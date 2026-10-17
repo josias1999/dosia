@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leis e Deveres da Enfermagem · Dosia</title>
+<meta name="description" content="Dosia — ferramentas para a enfermagem: consulta de medicamentos, compatibilidade, diluição e calculadoras de dose.">
+<style>html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<div class="dosia-nav">
+<style>
+.dosia-nav{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.dosia-nav *{box-sizing:border-box}
+.dosia-nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.dosia-nav-bar{position:sticky;top:0;z-index:9998;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:60px;padding:0 16px;background:#fff;border-bottom:1px solid #E3E8EE;box-shadow:0 1px 6px rgba(18,48,74,.06)}
+body.admin-bar .dosia-nav-bar{top:32px}
+.dosia-nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#12304A;font-weight:700;font-size:20px}
+.dosia-nav-brand img{height:34px;width:auto;display:block}
+.dosia-nav-btn{order:-1;display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;border-radius:10px;cursor:pointer}
+.dosia-nav-btn:hover{background:#F1F5F8}
+.dosia-nav-btn span{display:block;height:2.5px;width:100%;background:#12304A;border-radius:2px;transition:transform .25s,opacity .2s}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(2){opacity:0}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.dosia-nav-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,48,74,.35);opacity:0;visibility:hidden;transition:opacity .25s}
+.dosia-nav-panel{position:fixed;top:0;left:0;bottom:0;z-index:9999;width:min(300px,85vw);background:#fff;padding:76px 16px 24px;box-shadow:4px 0 24px rgba(18,48,74,.15);transform:translateX(-105%);transition:transform .28s ease}
+.dosia-nav-toggle:checked ~ .dosia-nav-overlay{opacity:1;visibility:visible}
+.dosia-nav-toggle:checked ~ .dosia-nav-panel{transform:none}
+.dosia-nav-close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;color:#12304A}
+.dosia-nav-close:hover{background:#F1F5F8}
+.dosia-nav-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A8A99;margin:0 8px 8px}
+.dosia-nav-panel a{display:flex;align-items:center;gap:12px;padding:13px 12px;margin-bottom:4px;border-radius:10px;text-decoration:none;color:#12304A;font-size:15.5px;font-weight:500}
+.dosia-nav-panel a:hover{background:#E9F8F6;color:#0E8C80}
+.dosia-nav-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#E9F8F6;color:#14B5A6;flex:none}
+.dosia-nav-ico svg{width:18px;height:18px}
+</style>
+<input type="checkbox" id="dosia-nav-toggle" class="dosia-nav-toggle" aria-hidden="true">
+<header class="dosia-nav-bar">
+<a class="dosia-nav-brand" href="/"><img decoding="async" src="../assets/dosia-logo.webp" alt="Dosia"></a>
+<label for="dosia-nav-toggle" class="dosia-nav-btn" aria-label="Abrir menu" title="Menu"><span></span><span></span><span></span></label>
+</header>
+<label for="dosia-nav-toggle" class="dosia-nav-overlay" aria-hidden="true"></label>
+<nav class="dosia-nav-panel" aria-label="Menu do Dosia">
+<label for="dosia-nav-toggle" class="dosia-nav-close" aria-label="Fechar menu">×</label>
+<p class="dosia-nav-title">Ferramentas</p>
+<a href="/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span>Consulta de medicamentos</a>
+<a href="/calculadora-de-medicacao/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"></path></svg></span>Calculadora de medicação</a>
+<a href="/leis-e-deveres-da-enfermagem/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M8 7h8M8 11h6"></path></svg></span>Leis e deveres da enfermagem</a>
+<a href="/calculadora-pediatrica/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path><path d="M10 7h.01M14 7h.01"></path></svg></span>Calculadora pediátrica</a>
+</nav>
+</div>
+<div class="lx">
+<style>
+.lx{--ink:#12304A;--ink2:#3C5468;--muted:#6B7C8C;--teal:#14B5A6;--teal2:#0E8C80;--coral:#F2735A;--bg:#F5F8FA;--card:#fff;--line:#E3E8EE;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.lx *{box-sizing:border-box}
+.lx a{color:var(--teal2)}
+.lx-hero{position:relative;overflow:hidden;padding:64px 20px 88px;color:#fff;background:linear-gradient(135deg,#0F2A44 0%,#12304A 38%,#0E6E78 72%,#14B5A6 100%)}
+.lx-hero::before,.lx-hero::after{content:"";position:absolute;border-radius:50%;filter:blur(2px);opacity:.35;animation:lxfloat 14s ease-in-out infinite}
+.lx-hero::before{width:420px;height:420px;right:-120px;top:-140px;background:radial-gradient(circle at 30% 30%,#5EEAD4,transparent 65%)}
+.lx-hero::after{width:360px;height:360px;left:-140px;bottom:-180px;background:radial-gradient(circle at 60% 40%,#F2735A,transparent 65%);animation-delay:-6s}
+@keyframes lxfloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,22px) scale(1.06)}}
+.lx-hero-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.12) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(180deg,#000 30%,transparent 95%);-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent 95%)}
+.lx-hero-in{position:relative;max-width:980px;margin:0 auto}
+.lx-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:13px;font-weight:600;letter-spacing:.02em}
+.lx-hero h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:16px 0 12px;font-weight:800;letter-spacing:-.01em;color:#fff}
+.lx-hero p{font-size:17px;max-width:680px;margin:0;color:rgba(255,255,255,.88)}
+.lx-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.lx-stat{padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:13.5px}
+.lx-stat b{display:block;font-size:20px}
+.lx-wrap{max-width:980px;margin:-48px auto 0;padding:0 16px 64px;position:relative}
+.lx-tools{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(18,48,74,.12);padding:16px;display:flex;flex-direction:column;gap:12px}
+.lx-search{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:0 14px;height:48px;background:#FAFCFD}
+.lx-search input{flex:1;border:0;outline:0;background:transparent;font-size:15.5px;color:var(--ink);font-family:inherit}
+.lx-chips{display:flex;flex-wrap:wrap;gap:8px}
+.lx-chip{border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.lx-chip:hover{border-color:var(--teal)}
+.lx-chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.lx-sec{margin-top:36px}
+.lx-sec-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.lx-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;font-size:20px;font-weight:800}
+.lx-ico.ok{background:#E3F7F4;color:var(--teal2)}
+.lx-ico.no{background:#FDECE8;color:#C2412D}
+.lx-ico.inf{background:#E8EEF6;color:var(--ink)}
+.lx-ico.new{background:#FFF3E0;color:#B45309}
+.lx-sec-h h2{font-size:22px;margin:0;line-height:1.25;color:var(--ink)}
+.lx-sec-h p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.lx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.lx-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;transition:transform .2s,box-shadow .2s;animation:lxin .5s ease both}
+.lx-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,48,74,.08)}
+@keyframes lxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lx-card h3{font-size:16px;margin:0 0 6px;line-height:1.35;color:var(--ink)}
+.lx-card p{margin:0;font-size:14.5px;color:var(--ink2)}
+.lx-card ul{margin:6px 0 0;padding-left:18px;font-size:14.5px;color:var(--ink2)}
+.lx-ref{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted);background:#F1F5F8;border-radius:8px;padding:3px 8px}
+.lx-card.ok{border-left:4px solid var(--teal)}
+.lx-card.no{border-left:4px solid #E5674F}
+.lx-card.new{border-left:4px solid #F59E0B}
+.lx-roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.lx-role{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.lx-role.lx-card{padding:0}
+.lx-role-h{padding:14px 16px;color:#fff;font-weight:800;font-size:17px}
+.lx-role-h small{display:block;font-weight:500;font-size:13px;opacity:.9}
+.lx-role ul{margin:0;padding:12px 16px 14px 32px;font-size:14.5px;color:var(--ink2)}
+.lx-tl{position:relative;padding-left:22px}
+.lx-tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--teal),#F59E0B)}
+.lx-tl .lx-card{position:relative;margin-bottom:12px}
+.lx-tl .lx-card::before{content:"";position:absolute;left:-21px;top:20px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #F59E0B}
+.lx-date{font-size:12.5px;font-weight:700;color:#B45309;text-transform:uppercase;letter-spacing:.04em}
+.lx-note{margin-top:36px;background:#fff;border:1px dashed #C9D4DE;border-radius:16px;padding:16px;font-size:14px;color:var(--ink2)}
+.lx-src{margin-top:16px;font-size:13.5px;color:var(--ink2)}
+.lx-src li{margin-bottom:4px}
+.lx-empty{display:none;text-align:center;padding:30px;color:var(--muted)}
+.lx-hide{display:none !important}
+</style>
+
+<header class="lx-hero">
+<div class="lx-hero-grid"></div>
+<div class="lx-hero-in">
+<span class="lx-badge">⚖️ Dosia · Enfermagem e legislação</span>
+<h1>O que a enfermagem deve e o que não pode fazer no hospital</h1>
+<p>Deveres, direitos, proibições e as novas resoluções do Cofen, explicados de forma simples para enfermeiros, técnicos e auxiliares de enfermagem.</p>
+<div class="lx-stats">
+<div class="lx-stat"><b>Lei 7.498/86</b>Exercício profissional</div>
+<div class="lx-stat"><b>Res. 564/2017</b>Código de Ética</div>
+<div class="lx-stat"><b>10 normas</b>novas em 2025–2026</div>
+<div class="lx-stat"><b>Piso</b>Lei 14.434/2022</div>
+</div>
+</div>
+</header>
+
+<div class="lx-wrap">
+<div class="lx-tools">
+<label class="lx-search"><span aria-hidden="true">🔍</span><input id="lx-q" type="search" placeholder="Buscar: prescrição, registro, sigilo, técnico, vacina..." autocomplete="off"></label>
+<div class="lx-chips" id="lx-chips">
+<button class="lx-chip on" type="button" data-f="todos">Todos</button>
+<button class="lx-chip" type="button" data-f="quem">Quem faz o quê</button>
+<button class="lx-chip" type="button" data-f="deve">✓ Deve fazer</button>
+<button class="lx-chip" type="button" data-f="nao">✕ Não pode fazer</button>
+<button class="lx-chip" type="button" data-f="direitos">Seus direitos</button>
+<button class="lx-chip" type="button" data-f="dim">Limite de pacientes</button>
+<button class="lx-chip" type="button" data-f="salario">Piso e jornada</button>
+<button class="lx-chip" type="button" data-f="conselhos">Cofen e Coren</button>
+<button class="lx-chip" type="button" data-f="penal">Infrações e penas</button>
+<button class="lx-chip" type="button" data-f="anot">📝 Anotações</button>
+<button class="lx-chip" type="button" data-f="evol">Evolução (enfermeiro)</button>
+<button class="lx-chip" type="button" data-f="termos">Termos técnicos</button>
+<button class="lx-chip" type="button" data-f="novas">Novas resoluções</button>
+</div>
+</div>
+
+<section class="lx-sec" data-cat="quem">
+<div class="lx-sec-h"><div class="lx-ico inf">👥</div><div><h2>Quem faz o quê na equipe de enfermagem</h2><p>Lei nº 7.498/1986 e Decreto nº 94.406/1987</p></div></div>
+<div class="lx-roles">
+<div class="lx-role lx-card"><div class="lx-role-h" style="background:#12304A">Enfermeiro(a)<small>Atividades privativas (art. 8º, I)</small></div>
+<ul>
+<li>Chefiar o serviço e a unidade de enfermagem</li>
+<li>Planejar, organizar, coordenar e avaliar a assistência de enfermagem</li>
+<li>Consulta de enfermagem</li>
+<li>Prescrição da assistência de enfermagem</li>
+<li>Cuidados diretos a pacientes graves com risco de vida</li>
+<li>Cuidados de maior complexidade técnica, que exigem conhecimento científico e decisões imediatas</li>
+</ul></div>
+<div class="lx-role lx-card"><div class="lx-role-h" style="background:#0E8C80">Técnico(a) de enfermagem<small>Art. 10</small></div>
+<ul>
+<li>Assiste o enfermeiro no planejamento e na supervisão da assistência</li>
+<li>Ajuda no cuidado a pacientes em estado grave</li>
+<li>Atua na prevenção e no controle de infecção hospitalar e de danos ao paciente</li>
+<li>Executa a assistência de enfermagem, exceto as atividades privativas do enfermeiro</li>
+</ul></div>
+<div class="lx-role lx-card"><div class="lx-role-h" style="background:#E5674F">Auxiliar de enfermagem<small>Art. 11</small></div>
+<ul>
+<li>Prepara o paciente para consultas, exames e tratamentos</li>
+<li>Administra medicamentos por via oral e parenteral, faz curativos, controle hídrico, oxigenoterapia e nebulização</li>
+<li>Coleta material para exames e cuida do pré e pós-operatório</li>
+<li>Higiene, conforto e segurança do paciente</li>
+</ul></div>
+</div>
+<div class="lx-grid" style="margin-top:12px">
+<div class="lx-card"><h3>Técnicos e auxiliares trabalham sob supervisão</h3><p>As atividades de técnicos e auxiliares só podem ser exercidas sob supervisão, orientação e direção de enfermeiro.</p><span class="lx-ref">Decreto 94.406/87, art. 13</span></div>
+<div class="lx-card"><h3>Processo de Enfermagem: quem faz cada etapa</h3><p>O processo tem 5 etapas: avaliação, diagnóstico, planejamento, implementação e evolução. Diagnóstico e prescrição de enfermagem são privativos do enfermeiro. Técnicos e auxiliares fazem as anotações de enfermagem, executam os cuidados prescritos e fazem a checagem.</p><span class="lx-ref">Res. Cofen 736/2024, arts. 4º, 6º e 7º</span></div>
+<div class="lx-card"><h3>Toda instituição precisa de um Enfermeiro Responsável Técnico</h3><p>Todo serviço com atuação de enfermagem deve ter pelo menos um Enfermeiro Responsável Técnico (ERT), com a certidão afixada em local visível. A anotação vale 12 meses.</p><span class="lx-ref">Res. Cofen 782/2025</span></div>
+<div class="lx-card "><h3>Enfermeiro: consulta e prescrição de enfermagem</h3><p>Consulta de enfermagem e prescrição da assistência de enfermagem são privativas do enfermeiro. A prescrição de medicamentos pelo enfermeiro só vale dentro de protocolos aprovados.</p><span class="lx-ref">Decreto 94.406/87 · Res. 801/2026</span></div>
+<div class="lx-card "><h3>Técnico e auxiliar: anotar e checar</h3><p>Técnicos e auxiliares registram as anotações de enfermagem, executam os cuidados prescritos e checam a prescrição.</p><span class="lx-ref">Res. Cofen 736/2024, art. 7º</span></div>
+<div class="lx-card "><h3>Acupuntura agora tem lei</h3><p>A Lei 15.345/2026 regulamentou a acupuntura para profissionais legalmente habilitados. O Cofen reconhece a prática por enfermeiros com especialização (Res. 585/2018).</p><span class="lx-ref">Lei 15.345/2026</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="deve">
+<div class="lx-sec-h"><div class="lx-ico ok">✓</div><div><h2>O que a enfermagem deve fazer</h2><p>Deveres do Código de Ética dos Profissionais de Enfermagem (Res. Cofen 564/2017)</p></div></div>
+<div class="lx-grid">
+<div class="lx-card ok"><h3>Registrar tudo no prontuário</h3><p>Anotar de forma clara, objetiva, cronológica, legível, completa e sem rasuras.</p><span class="lx-ref">Art. 36</span></div>
+<div class="lx-card ok"><h3>Assinar com nome e Coren</h3><p>Colocar nome completo, número e categoria de inscrição no Coren em todo registro.</p><span class="lx-ref">Art. 35</span></div>
+<div class="lx-card ok"><h3>Recusar prescrição sem assinatura</h3><p>Não cumprir prescrição sem assinatura e número de registro do prescritor (salvo urgência e emergência). Prescrição com erro ou ilegível deve ser esclarecida antes. Prescrição a distância só em urgência, emergência e regulação.</p><span class="lx-ref">Art. 46, §§ 1º e 2º</span></div>
+<div class="lx-card ok"><h3>Prestar assistência sem danos</h3><p>Cuidar livre de danos causados por imperícia, negligência ou imprudência.</p><span class="lx-ref">Art. 45</span></div>
+<div class="lx-card ok"><h3>Passar o plantão com informação completa</h3><p>Dar informações completas e verdadeiras para garantir a continuidade da assistência.</p><span class="lx-ref">Art. 38</span></div>
+<div class="lx-card ok"><h3>Manter o sigilo</h3><p>Guardar sigilo sobre o que soube no trabalho, com as exceções da lei. Casos de violência contra crianças, adolescentes, idosos e pessoas incapazes devem ser comunicados aos órgãos responsáveis.</p><span class="lx-ref">Art. 52 e § 4º</span></div>
+<div class="lx-card ok"><h3>Respeitar a autonomia e a privacidade</h3><p>Respeitar as decisões do paciente, inclusive diretivas antecipadas de vontade, e o seu pudor, privacidade e intimidade.</p><span class="lx-ref">Arts. 42 e 43</span></div>
+<div class="lx-card ok"><h3>Pedir consentimento</h3><p>Realizar a assistência com o consentimento da pessoa, do representante legal ou por decisão judicial.</p><span class="lx-ref">Art. 50</span></div>
+<div class="lx-card ok"><h3>Denunciar risco ao paciente</h3><p>Denunciar aos órgãos competentes ações de membros da equipe que coloquem o paciente em risco, e comunicar ao Coren fatos que infrinjam as normas.</p><span class="lx-ref">Arts. 28 e 47</span></div>
+<div class="lx-card ok"><h3>Aceitar só o que sabe fazer</h3><p>Assumir encargos somente quando estiver apto técnica, científica e legalmente.</p><span class="lx-ref">Art. 59</span></div>
+<div class="lx-card ok"><h3>Garantir cuidados mínimos na greve</h3><p>Mesmo em movimento reivindicatório, garantir assistência segura e os cuidados mínimos.</p><span class="lx-ref">Art. 44</span></div>
+<div class="lx-card ok"><h3>Conhecer e cumprir o Código</h3><p>Conhecer, cumprir e fazer cumprir o Código de Ética e as normas do Sistema Cofen/Conselhos Regionais.</p><span class="lx-ref">Art. 26</span></div>
+<div class="lx-card ok"><h3>Manter a inscrição no Coren em dia</h3><p>Manter a inscrição no Coren do estado onde trabalha, os dados cadastrais atualizados e as anuidades em dia.</p><span class="lx-ref">Arts. 32, 33 e 34</span></div>
+<div class="lx-card ok"><h3>Documentar o Processo de Enfermagem</h3><p>Registrar formalmente as etapas do Processo de Enfermagem, conforme a competência de cada categoria.</p><span class="lx-ref">Art. 37 · Res. 736/2024</span></div>
+<div class="lx-card ok"><h3>Orientar paciente e família</h3><p>Explicar exames e procedimentos e respeitar o direito do paciente de recusar.</p><span class="lx-ref">Art. 40</span></div>
+<div class="lx-card ok"><h3>Atender sem discriminação</h3><p>Prestar assistência sem discriminação de qualquer natureza.</p><span class="lx-ref">Art. 41</span></div>
+<div class="lx-card ok"><h3>Colaborar com a fiscalização</h3><p>Atender no prazo notificações e convocações do Coren e colaborar com a fiscalização, dando informações verdadeiras.</p><span class="lx-ref">Arts. 30 e 31</span></div>
+<div class="lx-card ok"><h3>Responder pelos próprios erros</h3><p>Responsabilizar-se pelas faltas cometidas, sozinho ou em equipe, quando teve participação ou sabia antes.</p><span class="lx-ref">Art. 51</span></div>
+<div class="lx-card ok"><h3>Esclarecer riscos e direitos</h3><p>Esclarecer a pessoa e a família sobre direitos, riscos, benefícios e intercorrências da assistência.</p><span class="lx-ref">Art. 39</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="nao">
+<div class="lx-sec-h"><div class="lx-ico no">✕</div><div><h2>O que a enfermagem não pode fazer</h2><p>Proibições do Código de Ética (Res. Cofen 564/2017)</p></div></div>
+<div class="lx-grid">
+<div class="lx-card no"><h3>Dar remédio sem conhecer</h3><p>Administrar medicamento sem conhecer indicação, ação, via e riscos.</p><span class="lx-ref">Art. 78</span></div>
+<div class="lx-card no"><h3>Cumprir prescrição que coloca o paciente em risco</h3><p>Executar prescrições que comprometam a segurança da pessoa.</p><span class="lx-ref">Art. 80</span></div>
+<div class="lx-card no"><h3>Prescrever fora do protocolo</h3><p>Prescrever medicamentos que não estejam em programas de saúde pública ou em rotina aprovada pela instituição, salvo emergência.</p><span class="lx-ref">Art. 79</span></div>
+<div class="lx-card no"><h3>Assinar o que não fez</h3><p>Registrar e assinar ações de enfermagem que não executou, ou deixar que outra pessoa assine as suas.</p><span class="lx-ref">Art. 88</span></div>
+<div class="lx-card no"><h3>Registro incompleto ou falso</h3><p>Registrar informações incompletas, imprecisas ou que não são verdade.</p><span class="lx-ref">Art. 87</span></div>
+<div class="lx-card no"><h3>Fazer o que não é da sua competência</h3><p>Executar atividades fora da sua competência ou sem segurança, ou fazer serviço que é de outro profissional (salvo emergência).</p><span class="lx-ref">Arts. 62 e 81</span></div>
+<div class="lx-card no"><h3>Delegar atividade privativa</h3><p>O enfermeiro não pode passar atividades privativas para outro membro da equipe, salvo emergência. E ninguém pode delegar tarefas de enfermagem para acompanhantes.</p><span class="lx-ref">Arts. 91 e 92</span></div>
+<div class="lx-card no"><h3>Negar socorro</h3><p>Negar assistência em urgência, emergência, epidemia, desastre ou catástrofe, quando não houver risco à sua integridade.</p><span class="lx-ref">Art. 76</span></div>
+<div class="lx-card no"><h3>Procedimento sem consentimento</h3><p>Realizar procedimentos sem consentimento formal, exceto em risco iminente de morte.</p><span class="lx-ref">Art. 77</span></div>
+<div class="lx-card no"><h3>Expor informações do paciente</h3><p>Passar informações a pessoas que não participam da assistência, sem autorização.</p><span class="lx-ref">Art. 89</span></div>
+<div class="lx-card no"><h3>Assédio de qualquer tipo</h3><p>Praticar ou ser conivente com assédio moral, sexual ou de qualquer natureza.</p><span class="lx-ref">Art. 83</span></div>
+<div class="lx-card no"><h3>Abandonar o estagiário</h3><p>Eximir-se da responsabilidade pela assistência feita por alunos e estagiários sob sua supervisão.</p><span class="lx-ref">Art. 93</span></div>
+<div class="lx-card no"><h3>Antecipar a morte ou provocar aborto</h3><p>Participar de prática destinada a antecipar a morte, ou provocar/cooperar com aborto fora dos casos permitidos em lei.</p><span class="lx-ref">Arts. 73 e 74</span></div>
+<div class="lx-card no"><h3>Omitir-se diante de violência</h3><p>Provocar, ser conivente ou omisso diante de qualquer forma de violência contra a pessoa, a família ou a coletividade.</p><span class="lx-ref">Art. 64</span></div>
+<div class="lx-card no"><h3>Usar a profissão para crime</h3><p>Usar conhecimentos de enfermagem para praticar crimes ou contravenções, dentro ou fora da profissão.</p><span class="lx-ref">Art. 70</span></div>
+<div class="lx-card no"><h3>Anunciar título que não tem</h3><p>Anunciar formação, especialização ou título que não pode comprovar.</p><span class="lx-ref">Art. 84</span></div>
+<div class="lx-card no"><h3>Espalhar informação falsa</h3><p>Divulgar informação falsa ou duvidosa da área, ou expor pessoas e instituições sem autorização (inclusive nas redes sociais).</p><span class="lx-ref">Art. 86</span></div>
+<div class="lx-card no"><h3>Desviar bens ou valores</h3><p>Apropriar-se ou desviar dinheiro, medicamentos ou materiais sob sua responsabilidade.</p><span class="lx-ref">Art. 94</span></div>
+<div class="lx-card no"><h3>Mentir para o Coren</h3><p>Omitir informações ou fazer declarações falsas ao Coren ou à Comissão de Ética.</p><span class="lx-ref">Art. 90</span></div>
+<div class="lx-card no"><h3>Descumprir leis de transplante e reprodução</h3><p>Colaborar com o descumprimento das leis sobre transplantes, esterilização, reprodução assistida ou manipulação genética.</p><span class="lx-ref">Art. 82</span></div>
+<div class="lx-card no"><h3>Fazer ato cirúrgico</h3><p>Praticar ato cirúrgico, exceto em emergência ou quando autorizado em lei.</p><span class="lx-ref">Art. 75</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="direitos">
+<div class="lx-sec-h"><div class="lx-ico inf">🛡️</div><div><h2>Seus direitos como profissional</h2><p>Direitos do Código de Ética (Res. Cofen 564/2017)</p></div></div>
+<div class="lx-grid">
+<div class="lx-card ok"><h3>Recusar o que não é seguro</h3><p>Recusar atividades fora da sua competência técnica, científica, ética e legal, ou que não ofereçam segurança a você ou ao paciente.</p><span class="lx-ref">Art. 22</span></div>
+<div class="lx-card ok"><h3>Suspender atividades sem condições seguras</h3><p>Suspender as atividades quando o local não oferecer condições seguras, comunicando por escrito, exceto em urgência e emergência.</p><span class="lx-ref">Art. 13</span></div>
+<div class="lx-card ok"><h3>Trabalhar em local livre de riscos</h3><p>Exercer a profissão com autonomia e segurança, em local de trabalho livre de riscos e danos.</p><span class="lx-ref">Arts. 1º e 2º</span></div>
+<div class="lx-card ok"><h3>Não ser filmado no trabalho</h3><p>Negar-se a ser filmado, fotografado ou exposto em mídias durante o trabalho.</p><span class="lx-ref">Art. 21</span></div>
+<div class="lx-card ok"><h3>Participar de movimentos da categoria</h3><p>Apoiar e participar de movimentos por melhores condições de trabalho e pela dignidade da profissão, dentro da lei.</p><span class="lx-ref">Art. 3º</span></div>
+<div class="lx-card ok"><h3>Autonomia na equipe</h3><p>Participar da equipe multiprofissional com responsabilidade, autonomia e liberdade de observar e manifestar opiniões.</p><span class="lx-ref">Art. 4º</span></div>
+<div class="lx-card ok"><h3>Pedir para sair do caso em risco</h3><p>Solicitar ao gestor a quebra do vínculo com o paciente quando houver risco à sua integridade física ou moral.</p><span class="lx-ref">Art. 23</span></div>
+<div class="lx-card ok"><h3>Desagravo público</h3><p>Pedir desagravo público ao Coren quando for ofendido no exercício da profissão.</p><span class="lx-ref">Art. 8º</span></div>
+<div class="lx-card ok"><h3>Estudar e se aperfeiçoar</h3><p>Aprimorar seus conhecimentos técnicos, científicos e culturais.</p><span class="lx-ref">Art. 6º</span></div>
+<div class="lx-card ok"><h3>Prontuário eletrônico sem custo para você</h3><p>Quando a instituição adota prontuário eletrônico, o profissional empregado não precisa comprar certificado digital: isso cabe à instituição. Prontuário 100% digital só vale com assinatura ICP-Brasil.</p><span class="lx-ref">Res. Cofen 754/2024</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="dim">
+<div class="lx-sec-h"><div class="lx-ico no">⚠️</div><div><h2>Existe limite de pacientes por profissional?</h2><p>Dimensionamento de pessoal: o que mudou e o que ainda vale</p></div></div>
+<div class="lx-grid">
+<div class="lx-card no"><h3>A regra do Cofen deixou de ser obrigatória</h3><p>A Res. Cofen 543/2017 fixava quantos pacientes cada profissional podia assumir (ex.: 1 para 6 no cuidado mínimo). Ações na Justiça Federal (DF, GO e TRF-4) suspenderam a regra, entendendo que só uma lei federal pode obrigar o hospital a contratar. Em março de 2024 o Cofen revogou a resolução.</p><span class="lx-ref">Res. Cofen 743/2024</span></div>
+<div class="lx-card no"><h3>TST: parâmetro é só orientação</h3><p>Em decisão divulgada em abril de 2026, a 1ª Turma do TST decidiu, por unanimidade, que os números do Cofen têm "caráter apenas orientativo" e não obrigam o hospital, porque a Lei 5.905/1973 não dá ao conselho poder para exigir quadro mínimo.</p><span class="lx-ref">TST, Proc. 0000446-20.2022.5.05.0017</span></div>
+<div class="lx-card "><h3>Na prática: hoje não há um número fixo em lei</h3><p>Para a maior parte das unidades (enfermarias, pronto-socorro), não existe hoje uma lei que diga o máximo de pacientes por técnico ou enfermeiro. O planejamento da equipe é feito pelo enfermeiro, com base no Parecer Normativo Cofen nº 1/2024.</p><span class="lx-ref">Parecer Normativo Cofen 1/2024</span></div>
+<div class="lx-card ok"><h3>Na UTI, a Anvisa ainda exige mínimo</h3><p>Na UTI adulto, a norma sanitária da Anvisa exige no mínimo 1 enfermeiro para cada 10 leitos e 1 técnico de enfermagem para cada 2 leitos, por turno. Essa é uma norma sanitária obrigatória, diferente da resolução do Cofen.</p><span class="lx-ref">RDC Anvisa 7/2010 e 26/2012</span></div>
+<div class="lx-card ok"><h3>Paciente grave exige enfermeiro</h3><p>A lei continua dizendo que o cuidado direto a pacientes graves com risco de vida é privativo do enfermeiro. Isso não mudou.</p><span class="lx-ref">Lei 7.498/86 · Decreto 94.406/87, art. 8º</span></div>
+<div class="lx-card ok"><h3>Sobrecarga ainda pode gerar responsabilidade</h3><p>O próprio TST disse que equipe subdimensionada pode gerar responsabilidade do empregador, desde que haja prova concreta de sobrecarga ou risco. Registre tudo e comunique por escrito.</p><span class="lx-ref">TST 2026</span></div>
+<div class="lx-card ok"><h3>O que fazer se a escala está insegura</h3><p>Comunique por escrito à chefia e ao Enfermeiro Responsável Técnico, registre as intercorrências no prontuário e, se não houver solução, denuncie ao Coren. Você pode recusar atividades sem segurança (exceto urgência e emergência).</p><span class="lx-ref">Código de Ética, arts. 13, 22 e 28</span></div>
+<div class="lx-card "><h3>O Coren continua fiscalizando</h3><p>O Sistema Cofen/Coren segue fiscalizando as instituições e pode entrar com ações civis públicas quando há risco à assistência.</p><span class="lx-ref">Nota oficial Cofen, 2024</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="salario">
+<div class="lx-sec-h"><div class="lx-ico ok">💰</div><div><h2>Piso salarial e jornada</h2><p>Lei 14.434/2022, decisões do STF e propostas no Congresso</p></div></div>
+<div class="lx-grid">
+<div class="lx-card ok"><h3>Valores do piso</h3><p>Enfermeiro: R$ 4.750. Técnico de enfermagem: R$ 3.325 (70%). Auxiliar de enfermagem e parteira: R$ 2.375 (50%).</p><span class="lx-ref">Lei 14.434/2022</span></div>
+<div class="lx-card "><h3>Piso é proporcional à jornada</h3><p>O STF definiu que o piso corresponde à jornada de 8 horas por dia e 44 por semana. Quem trabalha menos horas pode receber piso proporcional.</p><span class="lx-ref">STF, ADI 7222</span></div>
+<div class="lx-card "><h3>Setor público</h3><p>Estados e municípios pagam o piso na medida dos repasses do governo federal para essa finalidade.</p><span class="lx-ref">STF, ADI 7222</span></div>
+<div class="lx-card "><h3>Setor privado</h3><p>A negociação coletiva com o sindicato é obrigatória. Se não houver acordo, o hospital tem que pagar o piso previsto na lei.</p><span class="lx-ref">STF, ADI 7222</span></div>
+<div class="lx-card no"><h3>Sem reajuste desde 2022</h3><p>O artigo que previa correção anual pela inflação foi vetado. Os valores seguem os mesmos desde 2022.</p><span class="lx-ref">Lei 14.434/2022</span></div>
+<div class="lx-card new"><h3>PEC 19/2024: reajuste anual</h3><p>A proposta prevê reajuste anual do piso. Em 2026, o Fórum Nacional da Enfermagem aceitou usar 36 horas semanais como base de cálculo. A PEC está no Senado.</p><span class="lx-ref">PEC 19/2024 · Cofen, mar/2026</span></div>
+<div class="lx-card new"><h3>Jornada de 30 horas ainda não é lei</h3><p>A jornada de 30 horas semanais continua sendo a principal pauta da categoria, mas ainda não foi aprovada. Hoje vale o que estiver no contrato ou na convenção coletiva.</p><span class="lx-ref">Situação em 2026</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="conselhos">
+<div class="lx-sec-h"><div class="lx-ico inf">🏛️</div><div><h2>Cofen e Coren: o que cada um faz</h2><p>Lei 5.905/1973</p></div></div>
+<div class="lx-grid">
+<div class="lx-card "><h3>Cofen: o conselho federal</h3><p>Cria as normas da profissão (resoluções), elabora o Código de Ética, julga recursos e coordena todos os Corens do país.</p><span class="lx-ref">Lei 5.905/1973</span></div>
+<div class="lx-card "><h3>Coren: o conselho do seu estado</h3><p>Faz a inscrição dos profissionais, emite a carteira (que vale como identidade), fiscaliza o exercício profissional e julga casos de ética.</p><span class="lx-ref">Lei 5.905/1973 · Lei 6.206/1975</span></div>
+<div class="lx-card ok"><h3>Sem inscrição, não pode trabalhar</h3><p>Só pode exercer a enfermagem quem tem habilitação legal e inscrição no Coren do estado onde trabalha.</p><span class="lx-ref">Lei 7.498/86 · Código de Ética, art. 32</span></div>
+<div class="lx-card "><h3>Anuidade é obrigatória</h3><p>A anuidade é obrigatória para os inscritos. Se não for paga, pode virar dívida ativa.</p><span class="lx-ref">Lei 5.905/1973</span></div>
+<div class="lx-card "><h3>Coren não é sindicato</h3><p>O Coren é uma autarquia de direito público que fiscaliza a profissão. Salário, piso e acordo coletivo são negociados pelos sindicatos.</p><span class="lx-ref">Esclarecimento Cofen</span></div>
+<div class="lx-card "><h3>Comissão de Ética no hospital</h3><p>Instituições com 50 ou mais profissionais de enfermagem devem ter Comissão de Ética de Enfermagem, que representa o Coren dentro do serviço.</p><span class="lx-ref">Res. Cofen 792/2025</span></div>
+<div class="lx-card "><h3>Enfermeiro Responsável Técnico</h3><p>Todo serviço com enfermagem deve ter um ERT, que responde pelo serviço perante o Coren. A Anotação de Responsabilidade Técnica vale 12 meses.</p><span class="lx-ref">Res. Cofen 782/2025</span></div>
+</div>
+</section>
+
+<section class="lx-sec" data-cat="penal">
+<div class="lx-sec-h"><div class="lx-ico no">⚖️</div><div><h2>Infrações e penalidades</h2><p>Código de Ética (Res. 564/2017) e Lei 5.905/1973</p></div></div>
+<div class="lx-grid">
+<div class="lx-card no"><h3>O que é infração ética</h3><p>Qualquer ação, omissão ou conivência que descumpra o Código de Ética ou as normas do Sistema Cofen/Coren.</p><span class="lx-ref">Art. 104</span></div>
+<div class="lx-card no"><h3>Quem responde</h3><p>Responde quem comete a infração, quem contribui para ela e quem se beneficia dela.</p><span class="lx-ref">Art. 105</span></div>
+<div class="lx-card no"><h3>As 5 penalidades</h3><p>Advertência verbal, multa, censura, suspensão do exercício profissional e cassação do direito ao exercício profissional.</p><span class="lx-ref">Art. 108</span></div>
+<div class="lx-card "><h3>Quem aplica</h3><p>O Coren aplica advertência, multa, censura e suspensão. A cassação é aplicada pelo Cofen, ouvido o Coren.</p><span class="lx-ref">Lei 5.905/1973, art. 18</span></div>
+<div class="lx-card "><h3>Como é apurado</h3><p>A infração é apurada em processo ético-disciplinar, com direito de defesa. A gravidade considera os fatos, as ações ou omissões e os resultados.</p><span class="lx-ref">Arts. 106 e 107</span></div>
+</div>
+</section>
+
+<style>
+.lx-ex pre.lx-ex-t{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.7;background:#F7FAFC;border:1px solid #E3E8EE;border-left:4px solid #14B5A6;border-radius:10px;padding:12px 14px;margin:8px 0;color:#12304A}
+.lx-ex.enf pre.lx-ex-t{border-left-color:#12304A}
+.lx-ex-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lx-ex-who{flex:none;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;background:#E3F7F4;color:#0E8C80}
+.lx-ex.enf .lx-ex-who{background:#E8EEF6;color:#12304A}
+.lx-ex-c{margin-top:6px!important;font-size:13.5px!important}
+.lx-ex ul{font-size:13.5px!important}
+.lx-wide{grid-column:1/-1}
+.lx-grid.lx-g2{grid-template-columns:repeat(auto-fill,minmax(420px,1fr))}
+@media (max-width:520px){.lx-grid.lx-g2{grid-template-columns:1fr}}
+.lx-term{padding:12px 14px 10px}
+.lx-term h3{font-size:15px;margin-bottom:2px}
+.lx-term p{font-size:14px}
+.lx-tag{display:inline-block;font-size:11px;font-weight:700;color:#6B7C8C;background:#F1F5F8;border-radius:6px;padding:1px 7px;margin-top:6px}
+</style>
+<section class="lx-sec" data-cat="anot">
+<div class="lx-sec-h"><div class="lx-ico ok">📝</div><div><h2>Anotações de enfermagem: como escrever (com exemplos)</h2><p>Para técnicos e auxiliares — e também para enfermeiros, nos procedimentos que realizam</p></div></div>
+<div class="lx-grid">
+<div class="lx-card ok"><h3>Anotação x evolução</h3><p>A <b>anotação</b> é feita por toda a equipe: dados brutos e pontuais do que foi observado e feito naquele momento. A <b>evolução</b> é privativa do enfermeiro: analisa os dados das últimas 24 horas e é refeita sempre que o estado do paciente mudar.</p><span class="lx-ref">Guia Cofen · Res. 514/2016 e 736/2024</span></div>
+<div class="lx-card ok"><h3>Data e hora antes de tudo</h3><p>Comece cada registro com data e hora e escreva logo após o cuidado. Deixar para o fim do plantão causa esquecimentos.</p><span class="lx-ref">Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card ok"><h3>Números, não opiniões</h3><p>Anote valores exatos (PA 120x80 mmHg, FC 88 bpm). Evite palavras de julgamento como "bem", "mal", "muito", "pouco" e descreva medidas, quantidade, cor e aspecto.</p><span class="lx-ref">Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card no"><h3>Sem rasura, lápis ou corretivo</h3><p>Não deixe linhas em branco nem espaços vazios, não use entrelinhas, lápis ou corretivo líquido. Use só siglas aceitas pela literatura ou pela instituição.</p><span class="lx-ref">Guia Cofen · Código de Ética, art. 36</span></div>
+<div class="lx-card no"><h3>Check (✓) não é assinatura</h3><p>Só marcar ✓ ou / na prescrição não basta. Cada registro precisa de nome completo, categoria e número do Coren. Nunca assine o que não fez.</p><span class="lx-ref">Guia Cofen · Código de Ética, arts. 35 e 88</span></div>
+</div>
+<div class="lx-grid lx-g2" style="margin-top:12px">
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Admissão na enfermaria</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 14h20 — Admitido na Clínica Médica, leito 12, procedente do Pronto-Socorro, em maca, acompanhado da esposa. Consciente, orientado, comunicando-se verbalmente. Refere dor abdominal 5/10. PA 130x80 mmHg, FC 92 bpm, FR 18 irpm, Tax 37,4 °C, SpO2 96% em ar ambiente. AVP em MSE, sem sinais de flebite, com SF 0,9% correndo em bomba a 42 mL/h. Sem lesões de pele visíveis. Uso de prótese dentária superior. Pertences (celular e carteira) entregues à esposa. Orientado sobre rotinas do setor e uso da campainha. Comunicado à enfermeira.
+Maria S. Santos — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Procedência e forma de chegada</li><li>Nível de consciência e sinais vitais com valores</li><li>Dispositivos, lesões, próteses e pertences</li><li>Orientações dadas e a quem foi comunicado</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Administração de medicamento</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 08h05 — Administrado dipirona 1 g EV, diluída em 10 mL de AD, em bolus lento (cerca de 5 min), em AVP de MSE, conforme prescrição médica. Paciente referia cefaleia 6/10. Sem intercorrências durante a administração.
+16/10/2026 — 08h40 — Paciente refere melhora da cefaleia, dor 2/10.
+João P. Lima — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Medicamento, dose, via e local</li><li>Motivo (queixa) e resposta ao medicamento</li><li>Intercorrências ou "sem intercorrências"</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Recusa de medicamento</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 10h00 — Paciente recusou captopril 25 mg VO prescrito para as 10h, referindo náuseas. PA 150x95 mmHg. Orientado sobre a importância do medicamento; mantém a recusa. Comunicado à enfermeira Ana R. às 10h05, que avaliará o paciente e comunicará ao médico plantonista. Medicamento não administrado.
+João P. Lima — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>O que foi recusado e o motivo</li><li>Orientação feita</li><li>A quem foi comunicado e em que horário</li><li>Deixar claro que NÃO foi administrado</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Curativo</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 09h30 — Realizado curativo em ferida operatória em região abdominal mediana, cerca de 12 cm, com técnica asséptica. Bordas aproximadas, sem hiperemia, com pequena quantidade de exsudato seroso, sem odor. Limpeza com SF 0,9% e cobertura com gaze estéril e fita adesiva, conforme prescrição de enfermagem. Paciente refere dor 3/10 durante o procedimento.
+Maria S. Santos — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Local e tamanho da lesão</li><li>Aspecto: bordas, exsudato (tipo e quantidade), odor</li><li>Produto e cobertura usados</li><li>Dor do paciente</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Intercorrência: queda</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 03h15 — Encontrado paciente sentado no chão ao lado do leito, referindo que tentou ir ao banheiro sozinho. Consciente, orientado. Refere dor em joelho direito 4/10; escoriação de cerca de 2 cm no local, sem sangramento ativo. PA 140x90 mmHg, FC 98 bpm, SpO2 95%, HGT 112 mg/dL. Auxiliado a retornar ao leito com ajuda de outro profissional, grades elevadas e campainha ao alcance. Comunicado à enfermeira Ana R. às 03h17, que avaliou o paciente e acionou o médico plantonista. Realizada notificação do evento conforme protocolo da instituição.
+João P. Lima — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Como o paciente foi encontrado (fatos, sem suposições)</li><li>Lesões e sinais vitais</li><li>Medidas tomadas e a quem comunicou, com horário</li><li>Notificação do evento</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Transferência para a UTI</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 17h40 — Paciente transferido para a UTI adulto, leito 4, por piora do padrão respiratório, conforme decisão médica. Transportado em maca, com O2 por máscara com reservatório a 10 L/min, monitor e acompanhamento da enfermeira e do médico. Saiu consciente, sonolento, SpO2 91%, FC 112 bpm, PA 110x70 mmHg. AVP em MSE pérvio. Prontuário e exames enviados com o paciente. Família comunicada pela equipe médica.
+Maria S. Santos — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Motivo, destino e horário</li><li>Forma de transporte e quem acompanhou</li><li>Condições na saída</li><li>Documentos e dispositivos</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Alta hospitalar</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 11h30 — Alta médica. Retirado AVP de MSE, cateter íntegro, sem sinais de flebite, curativo oclusivo no local. Paciente deambulando, consciente, orientado. Entregues receita e orientações de alta; paciente e esposa orientados sobre medicamentos e retorno ao ambulatório. Pertences conferidos e entregues. Saiu do setor às 11h45, deambulando, acompanhado da esposa.
+João P. Lima — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Tipo de alta e horário real de saída</li><li>Retirada de dispositivos</li><li>Orientações e documentos entregues</li><li>Com quem e como saiu</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex "><div class="lx-ex-h"><h3>Pós-óbito</h3><span class="lx-ex-who">Técnico/Auxiliar</span></div><pre class="lx-ex-t">16/10/2026 — 05h20 — Óbito constatado pelo Dr. Carlos M. (CRM-XX 00000) às 05h10. Realizado preparo do corpo conforme protocolo institucional: retirada de dispositivos, higiene e identificação com etiqueta em tórax e membro. Aliança e relógio entregues à filha, conforme registro de pertences. Comunicados o serviço social e a recepção. Corpo encaminhado ao necrotério às 06h00.
+Maria S. Santos — Téc. Enf. — Coren-XX 000000-TE</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Horário e quem constatou o óbito</li><li>Procedimentos e identificação do corpo</li><li>Bens e valores: o que, a quem e quando</li><li>Setores comunicados e horário de saída</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+</div>
+</section>
+<section class="lx-sec" data-cat="evol">
+<div class="lx-sec-h"><div class="lx-ico inf">🩺</div><div><h2>Evolução de enfermagem (enfermeiro)</h2><p>Privativa do enfermeiro, dentro do Processo de Enfermagem (Res. Cofen 736/2024)</p></div></div>
+<div class="lx-grid">
+<div class="lx-card "><h3>O que a evolução precisa ter</h3><p>Data, hora, tempo de internação, avaliação do paciente, diagnóstico(s) de enfermagem, resultados esperados, intervenções e a avaliação do que melhorou ou piorou. Assinatura com nome e Coren.</p><span class="lx-ref">Guia Cofen · Res. 736/2024</span></div>
+<div class="lx-card "><h3>Diária e sempre que houver mudança</h3><p>A evolução cobre as últimas 24 horas e deve ser refeita, em parte ou no todo, quando o estado do paciente mudar, registrando o horário.</p><span class="lx-ref">Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card "><h3>Diagnóstico e prescrição são do enfermeiro</h3><p>O diagnóstico e a prescrição de enfermagem são privativos do enfermeiro. Use a taxonomia adotada pela instituição (ex.: NANDA-I, CIPE).</p><span class="lx-ref">Res. Cofen 736/2024, art. 6º</span></div>
+</div>
+<div class="lx-grid lx-g2" style="margin-top:12px">
+<div class="lx-card lx-ex enf"><div class="lx-ex-h"><h3>Evolução — clínica médica</h3><span class="lx-ex-who">Enfermeiro(a)</span></div><pre class="lx-ex-t">16/10/2026 — 10h00 — 2º DIH por pneumonia comunitária.
+Avaliação: consciente, orientado, Glasgow 15. Refere tosse com expectoração amarelada e cansaço aos esforços. Eupneico em repouso com cateter nasal de O2 a 2 L/min, SpO2 94%; murmúrio vesicular diminuído em base direita. PA 128x78 mmHg, FC 90 bpm, FR 20 irpm, Tax 37,8 °C. Aceitando 50% da dieta oral. AVP em MSE (instalado em 15/10), sem sinais de flebite. Diurese espontânea, clara, sem queixas. Evacuação ausente há 2 dias. Braden 16; Morse 45 (alto risco de queda).
+Diagnósticos de enfermagem: troca de gases prejudicada; risco de quedas; constipação.
+Resultados esperados: manter SpO2 ≥ 94%; ausência de quedas; evacuar em até 48 h.
+Intervenções (ver prescrição de enfermagem): cabeceira elevada 30–45°; estimular tosse e ingesta hídrica, se não houver restrição; controle de SpO2 de 4/4 h; grades elevadas e acompanhamento para deambular; comunicar se SpO2 &lt; 92% ou Tax ≥ 38 °C.
+Avaliação: mantém febre baixa; padrão respiratório estável em relação às últimas 24 h.
+Ana R. Costa — Enfermeira — Coren-XX 000000-ENF</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>Tempo de internação e motivo</li><li>Avaliação completa com dados objetivos</li><li>Diagnósticos, resultados esperados e intervenções</li><li>Comparação com as 24 h anteriores</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+<div class="lx-card lx-ex enf"><div class="lx-ex-h"><h3>Evolução — formato SOAP (alternativo)</h3><span class="lx-ex-who">Enfermeiro(a)</span></div><pre class="lx-ex-t">16/10/2026 — 14h00 — 1º DPO de colecistectomia videolaparoscópica.
+S: refere dor em incisões 3/10 e náusea leve; nega vômitos.
+O: consciente, orientada; PA 118x72 mmHg, FC 84 bpm, FR 16 irpm, Tax 36,8 °C, SpO2 97% em ar ambiente. Incisões com curativo seco e limpo. Abdome flácido. Deambulou ao banheiro com auxílio. Diurese presente.
+A: dor aguda controlada; risco de náusea pós-operatória.
+P: manter analgesia e antiemético conforme prescrição médica; estimular deambulação; reavaliar dor de 6/6 h; orientar sinais de alerta para a alta.
+Ana R. Costa — Enfermeira — Coren-XX 000000-ENF</pre><p class="lx-ex-c"><b>O que não pode faltar:</b></p><ul><li>S (subjetivo): o que o paciente relata</li><li>O (objetivo): dados medidos e observados</li><li>A (avaliação/diagnóstico) e P (plano)</li></ul><span class="lx-ref">Exemplo fictício · Guia Cofen (Res. 514/2016)</span></div>
+</div>
+</section>
+<section class="lx-sec" data-cat="termos">
+<div class="lx-sec-h"><div class="lx-ico inf">📖</div><div><h2>Principais termos técnicos do dia a dia</h2><p>60 termos e siglas. Use a busca no topo para achar mais rápido (ex.: "urina", "ferida", "sonda")</p></div></div>
+<div class="lx-grid">
+<div class="lx-card lx-term"><h3>Sinais vitais</h3><p>Conjunto de PA, FC, FR, temperatura (Tax) e SpO2. Dor é considerada o 5º sinal vital.</p><span class="lx-tag">SSVV</span></div>
+<div class="lx-card lx-term"><h3>Afebril / febril</h3><p>Afebril: sem febre. Febril: temperatura axilar elevada (≥ 37,8 °C em muitos protocolos). Prefira anotar o valor exato.</p><span class="lx-tag">Temperatura</span></div>
+<div class="lx-card lx-term"><h3>Hipertermia / hipotermia</h3><p>Temperatura acima / abaixo da faixa normal.</p><span class="lx-tag">Temperatura</span></div>
+<div class="lx-card lx-term"><h3>Taquicardia / bradicardia</h3><p>FC acima / abaixo do normal para a idade (adulto: acima de 100 / abaixo de 60 bpm).</p><span class="lx-tag">Coração</span></div>
+<div class="lx-card lx-term"><h3>Hipertensão / hipotensão</h3><p>PA acima / abaixo do normal. Anote sempre os valores (ex.: 160x100 mmHg).</p><span class="lx-tag">Pressão</span></div>
+<div class="lx-card lx-term"><h3>Eupneia</h3><p>Respiração normal, sem esforço.</p><span class="lx-tag">Respiração</span></div>
+<div class="lx-card lx-term"><h3>Dispneia</h3><p>Dificuldade ou desconforto para respirar.</p><span class="lx-tag">Respiração</span></div>
+<div class="lx-card lx-term"><h3>Taquipneia / bradipneia</h3><p>FR acima / abaixo do normal.</p><span class="lx-tag">Respiração</span></div>
+<div class="lx-card lx-term"><h3>Apneia</h3><p>Parada da respiração.</p><span class="lx-tag">Respiração</span></div>
+<div class="lx-card lx-term"><h3>Ortopneia</h3><p>Falta de ar ao deitar, que melhora ao sentar ou elevar a cabeceira.</p><span class="lx-tag">Respiração</span></div>
+<div class="lx-card lx-term"><h3>Cianose</h3><p>Coloração arroxeada da pele e mucosas (central ou de extremidades).</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Icterícia</h3><p>Pele e escleras amareladas (ictérico +/4+ a 4+/4+).</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Palidez / hipocorado</h3><p>Pele e mucosas descoradas (hipocorado +/4+ a 4+/4+).</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Sudorese / diaforese</h3><p>Suor excessivo.</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Edema</h3><p>Inchaço por acúmulo de líquido. Pode ser graduado em cruzes (+/4+) ou pelo teste do cacifo (godet).</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Anasarca</h3><p>Edema generalizado pelo corpo.</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Hiperemia</h3><p>Vermelhidão local por aumento do fluxo de sangue.</p><span class="lx-tag">Pele</span></div>
+<div class="lx-card lx-term"><h3>Anúria / oligúria / poliúria</h3><p>Ausência / pouca / muita urina.</p><span class="lx-tag">Urina</span></div>
+<div class="lx-card lx-term"><h3>Disúria</h3><p>Dor ou ardência ao urinar.</p><span class="lx-tag">Urina</span></div>
+<div class="lx-card lx-term"><h3>Hematúria / colúria</h3><p>Sangue na urina / urina escura (cor de chá ou coca-cola).</p><span class="lx-tag">Urina</span></div>
+<div class="lx-card lx-term"><h3>Diurese espontânea</h3><p>Paciente urina sem sonda.</p><span class="lx-tag">Urina</span></div>
+<div class="lx-card lx-term"><h3>Êmese / hematêmese</h3><p>Vômito / vômito com sangue.</p><span class="lx-tag">Digestivo</span></div>
+<div class="lx-card lx-term"><h3>Melena / hematoquezia</h3><p>Fezes escuras, pretas e com odor forte (sangue digerido) / sangue vivo nas fezes.</p><span class="lx-tag">Digestivo</span></div>
+<div class="lx-card lx-term"><h3>Disfagia / odinofagia</h3><p>Dificuldade para engolir / dor ao engolir.</p><span class="lx-tag">Digestivo</span></div>
+<div class="lx-card lx-term"><h3>Pirose</h3><p>Azia, queimação no estômago ou no peito.</p><span class="lx-tag">Digestivo</span></div>
+<div class="lx-card lx-term"><h3>Constipação</h3><p>Dificuldade para evacuar ou evacuações raras. Anote há quantos dias não evacua.</p><span class="lx-tag">Digestivo</span></div>
+<div class="lx-card lx-term"><h3>Epistaxe / hemoptise</h3><p>Sangramento pelo nariz / tosse com sangue.</p><span class="lx-tag">Sangramento</span></div>
+<div class="lx-card lx-term"><h3>Cefaleia</h3><p>Dor de cabeça.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Lipotimia / síncope</h3><p>Sensação de desmaio / perda súbita e breve da consciência.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Vertigem / tontura</h3><p>Sensação de rotação do ambiente / sensação de instabilidade.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Parestesia</h3><p>Formigamento ou dormência.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Hemiparesia / hemiplegia</h3><p>Fraqueza / paralisia de um lado do corpo.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Afasia / disartria</h3><p>Dificuldade para falar ou compreender a linguagem / dificuldade de articular as palavras.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Escala de Glasgow</h3><p>Avalia o nível de consciência (abertura ocular, resposta verbal e motora), de 3 a 15.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Orientado em tempo e espaço</h3><p>Sabe onde está, que dia é e quem é (orientação auto e alopsíquica).</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Sonolento / torporoso / comatoso</h3><p>Graus de rebaixamento do nível de consciência, do mais leve ao mais grave.</p><span class="lx-tag">Neurológico</span></div>
+<div class="lx-card lx-term"><h3>Deambula / acamado</h3><p>Anda (com ou sem auxílio) / restrito ao leito.</p><span class="lx-tag">Mobilidade</span></div>
+<div class="lx-card lx-term"><h3>Decúbito dorsal, lateral e ventral</h3><p>Deitado de costas / de lado (direito ou esquerdo) / de bruços (pronação).</p><span class="lx-tag">Posição</span></div>
+<div class="lx-card lx-term"><h3>Fowler / semi-Fowler</h3><p>Cabeceira elevada a cerca de 45–60° / cerca de 30–45°.</p><span class="lx-tag">Posição</span></div>
+<div class="lx-card lx-term"><h3>Trendelenburg</h3><p>Deitado com a cabeça mais baixa que os pés.</p><span class="lx-tag">Posição</span></div>
+<div class="lx-card lx-term"><h3>AVP</h3><p>Acesso venoso periférico (ex.: AVP em MSE = membro superior esquerdo).</p><span class="lx-tag">Dispositivo</span></div>
+<div class="lx-card lx-term"><h3>CVC / PICC</h3><p>Cateter venoso central / cateter central de inserção periférica.</p><span class="lx-tag">Dispositivo</span></div>
+<div class="lx-card lx-term"><h3>SNG / SNE</h3><p>Sonda nasogástrica (drenagem ou alimentação) / sonda nasoenteral (alimentação).</p><span class="lx-tag">Dispositivo</span></div>
+<div class="lx-card lx-term"><h3>SVD / SVA</h3><p>Sonda vesical de demora / sonda vesical de alívio.</p><span class="lx-tag">Dispositivo</span></div>
+<div class="lx-card lx-term"><h3>Flebite</h3><p>Inflamação da veia: dor, calor, vermelhidão e endurecimento no trajeto.</p><span class="lx-tag">Acesso venoso</span></div>
+<div class="lx-card lx-term"><h3>Infiltração / extravasamento</h3><p>Saída do líquido infundido para o tecido ao redor (extravasamento: quando o líquido é irritante ou vesicante).</p><span class="lx-tag">Acesso venoso</span></div>
+<div class="lx-card lx-term"><h3>Exsudato seroso / sanguinolento / purulento</h3><p>Secreção clara / com sangue / com pus.</p><span class="lx-tag">Feridas</span></div>
+<div class="lx-card lx-term"><h3>Tecido de granulação</h3><p>Tecido vermelho vivo, úmido e granuloso: sinal de cicatrização.</p><span class="lx-tag">Feridas</span></div>
+<div class="lx-card lx-term"><h3>Esfacelo / necrose</h3><p>Tecido amarelado e amolecido / tecido morto, escuro e endurecido.</p><span class="lx-tag">Feridas</span></div>
+<div class="lx-card lx-term"><h3>Deiscência</h3><p>Abertura dos pontos ou das bordas de uma ferida cirúrgica.</p><span class="lx-tag">Feridas</span></div>
+<div class="lx-card lx-term"><h3>LPP</h3><p>Lesão por pressão (antes chamada de úlcera ou escara), classificada em estágios.</p><span class="lx-tag">Feridas</span></div>
+<div class="lx-card lx-term"><h3>Escala de Braden</h3><p>Avalia o risco de lesão por pressão. Quanto menor a pontuação, maior o risco.</p><span class="lx-tag">Escalas</span></div>
+<div class="lx-card lx-term"><h3>Escala de Morse</h3><p>Avalia o risco de queda. Quanto maior a pontuação, maior o risco.</p><span class="lx-tag">Escalas</span></div>
+<div class="lx-card lx-term"><h3>EVA / escala numérica da dor</h3><p>Dor de 0 (sem dor) a 10 (pior dor possível).</p><span class="lx-tag">Escalas</span></div>
+<div class="lx-card lx-term"><h3>HGT / glicemia capilar</h3><p>Medida da glicose no sangue pela ponta do dedo.</p><span class="lx-tag">Exames</span></div>
+<div class="lx-card lx-term"><h3>BH</h3><p>Balanço hídrico: tudo o que entra menos tudo o que sai de líquidos em um período.</p><span class="lx-tag">Controle</span></div>
+<div class="lx-card lx-term"><h3>DIH / DPO</h3><p>Dias de internação hospitalar / dias de pós-operatório.</p><span class="lx-tag">Tempo</span></div>
+<div class="lx-card lx-term"><h3>VO, EV, IM, SC, ID</h3><p>Via oral, endovenosa, intramuscular, subcutânea e intradérmica.</p><span class="lx-tag">Vias</span></div>
+<div class="lx-card lx-term"><h3>SN / ACM</h3><p>Se necessário / a critério médico.</p><span class="lx-tag">Prescrição</span></div>
+<div class="lx-card lx-term"><h3>Jejum (dieta zero)</h3><p>Nada pela boca. Anote o horário de início do jejum.</p><span class="lx-tag">Prescrição</span></div>
+</div>
+<div class="lx-grid" style="margin-top:12px"><div class="lx-card no"><h3>Cuidado com siglas ambíguas</h3><p>"AVC" pode ser acidente vascular cerebral ou acesso venoso central; "PCR" pode ser parada cardiorrespiratória ou proteína C reativa. Use só siglas padronizadas pela instituição e, na dúvida, escreva por extenso.</p><span class="lx-ref">Guia Cofen (Res. 514/2016)</span></div>
+</div>
+</section>
+<section class="lx-sec" data-cat="novas">
+<div class="lx-sec-h"><div class="lx-ico new">★</div><div><h2>Novas resoluções do Cofen (2025–2026)</h2><p>O que mudou recentemente</p></div></div>
+<div class="lx-tl">
+<div class="lx-card new"><span class="lx-date">Ago 2026 · Res. 813/2026</span><h3>Podiatria clínica</h3><p>Organiza a atuação da enfermagem no cuidado dos pés e membros inferiores, mantendo as atividades privativas do enfermeiro e definindo o enfermeiro especialista em podiatria.</p></div>
+<div class="lx-card new"><span class="lx-date">Mai 2026 · Res. 809/2026</span><h3>Avaliação de Tecnologias em Saúde</h3><p>O enfermeiro pode integrar e coordenar equipes de ATS. Técnicos e auxiliares atuam sob sua supervisão na coleta de dados.</p></div>
+<div class="lx-card new"><span class="lx-date">Abr 2026 · Res. 806/2026</span><h3>Enfermeiro perfusionista</h3><p>A perfusão (circulação extracorpórea, ECMO, cardioplegia) é atribuição privativa do enfermeiro habilitado, com especialização registrada no Coren. Revoga a Res. 667/2021.</p></div>
+<div class="lx-card new"><span class="lx-date">Mar 2026 · Res. 805/2026</span><h3>Enfermagem nas escolas</h3><p>Define a atuação da enfermagem em instituições de ensino, com supervisão de enfermeiro e um Enfermeiro Responsável Técnico.</p></div>
+<div class="lx-card new"><span class="lx-date">Mar 2026 · Res. 803/2026</span><h3>Enfermagem de reabilitação</h3><p>Atualiza a Res. 728/2023 e inclui a participação da enfermagem na avaliação, indicação e adaptação de órteses e próteses.</p></div>
+<div class="lx-card new"><span class="lx-date">Jan 2026 · Res. 801/2026</span><h3>Prescrição de medicamentos por enfermeiros</h3><p>A prescrição é feita na consulta de enfermagem, com base em protocolos aprovados pelo serviço ou por programas de saúde pública. A receita deve ter protocolo, instituição, prescritor, paciente, nome genérico, via e posologia.</p></div>
+<div class="lx-card new"><span class="lx-date">Nov 2025 · Res. 795/2025</span><h3>Vacinação e imunização</h3><p>Reconhece a prescrição de imunobiológicos pelo enfermeiro. Técnicos e auxiliares vacinam sob supervisão, e toda vacina deve ser registrada nos sistemas oficiais.</p></div>
+<div class="lx-card new"><span class="lx-date">Out 2025 · Res. 792/2025</span><h3>Comissões de Ética de Enfermagem</h3><p>A Comissão de Ética passa a ser obrigatória em instituições com 50 ou mais profissionais de enfermagem. Revoga a Res. 593/2018.</p></div>
+<div class="lx-card new"><span class="lx-date">Ago 2025 · Res. 787/2025</span><h3>Cuidado com feridas e lesões de pele</h3><p>O enfermeiro avalia, trata, indica coberturas e prescreve os cuidados, que a equipe executa sob sua supervisão. Revoga a Res. 567/2018.</p></div>
+<div class="lx-card new"><span class="lx-date">Jul 2025 · Res. 782/2025</span><h3>Responsável técnico (ERT)</h3><p>Regras para a Anotação de Responsabilidade Técnica, com validade de 12 meses, e atribuições do Enfermeiro Responsável Técnico.</p></div>
+</div>
+</section>
+
+<p class="lx-empty" id="lx-empty">Nada encontrado para essa busca. Tente outra palavra.</p>
+
+<div class="lx-note"><b>Importante:</b> este conteúdo é um resumo informativo e não substitui o texto oficial das leis e resoluções. Em caso de dúvida, consulte o Cofen, o Coren do seu estado e os protocolos da sua instituição.
+<ul class="lx-src">
+<li><a href="https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" target="_blank" rel="noopener">Lei nº 7.498/1986</a> e <a href="https://planalto.gov.br/ccivil_03/decreto/1980-1989/D94406.htm" target="_blank" rel="noopener">Decreto nº 94.406/1987</a></li>
+<li><a href="https://portal.coren-sp.gov.br/wp-content/uploads/2024/10/Codigo-de-etica-2024.pdf" target="_blank" rel="noopener">Código de Ética dos Profissionais de Enfermagem (Res. Cofen 564/2017)</a></li>
+<li><a href="https://cofen.gov.br/wp-content/uploads/2024/01/Resolucao-736-2024.pdf" target="_blank" rel="noopener">Res. Cofen 736/2024 (Processo de Enfermagem)</a></li>
+<li><a href="https://www.cofen.gov.br/" target="_blank" rel="noopener">Resoluções Cofen 754/2024, 743/2024 e 782/2025 a 813/2026 (portal do Cofen)</a></li>
+<li><a href="https://www.cofen.gov.br/entenda-a-decisao-do-cofen-sobre-o-dimensionamento-da-equipe-de-enfermagem/" target="_blank" rel="noopener">Nota do Cofen sobre dimensionamento (2024)</a> e <a href="https://conjur.com.br/2026-abr-12/hospital-nao-tera-de-seguir-parametros-do-conselho-de-enfermagem-sobre-numero-de-profissionais/" target="_blank" rel="noopener">decisão do TST (Conjur, abr/2026)</a></li>
+<li><a href="https://www.lex.com.br/por-voto-medio-stf-define-que-piso-de-enfermagem-no-setor-privado-deve-ser-pago-se-nao-houver-acordo-coletivo/" target="_blank" rel="noopener">STF, ADI 7222 (piso)</a> e <a href="https://cofen.gov.br/forum-nacional-da-enfermagem-entrega-posicionamento-sobre-pec-19-a-autora-e-ao-relator-da-proposta/" target="_blank" rel="noopener">PEC 19/2024</a></li>
+<li><a href="https://cofen.gov.br/esclarecimentos-sobre-a-autarquia-cofencorens/" target="_blank" rel="noopener">Lei 5.905/1973 (Cofen/Coren)</a> e <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15345.htm" target="_blank" rel="noopener">Lei 15.345/2026</a></li>
+</ul></div>
+</div>
+
+<script>
+(function(){
+var q=document.getElementById("lx-q"),chips=document.querySelectorAll(".lx-chip"),secs=document.querySelectorAll(".lx-sec"),empty=document.getElementById("lx-empty"),cur="todos";
+function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function run(){
+var t=norm(q.value).trim(),any=false;
+secs.forEach(function(s){
+var catOk=(cur==="todos")||(s.getAttribute("data-cat")===cur);
+var vis=0;
+s.querySelectorAll(".lx-card").forEach(function(c){
+var ok=catOk?(t===""?true:norm(c.textContent).indexOf(t)!==-1):false;
+c.classList.toggle("lx-hide",!ok);
+if(ok){vis++}
+});
+s.classList.toggle("lx-hide",vis===0);
+if(vis){any=true}
+});
+empty.style.display=any?"none":"block";
+}
+chips.forEach(function(b){b.addEventListener("click",function(){chips.forEach(function(x){x.classList.remove("on")});b.classList.add("on");cur=b.getAttribute("data-f");run()})});
+q.addEventListener("input",run);
+})();
+</script>
+</div>
+</body>
+</html>
