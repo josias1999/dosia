@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dosia · Consulta rápida de medicamentos para a enfermagem</title>
+<meta name="description" content="Dosia — ferramentas para a enfermagem: consulta de medicamentos, compatibilidade, diluição e calculadoras de dose.">
+<style>html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<div class="dosia-nav">
+<style>
+.dosia-nav{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.dosia-nav *{box-sizing:border-box}
+.dosia-nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.dosia-nav-bar{position:sticky;top:0;z-index:9998;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:60px;padding:0 16px;background:#fff;border-bottom:1px solid #E3E8EE;box-shadow:0 1px 6px rgba(18,48,74,.06)}
+body.admin-bar .dosia-nav-bar{top:32px}
+.dosia-nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#12304A;font-weight:700;font-size:20px}
+.dosia-nav-brand img{height:34px;width:auto;display:block}
+.dosia-nav-btn{order:-1;display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;border-radius:10px;cursor:pointer}
+.dosia-nav-btn:hover{background:#F1F5F8}
+.dosia-nav-btn span{display:block;height:2.5px;width:100%;background:#12304A;border-radius:2px;transition:transform .25s,opacity .2s}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(2){opacity:0}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.dosia-nav-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,48,74,.35);opacity:0;visibility:hidden;transition:opacity .25s}
+.dosia-nav-panel{position:fixed;top:0;left:0;bottom:0;z-index:9999;width:min(300px,85vw);background:#fff;padding:76px 16px 24px;box-shadow:4px 0 24px rgba(18,48,74,.15);transform:translateX(-105%);transition:transform .28s ease}
+.dosia-nav-toggle:checked ~ .dosia-nav-overlay{opacity:1;visibility:visible}
+.dosia-nav-toggle:checked ~ .dosia-nav-panel{transform:none}
+.dosia-nav-close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;color:#12304A}
+.dosia-nav-close:hover{background:#F1F5F8}
+.dosia-nav-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A8A99;margin:0 8px 8px}
+.dosia-nav-panel a{display:flex;align-items:center;gap:12px;padding:13px 12px;margin-bottom:4px;border-radius:10px;text-decoration:none;color:#12304A;font-size:15.5px;font-weight:500}
+.dosia-nav-panel a:hover{background:#E9F8F6;color:#0E8C80}
+.dosia-nav-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#E9F8F6;color:#14B5A6;flex:none}
+.dosia-nav-ico svg{width:18px;height:18px}
+</style>
+<input type="checkbox" id="dosia-nav-toggle" class="dosia-nav-toggle" aria-hidden="true">
+<header class="dosia-nav-bar">
+<a class="dosia-nav-brand" href="/"><img decoding="async" src="assets/dosia-logo.webp" alt="Dosia"></a>
+<label for="dosia-nav-toggle" class="dosia-nav-btn" aria-label="Abrir menu" title="Menu"><span></span><span></span><span></span></label>
+</header>
+<label for="dosia-nav-toggle" class="dosia-nav-overlay" aria-hidden="true"></label>
+<nav class="dosia-nav-panel" aria-label="Menu do Dosia">
+<label for="dosia-nav-toggle" class="dosia-nav-close" aria-label="Fechar menu">×</label>
+<p class="dosia-nav-title">Ferramentas</p>
+<a href="/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span>Consulta de medicamentos</a>
+<a href="/calculadora-de-medicacao/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"></path></svg></span>Calculadora de medicação</a>
+<a href="/leis-e-deveres-da-enfermagem/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M8 7h8M8 11h6"></path></svg></span>Leis e deveres da enfermagem</a>
+<a href="/calculadora-pediatrica/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path><path d="M10 7h.01M14 7h.01"></path></svg></span>Calculadora pediátrica</a>
+</nav>
+</div>
+<style>
+.dh{--ink:#12304A;--ink2:#3C5468;--muted:#6B7C8C;--teal:#14B5A6;--teal2:#0E8C80;--coral:#F2735A;--bg:#F3F7FA;--line:#E3E8EE;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink)}
+.dh *{box-sizing:border-box}
+body{background:#F3F7FA}
+.dh-hero{position:relative;overflow:hidden;padding:64px 20px 120px;color:#fff;background:linear-gradient(135deg,#0F2A44 0%,#12304A 35%,#0E6E78 70%,#14B5A6 100%)}
+.dh-hero::before,.dh-hero::after{content:"";position:absolute;border-radius:50%;opacity:.4;animation:dhf 14s ease-in-out infinite;pointer-events:none}
+.dh-hero::before{width:460px;height:460px;right:-140px;top:-160px;background:radial-gradient(circle at 35% 35%,#5EEAD4,transparent 65%)}
+.dh-hero::after{width:380px;height:380px;left:-150px;bottom:-200px;background:radial-gradient(circle at 60% 40%,#F2735A,transparent 65%);animation-delay:-7s}
+@keyframes dhf{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,24px) scale(1.07)}}
+.dh-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.13) 1px,transparent 1px);background-size:22px 22px;-webkit-mask-image:linear-gradient(180deg,#000 25%,transparent 95%);mask-image:linear-gradient(180deg,#000 25%,transparent 95%);pointer-events:none}
+.dh-in{position:relative;max-width:1080px;margin:0 auto}
+.dh-hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:36px;align-items:center}
+.dh-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);font-size:13px;font-weight:600}
+.dh-hero h1{font-size:clamp(32px,5vw,52px);line-height:1.08;margin:16px 0 14px;font-weight:800;letter-spacing:-.015em;color:#fff}
+.dh-hero h1 span{background:linear-gradient(90deg,#A7F3E8,#FFE3D9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dh-hero p.dh-lead{font-size:17.5px;max-width:560px;margin:0;color:rgba(255,255,255,.9);line-height:1.6}
+.dh-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.dh-btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 18px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.dh-btn:hover{transform:translateY(-1px)}
+.dh-btn.pri{background:#fff;color:#12304A;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.dh-btn.sec{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.dh-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.dh-stat{padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:13px;color:rgba(255,255,255,.88)}
+.dh-stat b{display:block;font-size:22px;color:#fff;line-height:1.2}
+.dh-mock{position:relative;background:rgba(255,255,255,.96);border-radius:20px;padding:18px;box-shadow:0 30px 60px rgba(4,20,35,.35);color:#12304A;animation:dhup .8s ease both .1s}
+.dh-mock-s{display:flex;align-items:center;gap:10px;border:1px solid #DDE5EC;border-radius:12px;padding:11px 13px;color:#8796A5;font-size:14.5px;background:#F8FAFC}
+.dh-mock-r{margin-top:12px;border:1px solid #E3E8EE;border-radius:14px;padding:12px 14px}
+.dh-mock-r b{font-size:15.5px}
+.dh-mock-r small{display:block;color:#6B7C8C;font-size:12.5px;margin-top:2px}
+.dh-pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;margin-top:8px}
+.dh-pill.ok{background:#E3F7F4;color:#0E8C80}
+.dh-pill.no{background:#FDECE8;color:#C2412D}
+.dh-pill.wa{background:#FFF4E5;color:#B45309}
+.dh-float{position:absolute;right:-14px;bottom:-18px;background:#12304A;color:#fff;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:700;box-shadow:0 12px 28px rgba(0,0,0,.25)}
+@keyframes dhup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.dh-tools{max-width:1080px;margin:-72px auto 0;padding:0 16px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.dh-tool{display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;text-decoration:none;color:var(--ink);box-shadow:0 10px 26px rgba(18,48,74,.08);transition:transform .2s,box-shadow .2s;animation:dhup .6s ease both}
+.dh-tool:nth-child(2){animation-delay:.08s}.dh-tool:nth-child(3){animation-delay:.16s}.dh-tool:nth-child(4){animation-delay:.24s}
+.dh-tool:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(18,48,74,.14)}
+.dh-ti{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center}
+.dh-ti svg{width:23px;height:23px}
+.dh-tool h3{margin:4px 0 0;font-size:16.5px;line-height:1.3;color:var(--ink)}
+.dh-tool p{margin:0;font-size:14px;color:var(--ink2);line-height:1.5}
+.dh-go{margin-top:auto;padding-top:6px;font-size:13.5px;font-weight:700;color:var(--teal2)}
+.dh-sec{max-width:1080px;margin:0 auto;padding:56px 16px 0}
+.dh-sec-h{text-align:center;max-width:680px;margin:0 auto 22px}
+.dh-kicker{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal2)}
+.dh-sec-h h2{font-size:clamp(24px,3.4vw,32px);margin:6px 0 8px;line-height:1.2;color:var(--ink)}
+.dh-sec-h p{margin:0;color:var(--ink2);font-size:15.5px}
+.dh-app-card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 40px rgba(18,48,74,.09);overflow:hidden}
+.dh-app-card #dosia-app-root{max-width:none!important;margin:0!important;padding:0!important;background:transparent!important}
+.dh-feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dh-f{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.dh-f b{display:flex;align-items:center;gap:10px;font-size:15.5px;margin-bottom:6px}
+.dh-f b i{font-style:normal;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#E9F8F6;font-size:17px}
+.dh-f p{margin:0;font-size:14px;color:var(--ink2);line-height:1.55}
+.dh-intro{max-width:1080px;margin:28px auto 0;padding:0 16px;font-size:14px;color:var(--ink2);line-height:1.6}
+.dh-intro details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.dh-intro summary{cursor:pointer;font-weight:700;color:var(--ink)}
+.dh-foot{max-width:1080px;margin:40px auto 0;padding:24px 16px 40px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}
+.dh-foot a{color:var(--teal2);text-decoration:none;font-weight:600;margin-right:14px}
+@media (max-width:900px){.dh-hero-grid{grid-template-columns:1fr}.dh-mock{max-width:460px}.dh-tools{grid-template-columns:repeat(2,1fr)}.dh-feat{grid-template-columns:1fr}}
+@media (max-width:520px){.dh-mock{display:none}.dh-hero{padding:44px 18px 104px}.dh-tools{grid-template-columns:1fr}.dh-float{right:8px}}
+</style>
+<style>
+.dh-mock{animation:dhup .8s ease both .1s,dhbob 6s ease-in-out 1s infinite}
+@keyframes dhbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.dh-type{display:inline-block;color:#12304A;font-weight:600;white-space:nowrap;clip-path:inset(0 100% 0 0);animation:dhtype 9s steps(18,end) infinite}
+@keyframes dhtype{0%,4%{clip-path:inset(0 100% 0 0)}22%,86%{clip-path:inset(0 0 0 0)}94%,100%{clip-path:inset(0 100% 0 0)}}
+.dh-caret{display:inline-block;width:2px;height:18px;background:#14B5A6;margin-left:2px;vertical-align:middle;animation:dhblink .8s step-end infinite}
+@keyframes dhblink{50%{opacity:0}}
+.dh-mock-s{transition:border-color .3s;animation:dhfocus 9s ease infinite}
+@keyframes dhfocus{0%,3%{border-color:#DDE5EC;box-shadow:none}6%,86%{border-color:#14B5A6;box-shadow:0 0 0 3px rgba(20,181,166,.15)}92%,100%{border-color:#DDE5EC;box-shadow:none}}
+.dh-mock-r{opacity:0;animation:dhcard 9s ease infinite}
+.dh-mock-r:nth-of-type(2){animation-delay:0s}
+.dh-mock-r:nth-of-type(3){animation-delay:.35s}
+@keyframes dhcard{0%,24%{opacity:0;transform:translateY(12px) scale(.98)}31%,86%{opacity:1;transform:none}93%,100%{opacity:0;transform:translateY(-6px)}}
+.dh-pill{animation:dhpop 9s ease infinite;transform-origin:left center}
+.dh-mock-r:nth-of-type(2) .dh-pill{animation-delay:.2s}
+.dh-mock-r:nth-of-type(2) .dh-pill+.dh-pill{animation-delay:.45s}
+.dh-mock-r:nth-of-type(3) .dh-pill{animation-delay:.6s}
+@keyframes dhpop{0%,30%{opacity:0;transform:scale(.6)}35%{opacity:1;transform:scale(1.08)}38%,86%{opacity:1;transform:scale(1)}93%,100%{opacity:0;transform:scale(.9)}}
+.dh-pill.wa{animation-name:dhpop,dhwarn;animation-duration:9s,1.6s;animation-iteration-count:infinite,infinite}
+@keyframes dhwarn{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.0)}50%{box-shadow:0 0 0 4px rgba(245,158,11,.18)}}
+.dh-pill.no{animation-name:dhpop,dhshake;animation-duration:9s,9s;animation-iteration-count:infinite,infinite}
+@keyframes dhshake{0%,40%,48%,100%{translate:0}42%{translate:-3px}44%{translate:3px}46%{translate:-2px}}
+.dh-float{animation:dhfl 3.2s ease-in-out infinite}
+@keyframes dhfl{0%,100%{transform:translateY(0);box-shadow:0 12px 28px rgba(0,0,0,.25)}50%{transform:translateY(-6px);box-shadow:0 18px 34px rgba(20,181,166,.35)}}
+.dh-float i{font-style:normal;display:inline-block;animation:dhtick 2s linear infinite}
+@keyframes dhtick{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.dh-pill.no{animation:dhpop 9s ease infinite}}
+</style>
+<div class="dh">
+<header class="dh-hero"><div class="dh-dots"></div><div class="dh-in dh-hero-grid">
+<div>
+<span class="dh-badge">💊 Dosia · Ferramentas para a enfermagem</span>
+<h1>Consulta rápida de medicamentos <span>para quem cuida.</span></h1>
+<p class="dh-lead">Compatibilidade em Y e na mesma seringa, diluição, vias, tempo de ação e farmacologia — com fontes citadas, em segundos, no plantão.</p>
+<div class="dh-ctas"><a class="dh-btn pri" href="#consulta">🔍 Buscar um medicamento</a><a class="dh-btn sec" href="/calculadora-de-medicacao/">🧮 Abrir calculadoras</a></div>
+<div class="dh-stats"><div class="dh-stat"><b>253</b>medicamentos</div><div class="dh-stat"><b>157</b>pares de compatibilidade</div><div class="dh-stat"><b>32</b>classes terapêuticas</div></div>
+</div>
+<div class="dh-mock" aria-hidden="true">
+<div class="dh-mock-s">🔍 <span class="dh-type">Ceftriaxona + cálcio</span><span class="dh-caret"></span></div>
+<div class="dh-mock-r"><b>Ondansetrona + Tramadol</b><small>Via Y · mesma seringa</small><span class="dh-pill ok">✓ Compatível</span> <span class="dh-pill wa">⚠ Pode reduzir a analgesia</span></div>
+<div class="dh-mock-r"><b>Ceftriaxona + Gluconato de cálcio</b><small>Mesma via</small><span class="dh-pill no">✕ Incompatível</span></div>
+<div class="dh-float"><i>⏱</i> Início · Pico · Duração</div>
+</div>
+</div></header>
+
+<nav class="dh-tools" aria-label="Ferramentas do Dosia">
+<a class="dh-tool" href="#consulta"><span class="dh-ti" style="background:#E3F7F4;color:#0E8C80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span><h3>Consulta de medicamentos</h3><p>Compatibilidade, diluição, vias, efeitos e tempo de ação.</p><span class="dh-go">Consultar agora →</span></a>
+<a class="dh-tool" href="/calculadora-de-medicacao/"><span class="dh-ti" style="background:#E8EEF6;color:#12304A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"></path></svg></span><h3>Calculadora de medicação</h3><p>Gotejamento, regra de três, insulina, bomba e diluições.</p><span class="dh-go">Calcular →</span></a>
+<a class="dh-tool" href="/calculadora-pediatrica/"><span class="dh-ti" style="background:#FDECE8;color:#C2412D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path></svg></span><h3>Calculadora pediátrica</h3><p>Dose por peso, quanto aspirar, PALS e soro de manutenção.</p><span class="dh-go">Calcular →</span></a>
+<a class="dh-tool" href="/leis-e-deveres-da-enfermagem/"><span class="dh-ti" style="background:#FFF3E0;color:#B45309"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M8 7h8M8 11h6"></path></svg></span><h3>Leis, deveres e anotações</h3><p>Cofen, Coren, piso, exemplos de anotação e termos técnicos.</p><span class="dh-go">Ler →</span></a>
+</nav>
+
+<section class="dh-sec" id="consulta">
+<div class="dh-sec-h"><span class="dh-kicker">Consulta de medicamentos</span><h2>Busque pelo nome genérico ou comercial</h2><p>Ou navegue pelas classes terapêuticas. Toque em um medicamento para ver a ficha completa e checar compatibilidades.</p></div>
+<div class="dh-app-card">
+<div id="dosia-app-root"><div style="padding:40px 20px;text-align:center;color:#6A96A0">Carregando o Dosia…</div></div>
+
+</div>
+</section>
+
+<section class="dh-sec">
+<div class="dh-feat">
+<div class="dh-f"><b><i>📚</i>Fontes citadas</b><p>Bulas aprovadas pela Anvisa e manuais de diluição hospitalares. Quando não há registro, o Dosia avisa em vez de supor.</p></div>
+<div class="dh-f"><b><i>💉</i>Pensado para o plantão</b><p>Compatibilidade em Y separada de "mesma seringa", passo a passo de administração e alertas de monitorização.</p></div>
+<div class="dh-f"><b><i>📱</i>Funciona no celular</b><p>Abra no navegador do celular, sem instalar nada. Salve o site na tela inicial para acessar mais rápido.</p></div>
+</div>
+</section>
+<div id="dosia-intro" class="dh-intro">
+<p style="font-size:13px;color:#5B6B7A">Conteúdo de apoio para profissionais. Confirme sempre na bula e com a farmácia da sua instituição antes de administrar.</p>
+<details style="font-size:13.5px;margin-top:6px"><summary style="cursor:pointer;font-weight:600">Lista de medicamentos disponíveis no Dosia</summary>
+<h3 style="font-size:14px;margin:12px 0 4px">Analgésicos e Antitérmicos</h3><p style="margin:0">Dipirona sódica (Novalgina, Anador); Paracetamol (Halexminophen); Ácido acetilsalicílico (AAS) (Aspirina).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antibióticos</h3><p style="margin:0">Ceftriaxona sódica (Rocefin); Azitromicina (monoidratada) (Zitromax); Ampicilina sódica (Binotal); Gentamicina (sulfato) (Garamicina, Hytamicina); Metronidazol (Flagyl); Vancomicina (cloridrato) (Vanclomin); Cefazolina sódica (Kefazol); Amoxicilina; Amoxicilina + Clavulanato de potássio; Cefalexina; Levofloxacino; Ciprofloxacino (cloridrato); Sulfametoxazol + Trimetoprima (Bactrim); Doxiciclina; Nitrofurantoína (Macrodantina); Sulfadiazina de prata; Cloranfenicol (colírio); Claritromicina; Eritromicina; Benzilpenicilina benzatina (Benzetacil); Benzilpenicilina potássica (Penicilina G Cristalina) (Cristacilina); Norfloxacino; Mupirocina (Bactroban); Neomicina (sulfato) + Bacitracina (zíncica) (Nebacetin); Rifampicina + Isoniazida + Pirazinamida + Etambutol (Esquema Básico); Vancomicina — via oral; Clindamicina.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Corticosteroides</h3><p style="margin:0">Dexametasona (fosfato dissódico) (Decadron); Hidrocortisona (succinato sódico) (Solu-Cortef); Prednisona / Prednisolona; Betametasona (dipropionato + fosfato dissódico) (BetaTrinta, Diprospan).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antieméticos</h3><p style="margin:0">Metoclopramida (Plasil); Bromoprida (Digesan); Butilbrometo de escopolamina (Buscopan); Butilbrometo de escopolamina + Dipirona sódica (Buscopan Composto); Dimenidrinato (+ cloridrato de piridoxina) — via IM (Dramin B6); Dimenidrinato (+ cloridrato de piridoxina) — via EV (off-label) (Dramin B6); Ondansetrona (cloridrato) (Zofran, Vonau); Domperidona (Motilium).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Cardiologia</h3><p style="margin:0">Furosemida (Lasix); Captopril (Capoten); Hidralazina (cloridrato) (Apresolina); Digoxina; Verapamil (cloridrato) (Dilacoron); Losartana potássica (Aradois); Enalapril (maleato); Hidroclorotiazida; Metildopa; Espironolactona (Aldactone); Anlodipino (besilato); Propranolol (cloridrato); Atenolol; Nifedipino (Adalat); Carvedilol; Bisoprolol (hemifumarato) (Concor); Diltiazem (cloridrato) (Dilzem).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Emergência e Vasoativos</h3><p style="margin:0">Epinefrina (adrenalina) (Adren); Atropina (sulfato) (Atropion); Adenosina (Adenocard); Amiodarona (cloridrato) (Ancoron, Atlansil); Noradrenalina (hemitartarato) (Noradrem); Dobutamina (cloridrato) (Dobutrex, Dobutan); Dopamina (cloridrato) (Dopacris, Dopamin, Revivan); Nitroprussiato de sódio (Nipride, Nitropress); Nitroglicerina (trinitrato de glicerila) (Tridil); Dinitrato de isossorbida (Isordil, Isocord); Vasopressina (hormônio antidiurético) (Encrise); Terlipressina (acetato) (Glypressin).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Sedação e Anestesia</h3><p style="margin:0">Midazolam (Dormonid); Diazepam (Valium); Cetamina (cloridrato); Etomidato (Hypnomidate); Succinilcolina (cloreto de suxametônio) (Succinil Colin); Propofol; Rocurônio (brometo) (Rocuron); Diazepam — via retal (Stesolid).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Opioides</h3><p style="margin:0">Morfina (sulfato) (Dimorf); Fentanila (citrato) (Fentanest); Tramadol (cloridrato) (Tramal); Codeína (fosfato); Metadona (cloridrato) (Mytedom).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Anti-histamínicos</h3><p style="margin:0">Prometazina (cloridrato) (Fenergan, Pamergan); Loratadina; Cetirizina (dicloridrato) (Zyrtec); Desloratadina; Hidroxizina (dicloridrato).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Anti-inflamatórios (AINEs)</h3><p style="margin:0">Diclofenaco sódico (Voltaren); Ibuprofeno; Cetoprofeno (Profenid, Bicerto); Tenoxicam (Tilatil); Nimesulida; Meloxicam; Piroxicam; Naproxeno (sódico); Ácido mefenâmico; Cetorolaco (trometamol).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Psiquiatria</h3><p style="margin:0">Haloperidol (Haldol); Clorpromazina (cloridrato) (Amplictil, Longactil); Fluoxetina (cloridrato); Risperidona; Escitalopram (oxalato) (Lexapro); Sertralina (cloridrato); Alprazolam; Clonazepam (Rivotril); Bromazepam; Duloxetina (cloridrato); Venlafaxina (cloridrato); Carbonato de lítio (Carbolitium); Olanzapina; Quetiapina (hemifumarato) (Seroquel); Bupropiona (cloridrato); Aripiprazol; Ziprasidona (cloridrato); Metilfenidato (cloridrato) (Ritalina); Amitriptilina (cloridrato) (Amytril); Trazodona (cloridrato); Buspirona (cloridrato) (Buspar).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Eletrólitos e Soros</h3><p style="margin:0">Sulfato de magnésio; Glicose 50% (hipertônica); Bicarbonato de sódio (8,4%); Cloreto de potássio (KCl); Manitol 20%; Gluconato de cálcio 10%; Ringer com Lactato (solução); Carbonato de cálcio.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Anticonvulsivantes</h3><p style="margin:0">Fenitoína sódica (Fenital, Hidantal); Fenobarbital sódico (Fenocris); Ácido valproico / Valproato de sódio (Depakene); Carbamazepina (Tegretol, Tegretard); Gabapentina; Pregabalina; Topiramato (Topamax); Lamotrigina (Lamictal, Neural); Oxcarbazepina.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Endocrinologia e Diabetes</h3><p style="margin:0">Insulina regular (humana) (Humulin R, Novolin R); Insulina humana NPH (isófana) (Novolin N); Metformina (cloridrato) (Glifage); Glibenclamida; Levotiroxina sódica; Glimepirida; Insulina glargina (Lantus, Glargilin); Insulina lispro; Empagliflozina (Jardiance); Liraglutida; Semaglutida (Ozempic, Wegovy); Acetazolamida; Desmopressina (acetato) (DDAVP).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Anticoagulantes</h3><p style="margin:0">Heparina sódica (Hepamax-S); Ácido tranexâmico (Transamin); Enoxaparina sódica (Clexane, Heparinox, Noxx); Varfarina sódica; Clopidogrel (bissulfato); Rivaroxabana (Xarelto); Fitomenadiona (Vitamina K1) (Kanakion, Kavit); Sulfato de protamina (Protamina 1000); Etexilato de dabigatrana (Pradaxa); Apixabana (Eliquis).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Pneumologia</h3><p style="margin:0">Salbutamol (sulfato) (Aerolin); Brometo de ipratrópio (Atrovent); Aminofilina; Budesonida (inalatória) (Pulmicort); Montelucaste (sódico) (Singulair); Teofilina (Teolong); Fenoterol (bromidrato) (Berotec); N-acetilcisteína (Fluimucil); Ambroxol (cloridrato); Dextrometorfano (bromidrato) (Bisoltussin); Beclometasona (dipropionato); Formoterol + Budesonida (Symbicort, Vannair); Brometo de tiotrópio (Spiriva).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antídotos</h3><p style="margin:0">Naloxona (cloridrato) (Narcan); Flumazenil (Lanexat); Azul de metileno.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Gastroenterologia</h3><p style="margin:0">Omeprazol sódico; Pantoprazol; Loperamida (cloridrato); Simeticona; Bisacodil (Dulcolax, Lacto-Purga, Bisalax); Lactulose (Duphalac); Esomeprazol (magnésico) (Nexium); Famotidina (Famotid); Sucralfato (Sucrafilm); Metronidazol + Nistatina (creme/óvulo vaginal); Racecadotrila (Tiorfan); Saccharomyces boulardii (probiótico) (Floratil); Sais para reidratação oral (SRO).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antifúngicos</h3><p style="margin:0">Fluconazol; Nistatina (Micostatin); Miconazol (gel oral) (Daktarin); Clotrimazol.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Vitaminas e Suplementos</h3><p style="margin:0">Sulfato ferroso; Ácido fólico; Colecalciferol (Vitamina D3); Cianocobalamina (Vitamina B12); Sacarato de hidróxido férrico (Noripurum, Sucrofer); Ácido ascórbico (Vitamina C) (Bio-C).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Estatinas e Hipolipemiantes</h3><p style="margin:0">Sinvastatina; Atorvastatina (cálcica); Rosuvastatina (cálcica) (Crestor); Ezetimiba; Pravastatina (sódica); Fenofibrato (Lipidil).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Reumatologia e Imunossupressores</h3><p style="margin:0">Alopurinol; Colchicina (Colchis); Metotrexato (MTX, Metrexato); Sulfassalazina (Azulfin); Alendronato de sódio; Azatioprina; Ciclosporina; Micofenolato (mofetila ou sódico); Ácido zoledrônico; Sulfato de hidroxicloroquina.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antiparasitários</h3><p style="margin:0">Albendazol (Zentel); Mebendazol; Ivermectina (Revectina, Ivermec); Permetrina (Permenati); Praziquantel.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Obstetrícia</h3><p style="margin:0">Ocitocina (Syntocinon); Misoprostol (Cytotec); Metilergometrina (maleato) (Ergometrin); Levonorgestrel (Postinor Uno, Dopo).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Dermatologia e Oftalmologia</h3><p style="margin:0">Timolol (maleato) — colírio (Timoptol); Isotretinoína (Roacutan); Latanoprosta (Xalatan); Pilocarpina (colírio) (Pilocan, Pilosol); Tobramicina + Dexametasona (colírio) (Tobradex).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Anestésicos Locais</h3><p style="margin:0">Lidocaína (cloridrato) (Xylestesin); Bupivacaína (cloridrato) (Neocaína).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antivirais</h3><p style="margin:0">Aciclovir; Fosfato de oseltamivir (Tamiflu).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Outros</h3><p style="margin:0">Betaistina (dicloridrato) (Labirin, Betaserc).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Urologia</h3><p style="margin:0">Finasterida; Tansulosina (cloridrato) (Omnic, Hproz); Oxibutinina (cloridrato) (Incontinol, Retemic).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Neurologia</h3><p style="margin:0">Baclofeno (Lioresal); Ciclobenzaprina (cloridrato) (Miosan, Musculare); Donepezila + Memantina (Donila Duo); Rivastigmina (hemitartarato); Galantamina; Memantina (cloridrato); Levodopa + Carbidopa; Biperideno (cloridrato) (Akineton).</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Oncologia</h3><p style="margin:0">Tamoxifeno (citrato); Anastrozol; Letrozol.</p>
+<h3 style="font-size:14px;margin:12px 0 4px">Antissépticos</h3><p style="margin:0">Permanganato de potássio; Ácido salicílico (tópico); Clorexidina (digliconato); Iodopovidona (PVPI); Água oxigenada (peróxido de hidrogênio).</p>
+</details>
+<noscript><p>Ative o JavaScript para usar a consulta interativa do Dosia.</p></noscript>
+</div>
+<footer class="dh-foot"><div><a href="#consulta">Consulta</a><a href="/calculadora-de-medicacao/">Calculadora</a><a href="/calculadora-pediatrica/">Pediatria</a><a href="/leis-e-deveres-da-enfermagem/">Leis e anotações</a></div><div>Dosia · Conteúdo de apoio para profissionais de saúde. Confirme sempre na bula e no protocolo da sua instituição.</div></footer>
+</div>
+<script src="assets/consulta.bundle.js"></script>
+</body>
+</html>
