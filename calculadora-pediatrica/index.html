@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora Pediátrica · Dosia</title>
+<meta name="description" content="Dosia — ferramentas para a enfermagem: consulta de medicamentos, compatibilidade, diluição e calculadoras de dose.">
+<style>html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<div class="dosia-nav">
+<style>
+.dosia-nav{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.dosia-nav *{box-sizing:border-box}
+.dosia-nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.dosia-nav-bar{position:sticky;top:0;z-index:9998;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:60px;padding:0 16px;background:#fff;border-bottom:1px solid #E3E8EE;box-shadow:0 1px 6px rgba(18,48,74,.06)}
+body.admin-bar .dosia-nav-bar{top:32px}
+.dosia-nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#12304A;font-weight:700;font-size:20px}
+.dosia-nav-brand img{height:34px;width:auto;display:block}
+.dosia-nav-btn{order:-1;display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;border-radius:10px;cursor:pointer}
+.dosia-nav-btn:hover{background:#F1F5F8}
+.dosia-nav-btn span{display:block;height:2.5px;width:100%;background:#12304A;border-radius:2px;transition:transform .25s,opacity .2s}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(2){opacity:0}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.dosia-nav-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,48,74,.35);opacity:0;visibility:hidden;transition:opacity .25s}
+.dosia-nav-panel{position:fixed;top:0;left:0;bottom:0;z-index:9999;width:min(300px,85vw);background:#fff;padding:76px 16px 24px;box-shadow:4px 0 24px rgba(18,48,74,.15);transform:translateX(-105%);transition:transform .28s ease}
+.dosia-nav-toggle:checked ~ .dosia-nav-overlay{opacity:1;visibility:visible}
+.dosia-nav-toggle:checked ~ .dosia-nav-panel{transform:none}
+.dosia-nav-close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;color:#12304A}
+.dosia-nav-close:hover{background:#F1F5F8}
+.dosia-nav-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A8A99;margin:0 8px 8px}
+.dosia-nav-panel a{display:flex;align-items:center;gap:12px;padding:13px 12px;margin-bottom:4px;border-radius:10px;text-decoration:none;color:#12304A;font-size:15.5px;font-weight:500}
+.dosia-nav-panel a:hover{background:#E9F8F6;color:#0E8C80}
+.dosia-nav-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#E9F8F6;color:#14B5A6;flex:none}
+.dosia-nav-ico svg{width:18px;height:18px}
+</style>
+<input type="checkbox" id="dosia-nav-toggle" class="dosia-nav-toggle" aria-hidden="true">
+<header class="dosia-nav-bar">
+<a class="dosia-nav-brand" href="/"><img decoding="async" src="../assets/dosia-logo.webp" alt="Dosia"></a>
+<label for="dosia-nav-toggle" class="dosia-nav-btn" aria-label="Abrir menu" title="Menu"><span></span><span></span><span></span></label>
+</header>
+<label for="dosia-nav-toggle" class="dosia-nav-overlay" aria-hidden="true"></label>
+<nav class="dosia-nav-panel" aria-label="Menu do Dosia">
+<label for="dosia-nav-toggle" class="dosia-nav-close" aria-label="Fechar menu">×</label>
+<p class="dosia-nav-title">Ferramentas</p>
+<a href="/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span>Consulta de medicamentos</a>
+<a href="/calculadora-de-medicacao/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"></path></svg></span>Calculadora de medicação</a>
+<a href="/leis-e-deveres-da-enfermagem/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M8 7h8M8 11h6"></path></svg></span>Leis e deveres da enfermagem</a>
+<a href="/calculadora-pediatrica/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path><path d="M10 7h.01M14 7h.01"></path></svg></span>Calculadora pediátrica</a>
+</nav>
+</div>
+<div class="pd">
+<style>
+.pd{--ink:#12304A;--ink2:#3C5468;--muted:#6B7C8C;--teal:#14B5A6;--teal2:#0E8C80;--coral:#E5674F;--bg:#F5F8FA;--card:#fff;--line:#E3E8EE;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+.pd *{box-sizing:border-box}
+.pd-hero{position:relative;overflow:hidden;padding:52px 20px 84px;color:#fff;background:linear-gradient(135deg,#12304A 0%,#1B5E7A 45%,#14B5A6 80%,#7FD8C9 100%)}
+.pd-hero::before,.pd-hero::after{content:"";position:absolute;border-radius:50%;opacity:.35;animation:pdf 13s ease-in-out infinite}
+.pd-hero::before{width:380px;height:380px;right:-100px;top:-120px;background:radial-gradient(circle,#FFE29A,transparent 65%)}
+.pd-hero::after{width:320px;height:320px;left:-120px;bottom:-170px;background:radial-gradient(circle,#F2735A,transparent 65%);animation-delay:-5s}
+@keyframes pdf{0%,100%{transform:translate(0,0)}50%{transform:translate(16px,20px)}}
+.pd-hero-in{position:relative;max-width:1000px;margin:0 auto}
+.pd-badge{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);font-size:13px;font-weight:600}
+.pd-hero h1{font-size:clamp(28px,4.6vw,44px);line-height:1.12;margin:14px 0 10px;font-weight:800;color:#fff}
+.pd-hero p{margin:0;max-width:700px;font-size:16.5px;color:rgba(255,255,255,.9)}
+.pd-wrap{max-width:1000px;margin:-52px auto 0;padding:0 16px 64px;position:relative}
+.pd-pat{background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(18,48,74,.12);padding:16px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;align-items:end}
+.pd-pat .pd-pat-info{grid-column:1/-1;font-size:13.5px;color:var(--muted)}
+.pd-f{display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:var(--ink2)}
+.pd-in{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;background:#FAFCFD;overflow:hidden;min-height:46px}
+.pd-in:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,181,166,.15)}
+.pd-in input,.pd-in select{flex:1;min-width:0;border:0;outline:0;background:transparent;padding:10px 12px;font-size:16px;color:var(--ink);font-family:inherit}
+.pd-in select{flex:none;border-left:1px solid var(--line);background:#F1F5F8;font-size:14px;padding:0 8px}
+.pd-in .pd-suf{display:flex;align-items:center;padding:0 12px;background:#F1F5F8;border-left:1px solid var(--line);font-size:14px;color:var(--muted);font-weight:600}
+.pd-sel{border:1px solid var(--line);border-radius:12px;background:#FAFCFD;padding:11px 12px;font-size:15px;color:var(--ink);font-family:inherit;width:100%}
+.pd-tabs{display:flex;gap:8px;overflow-x:auto;margin:18px 0 6px;padding-bottom:6px}
+.pd-tab{flex:none;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:9px 15px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.pd-tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pd-mod{display:none;animation:pdin .35s ease both}
+.pd-mod.on{display:block}
+@keyframes pdin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pd-mod h2{font-size:22px;margin:14px 0 4px;color:var(--ink)}
+.pd-lead{margin:0 0 14px;color:var(--ink2);font-size:14.5px}
+.pd-cols{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:start}
+.pd-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.pd-card h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal2)}
+.pd-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pd-stack{display:flex;flex-direction:column;gap:12px}
+.pd-seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.pd-seg button{flex:1;border:0;background:#fff;padding:10px 8px;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:inherit}
+.pd-seg button.on{background:var(--ink);color:#fff}
+.pd-res{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;position:sticky;top:90px}
+.pd-rl{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal2)}
+.pd-big{font-size:38px;font-weight:800;line-height:1.1;margin:6px 0 2px;color:var(--ink)}
+.pd-big small{font-size:17px;font-weight:700;color:var(--ink2);margin-left:4px}
+.pd-sub{font-size:14.5px;color:var(--ink2)}
+.pd-steps{margin-top:12px;background:#F4F7FA;border-radius:12px;padding:12px 14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap}
+.pd-al{margin-top:10px;border-radius:12px;padding:10px 12px;font-size:14px}
+.pd-al.warn{background:#FFF4E5;color:#9A3412}
+.pd-al.bad{background:#FDECE8;color:#B42318}
+.pd-al.ok{background:#E3F7F4;color:#0B6B62}
+.pd-al.info{background:#EEF3F9;color:var(--ink2)}
+.pd-hint{font-size:13px;color:var(--muted);margin:2px 0 0}
+.pd-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.pd-tbl th{text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:8px 6px;border-bottom:1px solid var(--line)}
+.pd-tbl td{padding:10px 6px;border-bottom:1px solid #EEF2F5;vertical-align:top}
+.pd-tbl td b{font-size:15px}
+.pd-tbl .pd-v{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--teal2);font-weight:700}
+.pd-tblw{overflow-x:auto}
+.pd-src{font-size:12.5px;color:var(--muted);margin-top:10px}
+.pd-btn{border:0;border-radius:10px;background:var(--ink);color:#fff;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px}
+.pd-note{margin-top:30px;background:#fff;border:1px dashed #C9D4DE;border-radius:16px;padding:16px;font-size:14px;color:var(--ink2)}
+.pd-chip{display:inline-block;font-size:12px;font-weight:700;border-radius:8px;padding:2px 8px;background:#EEF3F9;color:var(--ink2);margin:2px 4px 2px 0}
+.pd-pat>*,.pd-cols>*,.pd-grid2>*{min-width:0}
+@media (max-width:760px){.pd-cols{grid-template-columns:1fr}.pd-pat{grid-template-columns:1fr 1fr}.pd-pat>.pd-f:nth-child(3){grid-column:1/-1}.pd-res{position:static}}
+@media (max-width:480px){.pd-pat{grid-template-columns:1fr}}
+@media (max-width:420px){.pd-grid2{grid-template-columns:1fr}}
+</style>
+
+<header class="pd-hero"><div class="pd-hero-in">
+<span class="pd-badge">🧸 Dosia · Pediatria</span>
+<h1>Calculadora de medicamentos pediátricos</h1>
+<p>Dose por peso, volume a aspirar, emergência (PALS), infusão contínua e soro de manutenção, com o passo a passo de cada conta.</p>
+</div></header>
+
+<div class="pd-wrap">
+<div class="pd-pat">
+<label class="pd-f">Peso da criança<div class="pd-in"><input id="pk" inputmode="decimal" placeholder="ex: 12,5" autocomplete="off"><span class="pd-suf">kg</span></div></label>
+<label class="pd-f">Idade<div class="pd-in"><input id="pa" inputmode="decimal" placeholder="ex: 2" autocomplete="off"><select id="pau"><option value="a">anos</option><option value="m">meses</option></select></div></label>
+<div class="pd-f">Sem balança?<button class="pd-btn" style="margin:0;min-height:46px" type="button" id="pest">Estimar peso pela idade</button></div>
+<div class="pd-pat-info" id="pinfo">Informe o peso real da criança. Ele é usado em todas as abas.</div>
+</div>
+
+<div class="pd-tabs" id="tabs">
+<button class="pd-tab on" type="button" data-t="m-asp">Quanto aspirar</button>
+<button class="pd-tab" type="button" data-t="m-comum">Medicamentos comuns</button>
+<button class="pd-tab" type="button" data-t="m-dose">Dose por peso (livre)</button>
+<button class="pd-tab" type="button" data-t="m-pals">Emergência (PALS)</button>
+<button class="pd-tab" type="button" data-t="m-inf">Infusão contínua</button>
+<button class="pd-tab" type="button" data-t="m-soro">Soro de manutenção</button>
+<button class="pd-tab" type="button" data-t="m-peso">Peso estimado</button>
+</div>
+
+<section class="pd-mod on" id="m-asp">
+<h2>Quanto aspirar? (cálculo de enfermagem)</h2>
+<p class="pd-lead">Informe a dose prescrita e como o medicamento vem. O Dosia faz a regra de três, sugere a seringa e avisa quando o volume é pequeno demais e precisa rediluir.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<h3>1. O que foi prescrito</h3>
+<div class="pd-seg" id="amode"><button type="button" class="on" data-v="tot">Dose total</button><button type="button" data-v="kg">Dose por kg</button></div>
+<label class="pd-f"><span id="adl">Dose prescrita</span><div class="pd-in"><input id="ad" inputmode="decimal" placeholder="ex: 150" autocomplete="off"><select id="adu"><option value="mg">mg</option><option value="g">g</option><option value="mcg">mcg</option><option value="UI">UI</option><option value="mEq">mEq</option></select></div><span class="pd-hint" id="adh"></span></label>
+<h3>2. Como o medicamento vem</h3>
+<div class="pd-seg" id="atype"><button type="button" class="on" data-v="sol">Solução pronta</button><button type="button" data-v="po">Pó (reconstituir)</button><button type="button" data-v="pct">Em %</button></div>
+<div id="asol" class="pd-stack">
+<label class="pd-f">Quantidade no frasco/ampola<div class="pd-in"><input id="aq" inputmode="decimal" placeholder="ex: 500" autocomplete="off"><select id="aqu"><option value="mg">mg</option><option value="g">g</option><option value="mcg">mcg</option><option value="UI">UI</option><option value="mEq">mEq</option></select></div></label>
+<label class="pd-f"><span id="avl">Em quantos mL</span><div class="pd-in"><input id="av" inputmode="decimal" placeholder="ex: 2" autocomplete="off"><span class="pd-suf">mL</span></div><span class="pd-hint" id="avh">Ex.: ampola de 500 mg em 2 mL.</span></label>
+</div>
+<div id="apct" class="pd-stack" style="display:none">
+<label class="pd-f">Concentração em %<div class="pd-in"><input id="ap" inputmode="decimal" placeholder="ex: 10" autocomplete="off"><span class="pd-suf">%</span></div><span class="pd-hint">Regra: 1% = 1 g em 100 mL = 10 mg/mL. Ex.: gluconato de cálcio 10% = 100 mg/mL.</span></label>
+</div>
+<h3>3. Rediluição (opcional)</h3>
+<label class="pd-f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="ar" style="width:20px;height:20px"> Rediluir antes de aspirar a dose</label>
+<div id="arw" class="pd-grid2" style="display:none">
+<label class="pd-f">Aspirar do frasco<div class="pd-in"><input id="ara" inputmode="decimal" value="1"><span class="pd-suf">mL</span></div></label>
+<label class="pd-f">Completar até (total)<div class="pd-in"><input id="arb" inputmode="decimal" value="10"><span class="pd-suf">mL</span></div></label>
+</div>
+</div>
+<div class="pd-res" id="ra" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="pd-mod" id="m-comum">
+<h2>Medicamentos comuns em pediatria</h2>
+<p class="pd-lead">Escolha o medicamento e a apresentação. O Dosia calcula a faixa de dose pelo peso, respeita a dose máxima e mostra quanto aspirar.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<label class="pd-f">Medicamento<select class="pd-sel" id="cm"></select></label>
+<div id="cmind" class="pd-al info"></div>
+<label class="pd-f">Apresentação disponível<select class="pd-sel" id="cc"></select></label>
+<div class="pd-grid2" id="ccustom" style="display:none">
+<label class="pd-f">Concentração<div class="pd-in"><input id="ccv" inputmode="decimal" placeholder="mg"><span class="pd-suf">mg/mL</span></div></label>
+</div>
+<label class="pd-f" id="cgw">Gotas por mL (do frasco)<div class="pd-in"><input id="cgt" inputmode="decimal" placeholder="ex: 20"><span class="pd-suf">gotas/mL</span></div><span class="pd-hint">Confira no rótulo/bula. Muda de marca para marca.</span></label>
+<label class="pd-f">Dose escolhida dentro da faixa<div class="pd-in"><input id="cdk" inputmode="decimal"><span class="pd-suf" id="cdku">mg/kg</span></div><span class="pd-hint" id="cdkh"></span></label>
+</div>
+<div class="pd-res" id="rc" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="pd-mod" id="m-dose">
+<h2>Dose por peso (qualquer medicamento)</h2>
+<p class="pd-lead">Use quando a prescrição vem em mg/kg. Informe a dose em mg/kg, se é por dose ou por dia, e a concentração do frasco.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<div class="pd-seg" id="dmode"><button type="button" class="on" data-v="dose">mg/kg por dose</button><button type="button" data-v="dia">mg/kg por dia</button></div>
+<label class="pd-f">Dose prescrita<div class="pd-in"><input id="dd" inputmode="decimal" placeholder="ex: 15"><select id="du"><option value="mg">mg/kg</option><option value="mcg">mcg/kg</option><option value="UI">UI/kg</option><option value="mEq">mEq/kg</option></select></div></label>
+<label class="pd-f" id="dfw" style="display:none">Dividir em quantas doses por dia?<select class="pd-sel" id="df"><option value="1">1x ao dia (24/24h)</option><option value="2">2x ao dia (12/12h)</option><option value="3" selected="">3x ao dia (8/8h)</option><option value="4">4x ao dia (6/6h)</option><option value="6">6x ao dia (4/4h)</option></select></label>
+<label class="pd-f">Dose máxima por dose (opcional)<div class="pd-in"><input id="dmax" inputmode="decimal" placeholder="da bula"><span class="pd-suf" id="dmaxu">mg</span></div></label>
+<label class="pd-f">Concentração do frasco<div class="pd-in"><input id="dc" inputmode="decimal" placeholder="ex: 200"><span class="pd-suf" id="dcu">mg</span><span class="pd-suf">por</span><input id="dcv" inputmode="decimal" value="1" style="max-width:70px"><span class="pd-suf">mL</span></div><span class="pd-hint">Ex.: 250 mg em 5 mL, ou 200 mg em 1 mL.</span></label>
+</div>
+<div class="pd-res" id="rd" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="pd-mod" id="m-pals">
+<h2>Emergência pediátrica (PALS)</h2>
+<p class="pd-lead">Doses calculadas pelo peso, já com a dose máxima. Use apenas por profissionais treinados e conforme o protocolo da instituição.</p>
+<div class="pd-card pd-tblw"><table class="pd-tbl" id="tpals"></table></div>
+<p class="pd-src">Base: AHA PALS (doses de referência do suporte avançado de vida pediátrico) e diretrizes de anafilaxia. Confira sempre a concentração da ampola disponível.</p>
+</section>
+
+<section class="pd-mod" id="m-inf">
+<h2>Infusão contínua (mcg/kg/min ou mg/kg/h)</h2>
+<p class="pd-lead">Converte a dose prescrita em mL/h para a bomba de infusão, ou o contrário.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<div class="pd-seg" id="imode"><button type="button" class="on" data-v="mlh">Dose → mL/h</button><button type="button" data-v="dose">mL/h → dose</button></div>
+<label class="pd-f" id="idw">Dose prescrita<div class="pd-in"><input id="id" inputmode="decimal" placeholder="ex: 0,1"><select id="iu"><option value="mcgmin">mcg/kg/min</option><option value="mgh">mg/kg/h</option><option value="mcgh">mcg/kg/h</option></select></div></label>
+<label class="pd-f" id="imw" style="display:none">Velocidade na bomba<div class="pd-in"><input id="iml" inputmode="decimal" placeholder="ex: 3"><span class="pd-suf">mL/h</span></div></label>
+<div class="pd-grid2">
+<label class="pd-f">Medicamento na solução<div class="pd-in"><input id="iq" inputmode="decimal" placeholder="ex: 1"><select id="iqu"><option value="mg">mg</option><option value="mcg">mcg</option></select></div></label>
+<label class="pd-f">Volume total da solução<div class="pd-in"><input id="iv" inputmode="decimal" placeholder="ex: 50"><span class="pd-suf">mL</span></div></label>
+</div>
+</div>
+<div class="pd-res" id="ri" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="pd-mod" id="m-soro">
+<h2>Soro de manutenção (Holliday-Segar)</h2>
+<p class="pd-lead">Volume de manutenção em 24 horas pela regra 100/50/20 e a velocidade correspondente.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<label class="pd-f">Equipo<select class="pd-sel" id="seq"><option value="bomba">Bomba de infusão (mL/h)</option><option value="micro">Microgotas (60 microgotas/mL)</option><option value="macro">Macrogotas (20 gotas/mL)</option></select></label>
+<label class="pd-f">Ajuste da prescrição (opcional)<div class="pd-in"><input id="sp" inputmode="decimal" value="100"><span class="pd-suf">% da manutenção</span></div><span class="pd-hint">Ex.: 50% ou 80% quando há restrição hídrica prescrita.</span></label>
+<div class="pd-al info">Hoje as diretrizes recomendam soro de manutenção isotônico (ex.: SF 0,9% ou solução balanceada, com glicose conforme prescrição) para a maioria das crianças internadas, para reduzir o risco de hiponatremia.</div>
+</div>
+<div class="pd-res" id="rs" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="pd-mod" id="m-peso">
+<h2>Peso estimado pela idade</h2>
+<p class="pd-lead">Use somente quando não for possível pesar a criança (ex.: emergência). A fita de Broselow ou o peso real são sempre melhores.</p>
+<div class="pd-cols">
+<div class="pd-card pd-stack">
+<div class="pd-al info"><b>Fórmulas APLS</b><br>1 a 12 meses: (0,5 × idade em meses) + 4<br>1 a 5 anos: (2 × idade em anos) + 8<br>6 a 12 anos: (3 × idade em anos) + 7</div>
+<p class="pd-hint">Preencha a idade no topo da página e toque em "Estimar peso pela idade" para usar o resultado nas outras abas.</p>
+</div>
+<div class="pd-res" id="rp" aria-live="polite"></div>
+</div>
+</section>
+
+<div class="pd-note"><b>Atenção:</b> ferramenta de apoio ao cálculo para profissionais de saúde. Não substitui a prescrição médica, a bula vigente nem o protocolo da instituição. Doses pediátricas exigem dupla checagem. Faixas e doses máximas foram tiradas de fontes como a Sociedade Brasileira de Pediatria, bulas registradas na Anvisa, Guia Farmacêutico HSL, AHA/PALS, MSF e NICE.</div>
+</div>
+<script>(function(){var b=atob("H4sIAIeD0moC/71da1vcRrL+7l8h62ywxMhzH4IHBA82kJCA7ZjEZ/dgTuiRemYU6zLognEM//1UVV/UmhlwNtmcZ9e2ptXXqrfr1tWKM63SoIyy1HG/3LDcSn1dwN0vOS+rPLXCLKgSnpbtGS+PYo6PLz+fhFDjfkdVt26xAffPyzxKZw7f37dttw0/Esdt53wRs4A7nQ9FZ+bBC8/h7SgN+e2bqWN7tvvU95/37u46//sh/NLzBvfOhzY8De7d1j867ZIXJXTubmw43OdGZ23RmS6Bnjy7bbvuDi4l8xcsL/hxnDFsviMXExXHURqV3Mnc/Wz8mr2+10tgDvcy90s0dZ7qWjCuaGh/qPrd3tCmviP/jJXz9iL75PS6Xra/31f9O/Qiz6oU6LMZuZ0IqJCdZgGLuaSNvSifv3xne18SdhslVXKcMxr/MJpFZTHG3u7delZvDU4o6hok3UUibMTljm20OZTs5P6tk8KAH4FKNyyuajLwve4+by7/l6VGbE0jv7tPryr1zvd9O7H3eafXHy/1954QAXxOef79z2en/rPdMLqxgpgVhW8vwud5bO+940UVlyzMdjvwcm+pBoutTwxov3eSTrM84VZm7U72FrzIrJBZQR6x9MPt0bdstzPZs9LMKrMFvVlAaW8WpfDEcqjI4qCKWd4Wgzyr53gjWC7W92x19Gct3npm7z1rZS1bNLbvkUbv/IsvUTi2sfuAlyzJYttLs4SP7bd1keW8f+PaHiB9bB/zSc4tDpspt2J+wy1mJVnIcxaytu3BYza2w6zg8BylY0AVoGPcG3lVOraTme1Nc349tnEtsL4htN6y5lnOCsuBdSe4XgBTZo0s7KSweGL1h9YcRod+DqFo3OMDeo7Yj7PxtyP5fDApxkN4E2RpML64sL/LSuiz3+1ayayTnNoePF56qrynyi1nwicw6AEM0BM1zqtiwdMCCgeZNeirer0tajKyklOoO+hfXnoz7Gv8tOvBnsjxERpnCVC1zEIYBP4/zVLY9VbIrYVJTWBMFkQMWf7h9njEC1fwNxWDApBytoBK0BUjOlhhhJQBnLTtS496HdvnL99aYjNbZyzlvxFipsQeNqvg2el3+z13DKulaoPeCFfwcdbBLj1J7Lb1rS7G7u89AkQYLaI8S5lCw6H8/QAUHmF9f5n1JYz7Alh/w38H2jCYdgTdbnW2HmZzWsXxEmtHNQv7XYtYYflWT7AHXgLDiZtZXAk6I2UBaDG0VJgYdU0uwqRhqBH+e8YBe+OBwdjXkjXIE8Ak6I4sF5wdwA9EalZZQSbeUPnI+jgDeMF+dYE69kHJUz2RMfB1kSP9yyhgWJs49KpHC7EWsLc+zqjoEJlKhdilXnOIba2+5JyCAQuihGEDwkzOYT48DXGjLXjMLADMX4JP34BP2wKJB1K8xjBOMILBeAfl2tjClVsH6U1UrKLq1yj9bQVZUMYRG70bDnvk5Kxz9H6d0LmuWBpmQMAbgA0xVG4bgtUiK3DrHkIffw8mFQoPkkUGCxx1DTQhnB5F0VkNm57FUqBSgSwqOS3m5MzAy9F7AMkiBnjkVlJFZQbSNgX5gbU9qyErEfSWI2biEnhg8KrMPGR7ZuVREWQ45DxaZKUSbTjGnwP1EoYETIQAk8jDvhApO7gskOEAxSZW1qMjmlSLPJvCWAobJ7rkj8udkWBxd73G2YI5bguNU/N12O3WsmbYNVRKD9TGiuAxxMc6jdJbEUfwEv6sKJe+0cRULv1lsSSAtGUA6ZcCdwDQvIxy5MuW4BcB5yYqBT9DXkRhzkqm5Y5nFTiBSIiTkKezinfADogClA/A7IKls5xAlq1l89gaSWHQbQiDE6iXgyGVAVtqYCqtBTj/rgKAH7M8YQGq2wrkXmZ9f34K9REKGgOgIG8V9w/gOQqiGO0fKakIXgsW5oKCBijAsuKBIY0mYIxyNKyAEYUgOQiFCOwMYKcwwhYAy0DBErpzazRFTICpL9A0qtEEthNsaYEpeI7CCIQREHsgDRZnuwP4crVIjmdVAlNojEUThF2XWL0+GJzW3DYgNzCETAMuo1rhjUy4jFaRta2rDhvI2l6tagB31KjbI3G2qgHXGCegMUIoz9rWK6BtZAgCMHQjDQ1JgzIrDGwdEke5gAoICVCHVVGBVA8FMnC1AnKjbm2neNYU7CmwfGFPuw3w/MrADP8agrCO5WQleEadRcqrJEsjppD0BosJxS9QCwhlCHNU9VAiVuBUSYvMUxpJLY/VY6wCaltooBdNQPXXAKqvACUx4toPmLp/C+e9Pw4+EySHmroh+gYg9gEmmjA1PkCbRQmSWYsIC52cpQ1pwOTgQFsra/njIEJAPG1LY+WFARaDmrUlwm/Zr0FeLbi2Q6AkAQu9yGqwUAXLIX7Ctj1IAZ4KJqcMfVhEkKh1A+taZ3O0e0KGtLeWNFKjV8PI2NKcPYqjW5DvoDwU8bveyCB+u4d8OjHtpqGq+f6NhwYFyHQyo4YNNkGPynQE1Srmj87cDoy1tfwCDYACdlBEFgCohxsy8wzmnJ0fW69gk8E6YpT0IYcfAN0GFYk+Y1yM3M96qNoV6WFJvZ3DnKe/pnyitzMWMNrNUFrF0e+o0s1RJG9ePTZxyyFrBG1JAEbOF1lVgGYETcpmPHHXsVBycNmLXYDjix1w1MLSwEClHqUWCbW8iAp8pYeuuTyqDcl6UZrNvXGv3e12XbDgqhyw0Wtw7wykUAkWDI6JE0EH5yANUDKxHD2DQxawHaHqU3DNcTLSNeDkEk8WCZl/VQrS9ug9ggSgohj+bzIWWarAJPB5io+hXo5b83dksjcD1yRVrH2DPwpeah9TjXEDO2SYoNJACTFjwLoMbWCQJ4rb7x+posQDsNjKptPnMZvALgG+10GXomb5lEW3QO5H9ilY7eTRM+D7knFFzgg0wj6ATReIdK8POxT+AbAP4Qn+efHihbcN7FTsf5UlixxkYYjtszAqEDbSg6HdbHtd+J8NYF4Mbdzvj7bYbrbYth9wgrvetlYUpkTZFi7MqsX5Ns/iLJ2xhkb/6WdwUkzH1hIYjLIFK4XpD/MrkXj5JBIuBPggiIaiiMhYZDNs/QJ+Gbh7ffLqyHLAkgUTNeCA5CRh+Wfr6PyXN2eDIYh5dEUtR7slPfRLAGdDKlYCZtAVpVvi57ZoI8WBeAlgvPQ++6ljB4nteq/oKbDdnXdtsBGPWDB36kAyRthE1FRHkoOcw/plMNmxswXWhOaRjCpmXtQu+W35CteVlj5vI9y9z222wL35ah7FoRO5924dgP5Vhy/fXXwW3VzuvDLCj7bt8TbCZ3WKkVeIxsnXp5jIKRZe0phidAHa/1VjgglOUMSiv9ptJru1wYzPGh3bb6oSg5gwc/iZ1xun3YYN2Bwxcz3kRKgDvkA53KIYphWbdN+2x8yB0ij1BkZtwBubxDxcaSCrYMS3yRFVDW20fVtbDfbYrj0c1Xr+YGs1q0NhEU9BaIYikkNvCPm8AJCD/0oFRnhmbNmtei0tfGK3T32fSvZt2FTyPbuF92PbFnUa87bMiRu+mS1oAx2FMHcDRbuTvZM0BJFWR6Uo/Gy36EyjBRXyPaokd3v9GuWi95NjBOp/WgNaL/Nficcd2lVVUWawydpF+TnmyKdFzD77tIRbWMAMVDJMPc1Srg4n1DsM/40F5i+yS+pt9mmlJ94mn3nfnsb8VvXkRRsbDjUoNZSii/7lPv6FlPR+M9fxm14HtMlBEMAijBVF/qEDm3vqPHWiva46UqETAppy8fjZgAiSPANeRl7PbdkggWQw3ktwW+f418L/xcFtRIGkjY1oVz86ecu/cewJC0F5v8XDAzYBKIGfLaJBhyk53Rx4JNvQEGJUsHlA2nJkuHTvXVhcW8n6jY3Fnt+Fvzd7/V2zuDHoCdlP60Z15JjUCoalcIT78NBErlABxIu90kcu74SS5bE4vAmCG316M3ZiPxMgCC8vwPQtjZ+Dy7s77EB0HHgz6s6b+j1kV7a0Td2sLdT0qgh9436J9vw3IASR9m9gHKBBAAX9S5CCXtLy5f6VG1rsXc1PNFt6L/pUGLitK9I5ZEFMoZH75MqD3gddTdconWYYHVbmGaklC7QaEK2CdhScY4mMW4H1ZL2xMMzRw5MgYEBWoEzFNzsoWaXzvepIAcV5XHACdyVpGxrHadVe9+7OqXxious5lQDB8x5//uLurtrLUPi08Jer505HWjB36esXQRbPUeg5uPgKJZkNdFgrdlu2iyukKDawgILWWk7mfMpzZdMqnJrCzpnCPGHfAJerzQh5osernb4Pt4ffLvHGp98zwRasBOyghQmvemNjttf42VznWzy2qRTslyJcYtsxx2jvdcWE2tYvBW5+ox0sCuZu1kVcnaJLjDWZUXW8OmfXC/xZZyrWPRODoIGKy53CLxE38BsYREWE5dB6DHBeS7aHSbbai6QbPG9sBHvGj/U0kzERtSqmexJg0e3FXFxBMh1G0s2QboGvazepBpW6S/XH5uxh6UI6zEHMSqlAalZgnrbGqfgB1DkTw2xGO03wwQpP/dOOwN+ZfyaeXJMeUIFOz6Ej57R+4WJ1VX5mlLveXAmVWl7WsuUUiSJMgDPJbEU9MF/nSPJakszdVu7S0e6REKgKZKRAjvz652bkNsEPb31qc3d3ZO4Dt9EQC7yjjQ2DKmhlLAu0wya75TGuWNCR2hl2y6nnAyaMUCLyt7mZjYow/r7tgUubWDIK+fDOs8lUsl35r9Y7BxIApWD6xC9xHcLD2h+Ot70TP+hMdg5gf5x4fewr0D6XA1qNRpyIIcQ2Cpq7ULyTm4e6uGp28eTqHsWxBZOIwZCgaXyEQeMdhPR78NfAKVbgNXtmTqx3LDhvYoSPYoTkFPYlTvqjmHRyKgypaynvaxPIFfAne2lj41rN4Hv/4+Y1zYAONcZ159hZLR6uBYGpeT2L71FoXIlSnAh0YzmgDvvDbXhv5JN8rxu79r2gQ0NoqCSJdb5CMxECZOoN0QpYu1O0VqyvSTTDpAdBxd0iYXG8l4DNJZ6U7bWmYVFNsKFzsI928kEIWzZCTZsjTQ4whwJM4Q+3L4EehK2MbGKdW4Fd5h5QWPrPd3cXl+5aW6MwFv4GDYx1kyn5osDpvAVPrDHGs92FWQ8M1r1j8qDByIQp4SPWX+yhy1jb/sU9OKBheHQDtD2FdXF4AfiYs3QGFvOvLjpjD77+yfUuyC7zCFEe2RGXa9xl9wv+taanKF1U0PA35VUeSxmyo53L64rnn895zIMyyw/i2LH/K8QsE2tSlSW6mWuH4+tmHUfBR9sz0sP+yiCZ+wVMTiQ4jtDOeZLdcHB+oTKwjhuvYCai3DtGx4SXB2WZR9AzVA9ZyZ7fCMcsnK46Mse1V9dwZV6Dp9IIFbxueCsheSvgoICbgj3r3Cbc7FgA8nHZ+41oDsFq8VMnW+/gkCgJQy1JwHO5Vb3XhbksDOqihSq6aUihp06BA/3FBCvar7XcEMeE+jwGdMWzVtSyQZvI1ClbpoLdCzcE3K4Y/yrBuiCHQbPA/RKI/Dtwg2n6UzV7r9cVNJn5xWa2U4JJFnghKoNCmb5iyKY1mq1ao6LqlTRIQ23VSZEfLJl0pW5h2GNCjJY4lbWTeHgCa7vbSfbARyn3EtDr8RpjXwpgjHCssYojYgTaZGTdJXoi7gO2cOknOOs/YMvpvq7AnCPyT6Uyz3HGC6XKKj/vLMCuKjvVDvb8akWTiP5yPbdawy6kvhP0qWpCXnVIxYZLKrp0zdayvmg8NzTz1Je/STMLhsWmzfQ25zwFMbte8QFVpjnDVA5SgTe81n6UcHGKOlDYsH8wCJEtBSF2Th/RoGWtQYlcy0r09GElOhVKtFiAc5p3WFOZTqUyVdiz8VhFProtx5CFUt/ifriVKTrSsDPmELce0Z5hs25N+aVj69puTRkdQo+No+4qMTM2rZQOUei0U9mjK8fitttQv6f3FyhBPSEzPZSSHsnFP6NFX6PmuUBp76Fw+re6UCr9dUOr/LcZ6b64rF8U4M2c6Rxew8U5Ex5H4hdOu9vbBNGIEfBFVcydxvmWPNJ5++qd5Ry975xg8obd9bo97X8Cg/VZIFnXsOOVvUs/Ou2etkeB0EXjZMM4KO1ZTCRoUaoV2M8t6wW2OT/GMd81z+wGMsEAT+7a9qXYRrleTXv06HJYyqZRzG4xY+zkzIO9e8seW1jXG1BUqAaRa3XkIZrlwA6NQW/h+ZWLK87N5efm2uUC5ZLVUaH91jyUBMEwqpM/cXUtEJTtAeymt2RI16dgKv3L00fzXE61TdtMkmUBZBkBUQbdrkmVJMpCJg7vNGdH61Y/oFQDXMxCiB/5ozPqrllcnWxlE2qO33d+fi+cvyouMndsTQABBSYWyKIx+ZoyC2CLDmPbVoMmMtmv10h7vVQRSWA68nzLBYsAnvuI5n6D/3joFDUW2vtwe3AwVvDDc1C12i1KySMC9FWl/nIlSqwkZoeSBDMAhPD1+jWJws5AU0i+Nkpqmg00yV4ibSzKM13gcWHBZxX+C8SYwps5Ppwf68WXhPj+CuLLPFs0FwzQ7q+H9sgMT+CsSxO/ZafdH62ZMhBlVDPaZFYPUzL1DAOYIcmXBvhOYU10jHHY5MpaqaLhF5jwCzp9A36gl80u+98Q4m5YkYFextwBcBgo7Vicb6NZFJc8T1kZ3TBhu7B6Q0DTJdjq9cx8vtfv3t1le/5ovz+W2DPh9prF2W29rTonZ4L+anESzCPMJqV0zT4FkGnNdOYvzkpxjTMTTLNOe7iWEUPNhyUh2ZeHqiq9IeUBp1xbDH+2rUOyUFUKKdkYIUcTXCYQwRPqfzwLHoDQIYwArLIIqA20YwudFojU8TQBvgMHjg7ghbDFHNYZFPEkagJSiTkLyYIrbI9IEenYWU/9hLf2+XeAhG+E+Yb1uka9rvpNIQ+gI1AV6vdHsn6/WX9YVyeiYXT+RfI8BVMNQDRGN2TKc6CjGBMTpxk4EBGyXy5E42Eq8T0y4f0Sc4AngIGSdm6BFAyjzNr2ht804X50vYJ3FKBH10iPqcR78xeoSuqHclWhvYDzucxKxgwaNBlAvRlH/CG/rvC6h3WUWDGmWWJKBOq9ogTj6DldV4gr3Lzjnl5aBUvrI6n7fIABT9AiXflLX2lSKz6v4qlcrZEfYKx1OSWwuea+RQCoTC7NdUwQ33TogoDxti7A7ZBZZ7PzNzjE9hAo+I1OkKNkFlwcSoYQLUcggcqPl5k/IsOgFrqw6UFcgNfDMdHEhLYQz7BIacWjRVCUsOFhTxBHjY5PJaprdIqZ97sN+J0fwxZ+8Q1C9l0Etl1OkFR4w012PCjEfibFaTl1glSRTXIOUJuxpXke8mIaTfIGCFY0MXLF+qFTn4ANG78wDrg1kmW15uuKAnIgC2UvkyrUu+wH80hNb7YfYDx5kw1XWNK9m3ev3loRHjQymSivV5xZwTy7rnhzYa8oVeVGpM/AooAWAYhsSitrChVzKWKZDREjqjWkTGPafV1qTvuch4ySs4xLCyKyzcA7AleCZgu6ob+xoef8czUBTKVhBlVgQSymdDYQ9Kh7XPJlEiuoptOxvI0xBNN3AHqZtsg5X305bDSiEEFn2Bq0R2LKS+3U+yG89eyfwQsFWk9I5pH6F4lm6pAYuj4miZ9gKu8NHVxGdLBT5673SXcJztQn8f/SsS2MaGV4KC7iWuWCxYUtY0ecYkdRI3ZU5nu7Zfgfv4InI0e7Hey7A4M8M2NIMIgYeL53Vp90g51W7xloNKcKMkWkec6p35JdTvketXsuX4mgg/75ZlJgZsbSADg1e0c4cavOYEIhZ1sTaQLefHLRvRReuFgc/MHC3iX40rLAIOQN+tLJRZ+aGNUHywVDXUBTuseNZ8agkWzf+XYSzx+P/Eb/H5Hf6G+I/H73aOQ3SlYjv9/p87Sl0C/WDx+ojwRcqv7jcqT4x0akOFKRYrGJ1kZ6IxGuja7rCK4M/kY3ZvAXC3Sk2cvp93Uj9CxyZe7u/oZIL2beSzvB2HRzSitIl6MDvI6XlRmoWXWL1tzGCz8nks7s/WizxwfjyAv9Raeg8PBO/EggMRJBwtwMBRaNQKJy7gIRoaCiDl4pG8rDfbAunlxJTyyhaQQzsCjs/a3uWPyeAadxVj0vaNbAB/Rl8YdRV2awzTGXLZCP3uxPxweBmRpxAk9TCYlwKaY//btj+uuYV/nTzWyz7IQ7DdoA167AfpoDG2Qq7+G3dLwunra6gmGrIdcnvnXVQlN5IPRgM4DeaGzwV0WNZeC3M39yZXDkscmsnQQYSwIZX5mMmoRC1PqJ/Jnhg39r/AeJ4M0eiS5TzWfqhBbqN8PL65ChYTpVAfqgju5Wu+3RxoYzM48u3vM4C8QNAHGhEi0U8I/RpweLOxeh3abMENnCyuCX+RlQmNGtliCShiOZ08mEkpXudZ7VXG6OJF7aHfP//O64qRenJiNOBTrzdVvl1J9vhh0HdotLUo3A4FN1wds1SCAeOwgWu+U0pY/aDCIef6XAIk87NFhC9Rs70uh5tC/HEGbiTa/b7arEDomz0xoBV18BmqiqDzICNHG+hrQgyzF6kaWh8CkIdfokB7EqPqgwe/ToPq4PH1r1ycMvQHfBLbw+nU6rQimrsAIVD24LuGQz4CTe58yzGSsoDkXWPqbXF+BDwDPaz81Dhtn9BYplj+DnoR73UHP/mSOGH8URQ1RRP9WfO2P4sWGP/N6wR4o/bo8UC2MvUc5i5FM0kIxwSqPdyXahaN8p8MVmRkliBzLmi8GxsQgCnj58JEoJROLUzh1Db33RGx+0Rt1NJ3ve61Ii6NXbHLzNKM8K3THe2sF2LQq8yCFwK2CjpVHqvtRoYtfo0WW23xjHHnW7rT416H918HM+q9KwfjFSc+ovz6m/PKd6iMfn5EVPfSQvyFgi729VUcrTUJl9ZeQS4u9vFGk3ow5eh250B5alLNdHL53+0FsgOAquLVAwxdbJyTOWVo07KA8bMDjXtyC78f730mxBJPWHcpK5yGSSeit8RJyI5lpvqTy35cPRBQox2ub2fvjAQSm4Ys/U2EquoCvK1skH2fGYOk6iIM/sfeLEGT7LxKwoVSJdLQupvn5FzSmIgFKjK+Ee0qiASJ0jZo5CRByowTqDPzqcqKnzycRYGEdT47tqYK/Y6w8JdWFDswurvr7j1qbLr4Su8dJlL6G9MV6JinwJOTKECVI1F6dglISq3Ya1F53X5VqvXfL6LK5wbRbXOz6jALr1fRZjwOTzc9jUsDPwSwGdUbejQoK4wh2LX1egDmIujh5yajt83n/ek5XmbtuS17cxyEZflbDoBkojVl1YKcae6EpkERmZB3SXET9pg5+DEHE0TCp71lA44b0Szw8qkt/J8RU7+mFN8buhJ/6p9cQvjg75+LV6oBRXcTOJb/b6XuQVlNq42+u7kd8ebWatIUgXmy4mGvJeAFzcUcAI2I7KxuS7W9Cwv8lb29SuX7dSpwlpRo22zUY+jTeAZt9Ss8GDzb6VzcQCvmDy+/hp914aZ18+gcdZ3pbj4r4Ohf1PQ1kuSFn+U5Ij+7odSTdFRIzwj36eimFsjKzJr4XDtFVJCaW4mv/ohPS9iJ6IEtJHlXRAsVCfftGoTjDBCB198mlyvurl//XJaeGftT8hb5Xb8nH2uCmp9n/WBgZrH0l2YmipVi3YjnRkFySOIcPwXEZcwqF1wrbMJvixD0b3K0M8cgAJpmkg/Z0wmoKXAyYsiCjcrPC+XL8TV0JnAn4KdPzujkteYzdkyi7fLZPyZppFZnhbUjYXd8kiDTd5MVsdzQtmu22dptf4+JuPd+GQat6Doze4KL5+JIc4eHt67qoLd5r0bZrPeTWBJmXFxIdzavoBD6PEArm39H2hnx2Vw/rSt8sMRNy5bxf4DbUf/C/g0YzBJOt5yWzc82b49SDjO4P/EFk2j8Uk7RaHyT0ck4ww8v1XA59fG6RwvxQPBz6jtYHPzIkeCHxSWPL+Hw5+qgOvw5sOxEufe5+QoB6+Lz8vlt6fq/c1ERnDFzBnR+iAi4ue1+7iVxEG4uMII69NN7C74l+0dy/xGl93J6KLHzFPZ+V8J2q1XCHHs4voEsPhdNNJKhks2zEUTi2ZPzUkMyPJDE+szr0VZxbMiIjiT4TIciz3HE25RVCCo0tB3LEI6SLGGRY/Un85VMxu4qWEXlE5w/up4miWJzJ4WtAZMIY4RMrRGI8061eyv/mD/R3dtscqMZFyrWZkL6CMpiuuKe0ocV5KcqvXlTkWpEkqGVPBj3/VJpQ2r2T+nVUYwdspaJ9YfO2LsiLV3DFNiWZTZ36JY1vx/Q9MkKTF5KtxdCqGUvS2P/KweRmVGoXLFH2JFPg4Uzd+62Rj8fE2e7xUbsv8afRyqcP5Qx0We919+5xOhsCAA3MzItUWmlJpKcO2UHLMRSLUJ1xUd632xgjKjkjaI7+ahWbyNl1Dhb/WO1w/iag7EwmdSr+ScZasRLbC1lrb38h1XU7WhiKGP/FzZ430V/MK6ar1oegnPnwqzhrMIEIOLgt9ekPkEauQUbaUHl0secTJZlFXRW8m8aGIgmgx5ot7M1y53oyNsDhbfDUs/gB5Hr0CA3D+ZpkAsT/dBClX0tmFlz9yUCHCpcofl8FT2iMyLOLX14zksYRML0fCBnJlxrHQTBYZx0JPnUAe+cz+3RU/eqSjU6B5U4CtUiPozDy8xwCUcGphdSDTAWrBFGES8ng9sVy8OGSk0ddR7pnOFVHEGjZzxOV5RELOCGiaEtXLDxfZ5VO6Ybex8cNFKZ9dGSuON7Gsg5UIq2ccjEmrSnVQN9Tg1cOBGVnfv5qr0kwlqsf+HC9JC+Y1eaCvdOvbu+IyLpCV9gSdliliJ2KotnVUFGB9yjmZ1jeQ84bnJU/GVlXQN2HN2WNmeiP4HHtn/tOevJdiSl5BjCOJqLz+dK93oMom9Z46wpT/g72jfQe63DzqHGC3XUL/O045SEvYPzJzfOTqWvTm4PmRmf+ndIok7YGRxo+9v85u1u1MyZ3NI4M/NWgOlkBzWtcS/HLHCzOq8Ro98eYqvKUjTHkIIQIW4lgCjVRdSYjo0Lg8gKa/uPNYdU4RZ1dPdKyhpGSEYvzkaml2MvnO/Js+bUgVq69U/OeTf1oiiChraoKcmudUEylvTuUR6Ilh4ND3H872VwAwnu2cbGxM9k7IXNvYcBbGtwoOjPvFE0V6V9gNNanKjG6jSHoBOdEaUWr1RDdrW+9ZpKidi8Q0kTVVJZKyHWF2eOKbmY/exBe3PcF4nbjetT/BffBx37n2jTuSk87Hi96lu4l/E+TAIIjw8ztFNYMn8c2Qj5S4QQYcsDCsWCNmQ5c3sbnELn58gEZgk8K5fj5x94BqW5pq8kDiNYGJhqI+jDHAbwseHsIWcsIsoHQ5eYiGn7s9HtD1IGIBZZ7gVVJZEx2wtnUoXFRyc8Vuasy4M9mkb2mSApMikeJtS7X22j29LnVxKYfNhJ+cyuU9jUjEFbp1RxQ6kOE/IgBlsyI/xT6k4z21SSW5VkKPqEKFENS9ENgwxQ2/7ieO5TR4mNyjJkC8yS7O/+mZupUbd3rdncWaiKfw6xcckJxmCuoDBXVxWAlTz8Wn0PisymUIoQ2+7kzIfBRbUs7k4lOyoSn5XyxLREdInp5hK3zf1EeupSRPrthcdb5vMvqM5bj9mJUtGohalnjmZSe6ambJK2coyB6LzIstryPzyxH5h2LS+uxAX/sqW86Zuny0cuNETFccDssDy4+q8vpttHRlCeaxeOzKUt6s++CVJW0/ew/eHqMNWFb0jdYpE7eXlg4ZmfpcuXFJa/lgMby/sEnAMjxSZHgPGOxcj7S1R+L5z5wxfhJnjIzuMaG7jF39uZPGT40Qwc/gooObjp/5wQu03r/gz4/w53f48z+OqyNLD87MiKMY4abGh63eNlwylFvN/1rB3Z1K+pTRJutIBOtf4OddVI6w/GY8m7BChZY89d8veHB2P8s61aMhdaj1SAyoDZAr2eTvyq17pPvHs+q+0meShf+pTD1Y6LqAFbhz7rr6GMTyfgUAEZPAoX/yf6FcCJuAZAAA");var u=new Uint8Array(b.length);for(var i=0;i!==b.length;i++)u[i]=b.charCodeAt(i);new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"))).text().then(function(t){(0,eval)(t)})})();</script>
+</div>
+</body>
+</html>
