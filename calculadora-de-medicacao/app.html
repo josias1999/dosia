@@ -1,0 +1,1964 @@
+<title>Calculadora Dosia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: barra fixa no topo; menu de módulos à esquerda (vira faixa rolável no celular); cada módulo tem formulário à esquerda e resultado à direita (resultado empilha no celular). */
+:root {
+  --bg: #F1F5F8; --surface: #FFFFFF; --surface-2: #E8EFF3; --line: #D3DFE6;
+  --ink: #12304A; --ink-2: #4B6478; --ink-3: #62798A;
+  --brand: #14B5A6; --brand-ink: #0A7C71; --brand-soft: #DDF4F1; --coral: #F0624D;
+  --btn-bg: #12304A; --btn-fg: #FFFFFF;
+  --ok: #17794F; --ok-bg: #DDF3E8; --warn: #835500; --warn-bg: #FFF1CF; --bad: #B3261E; --bad-bg: #FDE5E2; --info: #1F5F99; --info-bg: #E1EEFA;
+  --fill: #14B5A6; --glass: rgba(20,181,166,.16);
+  --shadow: 0 1px 2px rgba(18,48,74,.06), 0 8px 24px rgba(18,48,74,.07);
+  --font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1822; --surface: #10232F; --surface-2: #162E3D; --line: #25414F;
+    --ink: #E7F1F6; --ink-2: #A3BAC8; --ink-3: #8AA2B1;
+    --brand: #2CCFBF; --brand-ink: #47DCCD; --brand-soft: #123B3F; --coral: #FF7A66;
+    --btn-bg: #2CCFBF; --btn-fg: #062029;
+    --ok: #5ED39B; --ok-bg: #12382B; --warn: #F2C25B; --warn-bg: #3A2D0F; --bad: #FF8A7E; --bad-bg: #40181A; --info: #7DB8F0; --info-bg: #132F4A;
+    --fill: #2CCFBF; --glass: rgba(44,207,191,.18);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1822; --surface: #10232F; --surface-2: #162E3D; --line: #25414F;
+  --ink: #E7F1F6; --ink-2: #A3BAC8; --ink-3: #8AA2B1;
+  --brand: #2CCFBF; --brand-ink: #47DCCD; --brand-soft: #123B3F; --coral: #FF7A66;
+  --btn-bg: #2CCFBF; --btn-fg: #062029;
+  --ok: #5ED39B; --ok-bg: #12382B; --warn: #F2C25B; --warn-bg: #3A2D0F; --bad: #FF8A7E; --bad-bg: #40181A; --info: #7DB8F0; --info-bg: #132F4A;
+  --fill: #2CCFBF; --glass: rgba(44,207,191,.18);
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; text-wrap: balance; }
+p { margin: 0; }
+.wrap { width: 100%; max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* barra superior */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand svg { flex: none; }
+.brand b { display: block; font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.brand span { display: block; font-size: 12px; color: var(--ink-2); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-actions { display: flex; gap: 8px; }
+.ghost { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.ghost:hover { background: var(--surface-2); }
+
+/* estrutura */
+.layout { display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 28px; padding-block: 22px 40px; align-items: start; }
+.nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 66px); display: flex; flex-direction: column; gap: 2px; }
+.nav h6 { margin: 14px 0 4px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding-left: 12px; }
+.nav h6:first-child { margin-top: 0; }
+.nav button { text-align: left; background: transparent; border: 0; padding: 9px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--ink-2); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nav button:hover { background: var(--surface-2); color: var(--ink); }
+.nav button[aria-current="page"] { background: var(--btn-bg); color: var(--btn-fg); }
+.nav .badge { font-size: 11px; font-family: var(--font-mono); background: var(--coral); color: #fff; border-radius: 99px; padding: 0 7px; line-height: 18px; }
+
+.mod-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 16px; margin-bottom: 16px; }
+.mod-head h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.mod-head p { color: var(--ink-2); margin-top: 6px; max-width: 62ch; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 99px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; }
+.chip:hover { border-color: var(--brand); }
+.chip[aria-pressed="true"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); }
+.chip.ex { border-style: dashed; color: var(--brand-ink); }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+[hidden] { display: none !important; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card h3 { font-size: 13px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+.result.sticky { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 78px); }
+
+/* campos */
+.f { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.f > span, .lbl { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.inp { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); overflow: hidden; min-width: 0; }
+.inp:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--glass); }
+.inp input, .inp select { border: 0; background: transparent; padding: 10px 12px; min-width: 0; flex: 1 1 auto; font-family: var(--font-mono); font-size: 15px; outline: none; }
+.inp select { flex: 0 0 auto; font-family: var(--font-ui); font-size: 14px; font-weight: 600; border-left: 1px solid var(--line); padding-right: 8px; max-width: 46%; }
+.inp .suf { display: flex; align-items: center; padding: 0 12px; color: var(--ink-3); font-size: 13px; font-weight: 600; border-left: 1px solid var(--line); white-space: nowrap; }
+select.solo { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 10px 12px; font-size: 14px; font-weight: 500; width: 100%; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.hint { font-size: 12.5px; color: var(--ink-3); }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg); }
+.seg button { flex: 1; border: 0; background: transparent; padding: 9px 8px; font-size: 13px; font-weight: 600; color: var(--ink-2); border-right: 1px solid var(--line); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--btn-bg); color: var(--btn-fg); }
+.check { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 500; }
+.check input { width: 18px; height: 18px; accent-color: var(--brand); }
+.btn { background: var(--btn-bg); color: var(--btn-fg); border: 0; border-radius: 8px; padding: 10px 14px; font-weight: 700; font-size: 14px; }
+.btn.sec { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.sec:hover { background: var(--surface-2); }
+.btn.small { padding: 6px 10px; font-size: 12.5px; }
+.items { display: flex; flex-direction: column; gap: 8px; }
+.item-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.item-row .inp input.txt { font-family: var(--font-ui); }
+.x { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--ink-3); font-size: 18px; line-height: 1; }
+.x:hover { background: var(--bad-bg); color: var(--bad); }
+.sum { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed var(--line); padding-top: 10px; font-weight: 600; }
+.sum b { font-family: var(--font-mono); font-size: 18px; }
+
+/* resultado */
+.result { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 18px 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 14px; min-width: 0; overflow: hidden; }
+.result::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 9px; opacity: .55; background: repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 40px) top / 100% 9px no-repeat, repeating-linear-gradient(90deg, var(--ink-3) 0 1px, transparent 1px 8px) top / 100% 5px no-repeat; }
+.r-label { font-size: 12px; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; color: var(--brand-ink); }
+.big { font-family: var(--font-mono); font-weight: 600; font-size: clamp(34px, 7vw, 50px); letter-spacing: -.03em; line-height: 1.05; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.big small { font-family: var(--font-ui); font-size: 16px; font-weight: 700; letter-spacing: 0; color: var(--ink-2); }
+.r-sub { color: var(--ink-2); font-size: 14px; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.kv > div { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.kv > div.on { background: var(--brand-soft); outline: 1px solid var(--brand); }
+.kv small { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .05em; }
+.kv b { font-family: var(--font-mono); font-size: 19px; font-weight: 600; overflow-wrap: anywhere; }
+.kv span { font-size: 12px; color: var(--ink-2); display: block; }
+.alerts { display: flex; flex-direction: column; gap: 8px; }
+.alert { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; line-height: 1.45; }
+.alert i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: currentColor; }
+.alert i b { color: var(--bg); font-weight: 800; }
+.alert.info { background: var(--info-bg); color: var(--info); }
+.alert.warn { background: var(--warn-bg); color: var(--warn); }
+.alert.bad { background: var(--bad-bg); color: var(--bad); }
+.alert.ok { background: var(--ok-bg); color: var(--ok); }
+.alert div { color: var(--ink); }
+.alert .btn { margin-top: 8px; }
+details.steps { border: 1px solid var(--line); border-radius: 10px; }
+details.steps summary { padding: 9px 12px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+details.steps pre { margin: 0; padding: 4px 14px 14px; font-family: var(--font-mono); font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.empty { color: var(--ink-3); padding: 14px 2px; font-size: 14px; }
+
+/* seringa */
+.syr { width: 100%; height: auto; display: block; }
+.syr .barrel { fill: var(--bg); stroke: var(--ink-2); stroke-width: 1.5; }
+.syr .liq { fill: var(--fill); opacity: .55; }
+.syr .tick { stroke: var(--ink-2); stroke-width: 1; }
+.syr .tick.maj { stroke: var(--ink); stroke-width: 1.5; }
+.syr .rod, .syr .needle { stroke: var(--ink-2); stroke-width: 2; fill: none; }
+.syr .flange, .syr .thumb { fill: var(--surface-2); stroke: var(--ink-2); stroke-width: 1.5; }
+.syr .lab { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-2); text-anchor: middle; }
+.syr .mark { stroke: var(--coral); stroke-width: 2.5; }
+.syr .marklab { font-family: var(--font-mono); font-size: 13px; font-weight: 600; fill: var(--coral); text-anchor: middle; }
+.syr-cap { font-size: 12.5px; color: var(--ink-2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
+
+/* tabelas e biblioteca */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+tr.pick { cursor: pointer; }
+tr.pick:hover td { background: var(--surface-2); }
+tr.sel td { background: var(--brand-soft); }
+td .tag { display: inline-block; white-space: nowrap; padding: 1px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 700; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); }
+.tag.warn { background: var(--warn-bg); color: var(--warn); }
+.tag.bad { background: var(--bad-bg); color: var(--bad); }
+.mono { font-family: var(--font-mono); white-space: nowrap; }
+.lib { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+.drug { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.drug h4 { font-size: 16px; font-weight: 700; }
+.drug .cat { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--brand-ink); }
+.drug dl { margin: 0; display: grid; gap: 7px; }
+.drug dt { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
+.drug dd { margin: 1px 0 0; font-size: 13.5px; overflow-wrap: anywhere; }
+.drug .none { color: var(--ink-3); font-style: italic; }
+.drug .src { font-size: 12px; color: var(--ink-3); margin-top: auto; }
+.search { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.search .inp { flex: 1 1 260px; }
+.search .inp input { font-family: var(--font-ui); }
+
+/* blocos de guia */
+.guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.guide .card h4 { font-size: 17px; font-weight: 800; }
+.guide ul, .checklist ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.facts div { background: var(--surface-2); border-radius: 10px; padding: 9px 11px; }
+.facts small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; color: var(--ink-3); }
+.facts b { font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
+.checklist { display: flex; flex-direction: column; gap: 14px; }
+.checklist label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; padding: 6px 0; cursor: pointer; }
+.checklist input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--brand); flex: none; }
+.checklist label:has(input:checked) span { color: var(--ink-3); text-decoration: line-through; }
+.prog { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--brand); width: 0; transition: width .25s; }
+.hist-item { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.hist-item:last-child { border-bottom: 0; }
+.hist-item small { color: var(--ink-3); font-size: 12px; }
+.hist-item pre { margin: 4px 0 0; font-family: var(--font-mono); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.foot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); display: flex; flex-direction: column; gap: 6px; }
+.foot a { color: var(--brand-ink); }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--btn-bg); color: var(--btn-fg); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; opacity: 0; pointer-events: none; transition: .2s; z-index: 50; max-width: calc(100vw - 32px); }
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-block: 14px 32px; }
+  .nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 15; flex-direction: row; overflow-x: auto; gap: 6px; padding: 8px 0; margin: 0 -2px; background: var(--bg); scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav h6 { display: none; }
+  .nav button { flex: none; white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .result.sticky { position: static; }
+  .mod-head h2 { font-size: 22px; }
+}
+@media (max-width: 460px) {
+  .row2 { grid-template-columns: minmax(0, 1fr); }
+  .row3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .item-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .brand span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .toast, .prog i { transition: none; } }
+
+/* animação da caneta (semana a semana) */
+.cna { margin: 14px 0 4px; padding: 14px 14px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.cna-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.cna-h b { font-size: 13.5px; }
+.cna svg { width: 100%; height: auto; display: block; }
+.pen-body { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.5; }
+.pen-cart { fill: var(--bg); stroke: var(--ink-2); stroke-width: 1; opacity: .9; }
+.pen-liq { fill: var(--fill); opacity: .4; }
+.pen-slice { fill: var(--coral); opacity: .9; transition: width .7s cubic-bezier(.4,0,.2,1); }
+.pen-win { fill: var(--bg); stroke: var(--ink-2); stroke-width: 1.2; }
+.pen-dial { font-family: var(--font-mono); font-size: 21px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
+.pen-unit { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-2); text-anchor: middle; }
+.pen-knob, .pen-btn { fill: var(--brand); opacity: .85; stroke: var(--ink-2); stroke-width: 1.2; }
+.pen-ridge { stroke: var(--surface); stroke-width: 2; opacity: .7; }
+.pen-needle { stroke: var(--ink-2); stroke-width: 2; }
+.pen-cap { font-family: var(--font-ui); font-size: 12px; font-weight: 700; fill: var(--coral); text-anchor: start; }
+.cna-now { margin: 6px 0 10px; font-size: 14px; line-height: 1.45; min-height: 42px; }
+.cna-now b { display: block; font-size: 15px; }
+.cna-steps { display: flex; gap: 6px; flex-wrap: wrap; }
+.cna-steps button { font: inherit; font-size: 12.5px; font-weight: 600; padding: 7px 11px; min-height: 36px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; transition: background .2s, border-color .2s; }
+.cna-steps button[aria-pressed="true"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); }
+.cna-steps button.you { border-style: dashed; }
+@media (prefers-reduced-motion: reduce) { .pen-slice { transition: none; } }
+</style>
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#12304A"/><g transform="rotate(-38 17 17)"><rect x="8" y="12.5" width="18" height="9" rx="4.5" fill="#14B5A6"/><path d="M17 12.5h4.5a4.5 4.5 0 0 1 0 9H17z" fill="#F0624D"/></g></svg>
+      <div><b>Dosia</b><span>Calculadora de enfermagem</span></div>
+    </div>
+    <div class="bar-actions">
+      <button class="ghost" id="themeBtn" type="button" aria-label="Alternar tema claro e escuro">Tema</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="nav" id="nav" aria-label="Módulos">
+    <h6>Calcular</h6>
+    <button type="button" data-mod="canetas">Canetas emagrecedoras</button>
+    <button type="button" data-mod="gotejamento">Gotejamento</button>
+    <button type="button" data-mod="dose">Dose (regra de três)</button>
+    <button type="button" data-mod="insulina">Insulina</button>
+    <button type="button" data-mod="bomba">Bomba de infusão</button>
+    <button type="button" data-mod="porcentagem">Porcentagem</button>
+    <button type="button" data-mod="conversor">Conversor de unidades</button>
+    <h6>Preparar</h6>
+    <button type="button" data-mod="reconstituicao">Reconstituição</button>
+    <button type="button" data-mod="rediluicao">Rediluição pediátrica</button>
+    <h6>Consultar</h6>
+    <button type="button" data-mod="medicamentos">Medicamentos</button>
+    <button type="button" data-mod="vias">Vias e seringas</button>
+    <button type="button" data-mod="checklist">Checklist de segurança</button>
+    <button type="button" data-mod="historico">Histórico <span class="badge" id="histBadge" hidden>0</span></button>
+  </nav>
+
+  <main id="main">
+
+    <!-- ================= CANETAS ================= -->
+    <section class="mod" id="m-canetas" hidden>
+      <div class="mod-head">
+        <div><h2>Canetas emagrecedoras</h2><p>Converta a dose prescrita para o que a caneta ou a seringa marca, e veja quanto tempo cada caneta ou frasco dura.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="cn1">Exemplo: Mounjaro 5 mg</button><button class="chip ex" type="button" data-ex="cn2">Exemplo: frasco com seringa</button></div>
+      </div>
+      <div class="alerts" style="margin-bottom:16px">
+        <div class="alert info"><i><b>i</b></i><div><b>Estas canetas não têm dose por quilo.</b> Nas bulas, a dose é fixa em miligramas e sobe por etapas (Wegovy: 0,25 mg até 2,4 mg; Mounjaro: 2,5 mg até 15 mg). Pessoas de pesos diferentes começam na mesma dose. Quem define a dose e o ritmo de aumento é o médico. Desde 2025 a Anvisa exige a retenção da receita na compra.</div></div>
+      </div>
+      <div class="seg" id="cn-tab" role="group" aria-label="Tipo de cálculo" style="margin-bottom:16px;max-width:620px"><button type="button" data-v="pen" aria-pressed="true">Caneta aplicadora</button><button type="button" data-v="vial" aria-pressed="false">Frasco e seringa</button><button type="button" data-v="peso" aria-pressed="false">Acompanhar o peso</button></div>
+      <div class="cols">
+        <div class="card" id="cn-pen">
+          <h3>Sua caneta</h3>
+          <label class="f"><span>Medicamento</span><select class="solo" id="cn-drug"></select></label>
+          <label class="f"><span>Caneta (conforme a embalagem)</span><select class="solo" id="cn-pensel"></select></label>
+          <label class="f" id="cn-dosewrap"><span>Dose prescrita (o que o seletor deve marcar)</span><select class="solo" id="cn-dose"></select></label>
+          <div class="row2">
+            <label class="f"><span>Doses já aplicadas desta caneta</span><div class="inp"><input id="cn-used" inputmode="decimal" value="0" autocomplete="off"></div></label>
+            <label class="f"><span>Data da última aplicação (opcional)</span><div class="inp"><input id="cn-last" type="date"></div></label>
+          </div>
+          <p class="hint">As apresentações seguem as bulas europeias (Wegovy, Ozempic, Mounjaro) e a bula brasileira do Saxenda. Confira sempre a embalagem que você tem.</p>
+        </div>
+        <div class="card" id="cn-vial" hidden>
+          <h3>Frasco com seringa de insulina</h3>
+          <div class="seg" id="cn-vmode" role="group" aria-label="O que o rótulo informa"><button type="button" data-v="conc" aria-pressed="true">Rótulo traz mg/mL</button><button type="button" data-v="total" aria-pressed="false">Total em mg e diluente</button></div>
+          <label class="f"><span>Dose prescrita</span><div class="inp"><input id="cn-vdose" inputmode="decimal" autocomplete="off"><span class="suf">mg</span></div></label>
+          <label class="f" id="cn-vconcw"><span>Concentração do frasco</span><div class="inp"><input id="cn-vconc" inputmode="decimal" autocomplete="off"><span class="suf">mg/mL</span></div></label>
+          <div class="row2" id="cn-vtotw" hidden>
+            <label class="f"><span>Total no frasco</span><div class="inp"><input id="cn-vtotal" inputmode="decimal" autocomplete="off"><span class="suf">mg</span></div></label>
+            <label class="f"><span>Volume do frasco ou diluente</span><div class="inp"><input id="cn-vdil" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <label class="f"><span>Aplicações por semana</span><select class="solo" id="cn-vfreq"><option value="1">1 por semana</option><option value="2">2 por semana</option><option value="7">1 por dia</option></select></label>
+          <p class="hint">Seringa de insulina U-100: 100 UI = 1 mL. A marca da seringa é em UI, não em mg.</p>
+        </div>
+        <div class="card" id="cn-peso" hidden>
+          <h3>Seu peso</h3>
+          <div class="row2">
+            <label class="f"><span>Altura</span><div class="inp"><input id="cn-h" inputmode="decimal" autocomplete="off"><span class="suf">cm</span></div></label>
+            <label class="f"><span>Peso inicial</span><div class="inp"><input id="cn-w0" inputmode="decimal" autocomplete="off"><span class="suf">kg</span></div></label>
+          </div>
+          <div class="row2">
+            <label class="f"><span>Peso atual</span><div class="inp"><input id="cn-w1" inputmode="decimal" autocomplete="off"><span class="suf">kg</span></div></label>
+            <label class="f"><span>Semanas decorridas (opcional)</span><div class="inp"><input id="cn-weeks" inputmode="decimal" autocomplete="off"></div></label>
+          </div>
+          <label class="f"><span>Peso meta (opcional)</span><div class="inp"><input id="cn-target" inputmode="decimal" autocomplete="off"><span class="suf">kg</span></div></label>
+          <p class="hint">O peso serve para acompanhar o resultado. Ele não define a dose da caneta.</p>
+        </div>
+        <div class="result sticky" id="r-canetas" aria-live="polite"></div>
+      </div>
+      <div class="foot" id="cn-src"></div>
+    </section>
+
+    <!-- ================= GOTEJAMENTO ================= -->
+    <section class="mod" id="m-gotejamento">
+      <div class="mod-head">
+        <div><h2>Gotejamento de infusão venosa</h2><p>Gotas por minuto, microgotas por minuto e mL/h a partir do volume prescrito e do tempo de infusão.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="g1">Exemplo do e-book: 4 soros em 8 h</button><button class="chip ex" type="button" data-ex="g2">Exemplo: vancomicina em 40 min</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <h3>Prescrição</h3>
+          <div class="f"><span class="lbl">Volumes a infundir</span><div class="items" id="g-items"></div></div>
+          <div class="actions"><button class="btn sec small" type="button" id="g-add">Adicionar item</button></div>
+          <div class="sum"><span>Volume total</span><b id="g-total">0 mL</b></div>
+          <div class="row2">
+            <label class="f"><span>Tempo de infusão</span><div class="inp"><input id="g-time" inputmode="decimal" autocomplete="off"><select id="g-timeu" aria-label="Unidade do tempo"><option value="h">horas</option><option value="min">minutos</option></select></div></label>
+            <label class="f"><span>Início (opcional)</span><div class="inp"><input id="g-start" type="time"></div></label>
+          </div>
+          <div class="f"><span class="lbl">Equipo disponível</span>
+            <div class="seg" id="g-eq" role="group" aria-label="Equipo"><button type="button" data-v="macro" aria-pressed="true">Macrogotas</button><button type="button" data-v="micro" aria-pressed="false">Microgotas</button><button type="button" data-v="bomba" aria-pressed="false">Bomba (mL/h)</button></div>
+            <span class="hint">Macrogotas: 20 gotas = 1 mL. Microgotas: 60 microgotas = 1 mL.</span>
+          </div>
+        </div>
+        <div class="result sticky" id="r-gotejamento" aria-live="polite"></div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h3>Caminho inverso: quanto tempo dura a infusão?</h3>
+        <div class="row3">
+          <label class="f"><span>Volume</span><div class="inp"><input id="gi-vol" inputmode="decimal" value="500" autocomplete="off"><span class="suf">mL</span></div></label>
+          <label class="f"><span>Gotejamento atual</span><div class="inp"><input id="gi-drops" inputmode="decimal" value="21" autocomplete="off"><select id="gi-kind" aria-label="Tipo de gota"><option value="macro">gts/min</option><option value="micro">microgts/min</option></select></div></label>
+          <div class="f"><span class="lbl">Duração</span><b class="mono" id="gi-out" style="font-size:18px;padding-top:8px">-</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOSE ================= -->
+    <section class="mod" id="m-dose" hidden>
+<div class="mod-head">
+        <div><h2>Dose por regra de três</h2><p>Preencha com os dados do enunciado: o que você tem disponível e o que foi prescrito. O Dosia monta a regra de três e calcula o X.</p></div>
+        <div class="chip-row"><button class="chip" type="button" id="rt-ex1">Exemplo: dipirona 1 g/2 mL, prescrito 500 mg</button><button class="chip" type="button" id="rt-ex2">Exemplo: comprimido de 25 mg, prescrito 50 mg</button></div>
+      </div>
+      <style>
+        .rt-line{display:grid;grid-template-columns:1fr;gap:10px}
+        .rt-mid{display:none}
+        .rt-step{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#14B5A6;margin:0 0 2px}
+        .rt-card h3{margin-top:4px}
+        .rt-card .rt-block+.rt-block{margin-top:18px;padding-top:16px;border-top:1px dashed #DCE3EA}
+        .rt-x{display:flex;align-items:center;justify-content:center;height:44px;border-radius:10px;background:#E9F8F6;color:#0E8C80;font-weight:800;font-size:18px}
+        .rt-table{margin:14px 0 6px;padding:12px 14px;border-radius:12px;background:#F4F7FA;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14px;line-height:1.9;color:#12304A}
+        .rt-table b{color:#0E8C80}
+        .rt-msg{margin-top:10px;font-size:14px;color:#9A3412;background:#FFF4E5;border-radius:10px;padding:10px 12px}
+        @media (max-width:560px){.rt-line{grid-template-columns:1fr;gap:6px}.rt-mid{display:none}}
+      </style>
+      <div class="cols">
+        <div class="card rt-card">
+          <div class="rt-block">
+            <p class="rt-step">Passo 1</p>
+            <h3>O que você tem disponível</h3>
+            <p class="hint">Como vem o medicamento: ex. ampola de 1 g em 2 mL, ou comprimido de 25 mg.</p>
+            <div class="rt-line">
+              <label class="f"><span>Quantidade do remédio</span><div class="inp"><input id="rt-a" inputmode="decimal" autocomplete="off" placeholder="ex: 1"><select id="rt-au" aria-label="Unidade"><option>mg</option><option>g</option><option>mcg</option><option>UI</option><option>mEq</option></select></div></label>
+              <div class="rt-mid">em</div>
+              <label class="f"><span>Está contido em (mL ou comprimidos)</span><div class="inp"><input id="rt-b" inputmode="decimal" autocomplete="off" placeholder="ex: 2"><select id="rt-bu" aria-label="Unidade"><option>mL</option><option>comprimido(s)</option><option>gotas</option></select></div></label>
+            </div>
+          </div>
+          <div class="rt-block">
+            <p class="rt-step">Passo 2</p>
+            <h3>O que foi prescrito</h3>
+            <p class="hint">A dose que o médico pediu.</p>
+            <div class="rt-line">
+              <label class="f"><span>Dose prescrita</span><div class="inp"><input id="rt-c" inputmode="decimal" autocomplete="off" placeholder="ex: 500"><select id="rt-cu" aria-label="Unidade"><option>mg</option><option>g</option><option>mcg</option><option>UI</option><option>mEq</option></select></div></label>
+              <div class="rt-mid">em</div>
+              <div class="f"><span class="lbl">Resultado</span><div class="rt-x">X</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="result sticky" id="rt-res" aria-live="polite"></div>
+      </div>
+      <script>
+      (function(){
+        var $=function(id){return document.getElementById(id)};
+        var F={mcg:0.001,mg:1,g:1000};
+        function num(v){v=String(v||'').trim().replace(/\s/g,'');if(v.indexOf(',')!==-1||/^\d{1,3}(\.\d{3})+$/.test(v)){v=v.replace(/\./g,'').replace(',','.')}var n=parseFloat(v);return isFinite(n)?n:NaN}
+        function fmt(n){var r=Math.round(n*100)/100;return r.toLocaleString('pt-BR',{maximumFractionDigits:2})}
+        function unitOut(u,x){if(u==='comprimido(s)'){return Math.abs(x-1)<1e-9?'comprimido':'comprimidos'}return u}
+        function calc(){
+          var a=num($('rt-a').value),b=num($('rt-b').value),c=num($('rt-c').value);
+          var au=$('rt-au').value,bu=$('rt-bu').value,cu=$('rt-cu').value,res=$('rt-res');
+          if(!(a>0)||!(b>0)||!(c>0)){
+            res.innerHTML='<div class="r-label">Resultado</div><div class="r-sub" style="margin-top:6px">Preencha os 3 campos (disponível e prescrito) para ver o resultado.</div>'+
+            '<div class="rt-table">'+(a>0?fmt(a):'?')+' '+au+' ——— '+(b>0?fmt(b):'?')+' '+bu+'<br>'+(c>0?fmt(c):'?')+' '+cu+' ——— <b>X</b></div>';
+            return;
+          }
+          var conv='',c2=c;
+          if(au!==cu){
+            if(F[au]!=null&&F[cu]!=null){c2=c*F[cu]/F[au];conv='Primeiro, coloque na mesma unidade: '+fmt(c)+' '+cu+' = '+fmt(c2)+' '+au+'<br>'}
+            else{res.innerHTML='<div class="r-label">Resultado</div><div class="rt-msg">As unidades do disponível ('+au+') e da prescrição ('+cu+') precisam ser iguais. Ajuste para a mesma unidade.</div>';return}
+          }
+          var x=c2*b/a;
+          var u=unitOut(bu,x);
+          var acao=bu==='mL'?'Aspirar':(bu==='gotas'?'Administrar':'Dar');
+          var warn='';
+          if(bu==='comprimido(s)'&&Math.abs(x*2-Math.round(x*2))>1e-6){warn='<div class="rt-msg">O resultado não dá um número inteiro ou meio comprimido. Confira a prescrição e se o comprimido pode ser partido.</div>'}
+          res.innerHTML='<div class="r-label">Resultado</div><div class="big"><span>'+fmt(x)+'</span><small>'+u+'</small></div>'+
+            '<div class="r-sub">'+acao+' '+fmt(x)+' '+u+' para '+fmt(c)+' '+cu+'.</div>'+warn+
+            '<div class="rt-table">'+conv+fmt(a)+' '+au+' ——— '+fmt(b)+' '+bu+'<br>'+fmt(c2)+' '+au+' ——— <b>X</b><br>X = '+fmt(c2)+' × '+fmt(b)+' ÷ '+fmt(a)+' = <b>'+fmt(x)+' '+u+'</b></div>'+
+            '<div class="actions"><button class="btn small" type="button" id="rt-copy">Copiar resultado</button></div>'+
+            '<p class="hint" style="margin-top:10px">Confira sempre a prescrição e o rótulo antes de administrar.</p>';
+          $('rt-copy').onclick=function(){var t=acao+' '+fmt(x)+' '+u+' ('+fmt(c)+' '+cu+'; disponível '+fmt(a)+' '+au+' em '+fmt(b)+' '+bu+')';try{navigator.clipboard.writeText(t);this.textContent='Copiado!'}catch(e){}};
+        }
+        ['rt-a','rt-b','rt-c','rt-au','rt-bu','rt-cu'].forEach(function(id){$(id).addEventListener('input',calc);$(id).addEventListener('change',calc)});
+        function setv(a,au,b,bu,c,cu){$('rt-a').value=a;$('rt-au').value=au;$('rt-b').value=b;$('rt-bu').value=bu;$('rt-c').value=c;$('rt-cu').value=cu;calc()}
+        $('rt-ex1').onclick=function(){setv('1','g','2','mL','500','mg')};
+        $('rt-ex2').onclick=function(){setv('25','mg','1','comprimido(s)','50','mg')};
+        calc();
+      })();
+      </script>
+
+<div hidden id="d-old">
+      <div class="mod-head">
+        <div><h2>Dose por regra de três</h2><p>Converte a dose prescrita em volume (mL) ou em número de comprimidos, a partir da apresentação disponível.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="d1">Exemplo do e-book: Diempax® 4 mg</button><button class="chip ex" type="button" data-ex="d2">Exemplo: penicilina 650.000 UI</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <h3>Prescrição</h3>
+          <div class="row2">
+            <label class="f"><span>Dose prescrita</span><div class="inp"><input id="d-dose" inputmode="decimal" autocomplete="off"><select id="d-doseu" aria-label="Unidade da dose"><option>mg</option><option>g</option><option>mcg</option><option>UI</option><option>mEq</option></select></div></label>
+            <div class="f"><span class="lbl">Cálculo por peso</span><label class="check" style="min-height:44px"><input type="checkbox" id="d-perkg"> Dose por kg</label></div>
+          </div>
+          <label class="f" id="d-wrap" hidden><span>Peso do paciente</span><div class="inp"><input id="d-weight" inputmode="decimal" autocomplete="off"><span class="suf">kg</span></div></label>
+          <h3>Disponível na unidade</h3>
+          <label class="f"><span>Preencher com um medicamento do banco</span><select class="solo" id="d-preset"></select></label>
+          <div class="seg" id="d-form" role="group" aria-label="Forma farmacêutica"><button type="button" data-v="liq" aria-pressed="true">Líquido ou injetável</button><button type="button" data-v="comp" aria-pressed="false">Comprimido ou cápsula</button></div>
+          <div class="row2" id="d-liqrow">
+            <label class="f"><span>Quantidade</span><div class="inp"><input id="d-amt" inputmode="decimal" autocomplete="off"><select id="d-amtu" aria-label="Unidade disponível"><option>mg</option><option>g</option><option>mcg</option><option>UI</option><option>mEq</option></select></div></label>
+            <label class="f"><span>Está contida em</span><div class="inp"><input id="d-vol" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <p class="hint" id="d-comphint" hidden>Informe a quantidade de princípio ativo de cada comprimido ou cápsula.</p>
+          <div class="row2">
+            <label class="f"><span>Via (opcional)</span><select class="solo" id="d-route"><option value="">Não informar</option><option value="IM">Intramuscular</option><option value="SC">Subcutânea</option><option value="ID">Intradérmica</option><option value="EV">Endovenosa</option><option value="VO">Oral</option></select></label>
+            <label class="f"><span>Seringa</span><select class="solo" id="d-syr"><option value="">Escolher automaticamente</option><option value="1">1 mL</option><option value="3">3 mL</option><option value="5">5 mL</option><option value="10">10 mL</option><option value="20">20 mL</option></select></label>
+          </div>
+        </div>
+        <div class="result sticky" id="r-dose" aria-live="polite"></div>
+      </div>
+    </div>
+</section>
+
+    <!-- ================= INSULINA ================= -->
+    <section class="mod" id="m-insulina" hidden>
+      <div class="mod-head">
+        <div><h2>Insulina</h2><p>Converte unidades (UI) em volume e mostra a marca na seringa. Concentração padrão: 100 UI/mL.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="i1">Exemplo do e-book: 40 UI de NPH</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <h3>Prescrição</h3>
+          <div class="row2">
+            <label class="f"><span>Dose prescrita</span><div class="inp"><input id="i-dose" inputmode="decimal" autocomplete="off"><span class="suf">UI</span></div></label>
+            <label class="f"><span>Concentração do frasco</span><div class="inp"><input id="i-conc" inputmode="decimal" value="100" autocomplete="off"><span class="suf">UI/mL</span></div></label>
+          </div>
+          <div class="f"><span class="lbl">Seringa disponível</span>
+            <div class="seg" id="i-syr" role="group" aria-label="Seringa"><button type="button" data-v="ins" aria-pressed="true">De insulina</button><button type="button" data-v="3" aria-pressed="false">3 mL (como no e-book)</button><button type="button" data-v="1" aria-pressed="false">1 mL</button></div>
+          </div>
+        </div>
+        <div class="result sticky" id="r-insulina" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= BOMBA ================= -->
+    <section class="mod" id="m-bomba" hidden>
+      <div class="mod-head">
+        <div><h2>Bomba de infusão</h2><p>Converte dose por peso ou por tempo em mL/h, e o contrário. A calculadora não traz doses de referência: a dose é sempre a da prescrição.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="p1">Exemplo: 0,1 mcg/kg/min, 70 kg</button><button class="chip ex" type="button" data-ex="p2">Exemplo: 1.000 UI/h</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <div class="seg" id="p-mode" role="group" aria-label="Sentido do cálculo"><button type="button" data-v="rate" aria-pressed="true">Dose em mL/h</button><button type="button" data-v="dose" aria-pressed="false">mL/h em dose</button></div>
+          <h3>Solução no frasco ou seringa</h3>
+          <div class="row2">
+            <label class="f"><span>Quantidade do medicamento</span><div class="inp"><input id="p-amt" inputmode="decimal" autocomplete="off"><select id="p-amtu" aria-label="Unidade"><option>mg</option><option>mcg</option><option>g</option><option>UI</option></select></div></label>
+            <label class="f"><span>Volume total da solução</span><div class="inp"><input id="p-vol" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <h3>Paciente e dose</h3>
+          <div class="row2">
+            <label class="f" id="p-dosewrap"><span>Dose prescrita</span><div class="inp"><input id="p-dose" inputmode="decimal" autocomplete="off"></div></label>
+            <label class="f" id="p-mlhwrap" hidden><span>Vazão da bomba</span><div class="inp"><input id="p-mlh" inputmode="decimal" autocomplete="off"><span class="suf">mL/h</span></div></label>
+            <label class="f"><span>Unidade da dose</span><select class="solo" id="p-unit"></select></label>
+          </div>
+          <label class="f" id="p-wwrap"><span>Peso do paciente</span><div class="inp"><input id="p-weight" inputmode="decimal" autocomplete="off"><span class="suf">kg</span></div></label>
+        </div>
+        <div class="result sticky" id="r-bomba" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= PORCENTAGEM ================= -->
+    <section class="mod" id="m-porcentagem" hidden>
+      <div class="mod-head">
+        <div><h2>Porcentagem (massa/volume)</h2><p>Uma solução a 1% tem 1 g de soluto em cada 100 mL. Calcule a massa contida em um volume, ou o volume que contém uma massa.</p></div>
+        <div class="chip-row" id="pc-presets"></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <div class="seg" id="pc-mode" role="group" aria-label="Sentido do cálculo"><button type="button" data-v="mass" aria-pressed="true">Massa em um volume</button><button type="button" data-v="vol" aria-pressed="false">Volume para uma massa</button></div>
+          <label class="f"><span>Concentração da solução</span><div class="inp"><input id="pc-pct" inputmode="decimal" autocomplete="off"><span class="suf">%</span></div></label>
+          <label class="f" id="pc-volwrap"><span>Volume</span><div class="inp"><input id="pc-vol" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          <label class="f" id="pc-massw" hidden><span>Massa desejada</span><div class="inp"><input id="pc-mass" inputmode="decimal" autocomplete="off"><select id="pc-massu" aria-label="Unidade"><option>g</option><option>mg</option></select></div></label>
+          <label class="f"><span>Massa molar (opcional, para mEq)</span><div class="inp"><input id="pc-mm" inputmode="decimal" autocomplete="off" placeholder="ex.: 58,44"><span class="suf">g/mol</span></div></label>
+          <p class="hint">Para sais monovalentes (como NaCl e KCl), 1 mmol corresponde a 1 mEq.</p>
+        </div>
+        <div class="result sticky" id="r-porcentagem" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= CONVERSOR ================= -->
+    <section class="mod" id="m-conversor" hidden>
+      <div class="mod-head">
+        <div><h2>Conversor de unidades</h2><p>1 g = 1.000 mg e 1 mg = 1.000 mcg (µg). 1 L = 1.000 mL.</p></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <div class="seg" id="cv-kind" role="group" aria-label="Grandeza"><button type="button" data-v="mass" aria-pressed="true">Massa</button><button type="button" data-v="vol" aria-pressed="false">Volume</button><button type="button" data-v="drop" aria-pressed="false">Gotas</button></div>
+          <label class="f"><span>Valor</span><div class="inp"><input id="cv-val" inputmode="decimal" value="1,5" autocomplete="off"><select id="cv-unit" aria-label="Unidade"></select></div></label>
+          <p class="hint" id="cv-hint"></p>
+        </div>
+        <div class="result sticky" id="r-conversor" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= RECONSTITUIÇÃO ================= -->
+    <section class="mod" id="m-reconstituicao" hidden>
+      <div class="mod-head">
+        <div><h2>Reconstituição de pó</h2><p>Volume final do frasco, concentração, volume a aspirar e concentração depois de diluir na bolsa.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="rc1">Exemplo do e-book: vancomicina</button><button class="chip ex" type="button" data-ex="rc2">Exemplo: penicilina 5.000.000 UI</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <h3>Frasco-ampola</h3>
+          <label class="f"><span>Preencher com um medicamento do banco</span><select class="solo" id="rc-preset"></select></label>
+          <div class="row2">
+            <label class="f"><span>Quantidade no frasco</span><div class="inp"><input id="rc-amt" inputmode="decimal" autocomplete="off"><select id="rc-amtu" aria-label="Unidade"><option>mg</option><option>g</option><option>mcg</option><option>UI</option></select></div></label>
+            <label class="f"><span>Diluente adicionado</span><div class="inp"><input id="rc-dil" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <label class="f"><span>Expansão do pó (se houver)</span><div class="inp"><input id="rc-exp" inputmode="decimal" value="0" autocomplete="off"><span class="suf">mL</span></div><span class="hint">Alguns pós aumentam o volume final. Exemplo do e-book: penicilina 5.000.000 UI expande 2 mL.</span></label>
+          <h3>Prescrição</h3>
+          <div class="row2">
+            <label class="f"><span>Dose prescrita</span><div class="inp"><input id="rc-dose" inputmode="decimal" autocomplete="off"><select id="rc-doseu" aria-label="Unidade da dose"><option>mg</option><option>g</option><option>mcg</option><option>UI</option></select></div></label>
+            <label class="f"><span>Diluir em (opcional)</span><div class="inp"><input id="rc-bag" inputmode="decimal" autocomplete="off" placeholder="ex.: 100"><span class="suf">mL</span></div></label>
+          </div>
+          <div id="rc-via" class="f" hidden><span class="lbl">Via do preparo</span><div class="seg" id="rc-viaseg" role="group"></div></div>
+        </div>
+        <div class="result sticky" id="r-reconstituicao" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= REDILUIÇÃO ================= -->
+    <section class="mod" id="m-rediluicao" hidden>
+      <div class="mod-head">
+        <div><h2>Rediluição pediátrica</h2><p>Quando a dose é pequena demais para a graduação da seringa, dilui-se o medicamento para aumentar o volume a aspirar.</p></div>
+        <div class="chip-row"><button class="chip ex" type="button" data-ex="rd1">E-book: penicilina 10.000.000 UI</button><button class="chip ex" type="button" data-ex="rd2">E-book: penicilina 5.000.000 UI</button><button class="chip ex" type="button" data-ex="rd3">E-book: Unimedrol® 125 mg</button></div>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <h3>Prescrição e frasco</h3>
+          <label class="f"><span>Dose prescrita</span><div class="inp"><input id="rd-dose" inputmode="decimal" autocomplete="off"><select id="rd-doseu" aria-label="Unidade da dose"><option>mg</option><option>g</option><option>mcg</option><option>UI</option></select></div></label>
+          <div class="row2">
+            <label class="f"><span>Quantidade no frasco</span><div class="inp"><input id="rd-amt" inputmode="decimal" autocomplete="off"><select id="rd-amtu" aria-label="Unidade"><option>mg</option><option>g</option><option>mcg</option><option>UI</option></select></div></label>
+            <label class="f"><span>Volume já reconstituído</span><div class="inp"><input id="rd-vol" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <p class="hint">Use o volume final depois da reconstituição, incluindo a expansão do pó (veja o módulo Reconstituição).</p>
+          <h3>Rediluição</h3>
+          <div class="f"><span class="lbl">Escolha uma diluição</span><div class="tbl-wrap"><table id="rd-opts"></table></div></div>
+          <div class="row2">
+            <label class="f"><span>Aspirar do frasco</span><div class="inp"><input id="rd-a" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+            <label class="f"><span>Completar até</span><div class="inp"><input id="rd-T" inputmode="decimal" autocomplete="off"><span class="suf">mL</span></div></label>
+          </div>
+          <p class="hint">Os dois campos acima valem para uma etapa. Para acrescentar diluente no próprio frasco, aspire o volume todo do frasco e complete até o novo volume.</p>
+        </div>
+        <div class="result sticky" id="r-rediluicao" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= MEDICAMENTOS ================= -->
+    <section class="mod" id="m-medicamentos" hidden>
+      <div class="mod-head">
+        <div><h2>Banco de medicamentos</h2><p>Apresentação, reconstituição, diluição e tempo de infusão, com a fonte de cada dado. Campo vazio significa que a fonte não traz a informação.</p></div>
+      </div>
+      <div class="card">
+        <div class="search"><label class="inp"><input id="lib-q" type="search" placeholder="Buscar medicamento" autocomplete="off" aria-label="Buscar medicamento"></label><span class="hint" id="lib-count"></span></div>
+        <div class="chip-row" id="lib-cats"></div>
+      </div>
+      <div class="lib" id="lib" style="margin-top:16px"></div>
+    </section>
+
+    <!-- ================= VIAS ================= -->
+    <section class="mod" id="m-vias" hidden>
+      <div class="mod-head">
+        <div><h2>Vias de administração e seringas</h2><p>Resumo das técnicas descritas no e-book São Camilo. Volumes, ângulos, agulhas e alertas.</p></div>
+        <div class="chip-row" id="vias-tabs"></div>
+      </div>
+      <div id="vias-body"></div>
+    </section>
+
+    <!-- ================= CHECKLIST ================= -->
+    <section class="mod" id="m-checklist" hidden>
+      <div class="mod-head">
+        <div><h2>Checklist de segurança</h2><p>Passos do preparo e da administração segundo o e-book. Marque conforme avança; a lista não é salva.</p></div>
+        <button class="btn sec small" type="button" id="chk-reset">Limpar marcações</button>
+      </div>
+      <div class="card"><div class="prog" aria-hidden="true"><i id="chk-bar"></i></div><div class="hint" id="chk-text"></div></div>
+      <div class="checklist" id="chk" style="margin-top:16px"></div>
+    </section>
+
+    <!-- ================= HISTÓRICO ================= -->
+    <section class="mod" id="m-historico" hidden>
+      <div class="mod-head">
+        <div><h2>Histórico</h2><p>Cálculos que você salvou neste navegador. Eles não vão para nenhum servidor.</p></div>
+        <button class="btn sec small" type="button" id="hist-clear">Apagar tudo</button>
+      </div>
+      <div class="card" id="hist"></div>
+    </section>
+
+    <div class="foot">
+      <p><b>Ferramenta de apoio ao cálculo.</b> Não substitui a prescrição, o rótulo, a bula nem o protocolo da sua instituição. Refaça o cálculo e peça checagem a outro profissional sempre que o medicamento ou a dose exigirem.</p>
+      <p>Fórmulas e exemplos: e-book <i>Procedimentos de Enfermagem: Preparo e Administração de Medicamentos</i>, Centro Universitário São Camilo (2025). Dados de preparo: guias hospitalares citados em cada medicamento.</p>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* Núcleo de cálculo: funções puras, sem DOM. Fórmulas conforme e-book São Camilo (2025), seção "Cálculo de medicamentos". */
+(function (root) {
+  'use strict';
+
+  var UNITS = {
+    g: { dim: 'm', f: 1 },
+    mg: { dim: 'm', f: 1e-3 },
+    mcg: { dim: 'm', f: 1e-6 },
+    UI: { dim: 'ui', f: 1 },
+    mEq: { dim: 'eq', f: 1 }
+  };
+
+  function convert(v, from, to) {
+    var a = UNITS[from], b = UNITS[to];
+    if (!a || !b || a.dim !== b.dim) return NaN;
+    return v * a.f / b.f;
+  }
+  function sameDim(a, b) { return !!(UNITS[a] && UNITS[b] && UNITS[a].dim === UNITS[b].dim); }
+
+  /* Graduações do e-book (p. 14): capacidade, menor graduação, numeração a cada N ml */
+  var SYRINGES = [
+    { cap: 1, grad: 0.02, num: 0.1 },
+    { cap: 3, grad: 0.1, num: 1 },
+    { cap: 5, grad: 0.2, num: 1 },
+    { cap: 10, grad: 0.2, num: 1 },
+    { cap: 20, grad: 1, num: 5 }
+  ];
+
+  function fit(vol, s) {
+    var n = vol / s.grad;
+    var r = Math.round(n + 1e-9);
+    var rounded = r * s.grad;
+    var err = vol > 0 ? Math.abs(rounded - vol) / vol : 0;
+    var lvl = err <= 0.02 ? 'ok' : (err <= 0.05 ? 'warn' : 'bad');
+    return { syringe: s, rounded: rounded, err: err, exact: Math.abs(n - Math.round(n)) < 1e-6, level: lvl };
+  }
+
+  /* Escolhe a menor seringa que comporta o volume e permite leitura com erro <= 2%.
+     Se nenhuma permite, devolve a de menor erro e nível 'warn' (<=5%) ou 'bad' (>5%). */
+  function pickSyringe(vol, cap) {
+    if (!(vol > 0)) return null;
+    var list = cap ? SYRINGES.filter(function (s) { return s.cap === cap; }) : SYRINGES;
+    var cands = list.filter(function (s) { return vol <= s.cap + 1e-9; }).map(function (s) { return fit(vol, s); });
+    if (!cands.length) return { tooBig: true, syringe: list[list.length - 1] };
+    var best = null;
+    for (var i = 0; i < cands.length; i++) { if (cands[i].level === 'ok') { best = cands[i]; break; } }
+    if (!best) best = cands.reduce(function (a, b) { return b.err < a.err ? b : a; });
+    return best;
+  }
+
+  /* Gotejamento: macrogotas 20 gts/ml, microgotas 60 microgts/ml.
+     Tempo > 60 min: V / (T[h] x 3) e V / T[h]. Tempo <= 60 min: V x 20 / T[min] e V x 60 / T[min]. */
+  function drip(volume, timeMin) {
+    if (!(volume > 0) || !(timeMin > 0)) return null;
+    var th = timeMin / 60;
+    var overHour = timeMin > 60;
+    var macro = overHour ? volume / (th * 3) : volume * 20 / timeMin;
+    var micro = overHour ? volume / th : volume * 60 / timeMin;
+    return { macro: macro, micro: micro, mlh: volume / th, overHour: overHour, th: th };
+  }
+  function dripTime(volume, dropsPerMin, kind) {
+    /* tempo (min) = V x gotas_por_ml / gotas_por_min */
+    var perMl = kind === 'micro' ? 60 : 20;
+    if (!(volume > 0) || !(dropsPerMin > 0)) return null;
+    return volume * perMl / dropsPerMin;
+  }
+
+  /* Regra de três: dose prescrita -> volume (ml) ou nº de comprimidos */
+  function doseVolume(o) {
+    var total = o.perKg ? o.dose * o.weight : o.dose;
+    if (!sameDim(o.doseUnit, o.availUnit)) return { error: 'unit' };
+    var d = convert(total, o.doseUnit, o.availUnit);
+    var vol = d * o.availVolume / o.availAmount;
+    return { totalDose: total, dInAvail: d, volume: vol };
+  }
+  function doseTablets(o) {
+    var total = o.perKg ? o.dose * o.weight : o.dose;
+    if (!sameDim(o.doseUnit, o.availUnit)) return { error: 'unit' };
+    var d = convert(total, o.doseUnit, o.availUnit);
+    return { totalDose: total, dInAvail: d, tablets: d / o.availAmount };
+  }
+
+  /* Reconstituição: volume final = diluente + expansão do pó */
+  function reconstitute(o) {
+    var finalVol = o.diluent + (o.expansion || 0);
+    var conc = o.amount / finalVol; /* em unidade do frasco por ml */
+    var res = { finalVol: finalVol, conc: conc };
+    if (o.dose != null) {
+      if (!sameDim(o.doseUnit, o.unit)) { res.error = 'unit'; return res; }
+      var d = convert(o.dose, o.doseUnit, o.unit);
+      res.dInVial = d;
+      res.aspirate = d / conc;
+      if (o.bag > 0) {
+        res.totalVol = o.bag + res.aspirate;
+        res.finalConc = d / res.totalVol;
+      }
+    }
+    return res;
+  }
+
+  /* Rediluição: aspira 'a' ml do frasco (conc C) e completa até T ml. Nova concentração C2 = C x a / T. */
+  function redilute(o) {
+    if (!sameDim(o.doseUnit, o.stockUnit)) return { error: 'unit' };
+    var C = o.stockAmount / o.stockVolume;
+    var d = convert(o.dose, o.doseUnit, o.stockUnit);
+    var direct = d / C;
+    var out = { C: C, d: d, direct: direct };
+    if (o.a > 0 && o.T >= o.a) {
+      var f = o.T / o.a;
+      out.f = f;
+      out.C2 = C / f;
+      out.vol2 = d / out.C2;
+    }
+    return out;
+  }
+  /* Opções padrão: ÷2 (1+1), ÷5 (1+4), ÷10 (1+9), ÷100 (duas etapas de 1+9) */
+  var REDIL_OPTIONS = [
+    { key: '2', f: 2, a: 1, T: 2, steps: 1 },
+    { key: '5', f: 5, a: 1, T: 5, steps: 1 },
+    { key: '10', f: 10, a: 1, T: 10, steps: 1 },
+    { key: '100', f: 100, a: 1, T: 10, steps: 2 }
+  ];
+  function redilOptions(direct) {
+    return REDIL_OPTIONS.map(function (o) {
+      var vol = direct * o.f;
+      var inRange = vol >= 0.1 - 1e-9 && vol <= 1 + 1e-9;
+      var fx = inRange ? fit(vol, SYRINGES[0]) : null;
+      return { opt: o, vol: vol, inRange: inRange, fit: fx, good: !!(fx && fx.err <= 0.03) };
+    });
+  }
+  function bestRedil(direct) {
+    var list = redilOptions(direct);
+    var ten = list.filter(function (x) { return x.opt.key === '10' && x.good; })[0];
+    if (ten) return ten;
+    var good = list.filter(function (x) { return x.good; });
+    if (good.length) return good[0];
+    var any = list.filter(function (x) { return x.inRange; });
+    return any[0] || null;
+  }
+
+  /* Bomba de infusão: taxa em base/hora; base = mcg (massa) ou UI */
+  var PUMP_UNITS = {
+    'mcg/kg/min': { dim: 'm', kg: true, k: 60 },
+    'mcg/kg/h': { dim: 'm', kg: true, k: 1 },
+    'mg/kg/h': { dim: 'm', kg: true, k: 1000 },
+    'mcg/min': { dim: 'm', kg: false, k: 60 },
+    'mcg/h': { dim: 'm', kg: false, k: 1 },
+    'mg/min': { dim: 'm', kg: false, k: 60000 },
+    'mg/h': { dim: 'm', kg: false, k: 1000 },
+    'UI/h': { dim: 'ui', kg: false, k: 1 },
+    'UI/kg/h': { dim: 'ui', kg: true, k: 1 }
+  };
+  function pumpConc(amount, unit, volume) {
+    var dim = UNITS[unit].dim;
+    var base = dim === 'm' ? convert(amount, unit, 'mcg') : amount;
+    return { dim: dim, perMl: base / volume };
+  }
+  function pumpRate(o) {
+    var u = PUMP_UNITS[o.unit];
+    var c = pumpConc(o.amount, o.aUnit, o.volume);
+    if (c.dim !== u.dim) return { error: 'dim' };
+    var mult = u.kg ? o.weight : 1;
+    var perHour = o.dose * mult * u.k;
+    return { conc: c.perMl, perHour: perHour, mlh: perHour / c.perMl, dim: c.dim };
+  }
+  function pumpDose(o) {
+    var u = PUMP_UNITS[o.unit];
+    var c = pumpConc(o.amount, o.aUnit, o.volume);
+    if (c.dim !== u.dim) return { error: 'dim' };
+    var mult = u.kg ? o.weight : 1;
+    var perHour = o.mlh * c.perMl;
+    return { conc: c.perMl, perHour: perHour, dose: perHour / (mult * u.k), dim: c.dim };
+  }
+
+  /* Porcentagem massa/volume: % = g por 100 ml */
+  function percent(pct, volume) {
+    return { grams: pct * volume / 100, mgPerMl: pct * 10 };
+  }
+  function percentVolume(pct, grams) { return grams * 100 / pct; }
+
+
+  /* Canetas e frascos de peptídeos (GLP-1): a dose é fixa em mg, não por kg */
+  function penDoses(totalMg, doseMg, usedDoses) {
+    var left = totalMg - (usedDoses || 0) * doseMg;
+    if (left < 0) left = 0;
+    return { total: Math.floor(totalMg / doseMg + 1e-9), remaining: Math.floor(left / doseMg + 1e-9), leftMg: left };
+  }
+  function vialDose(o) {
+    var conc = o.conc != null ? o.conc : o.totalMg / o.diluentMl; /* mg/mL */
+    var vol = o.doseMg / conc;
+    return { conc: conc, volMl: vol, ui: vol * 100, dosesPerVial: o.totalMg ? Math.floor(o.totalMg / o.doseMg + 1e-9) : null };
+  }
+  function bmi(kg, cm) { var m = cm / 100; return kg / (m * m); }
+  function bmiClass(v) {
+    if (v < 18.5) return 'abaixo do peso';
+    if (v < 25) return 'peso normal';
+    if (v < 30) return 'sobrepeso';
+    if (v < 35) return 'obesidade grau I';
+    if (v < 40) return 'obesidade grau II';
+    return 'obesidade grau III';
+  }
+
+  var api = {
+    UNITS: UNITS, convert: convert, sameDim: sameDim, SYRINGES: SYRINGES, fit: fit, pickSyringe: pickSyringe,
+    drip: drip, dripTime: dripTime, doseVolume: doseVolume, doseTablets: doseTablets,
+    reconstitute: reconstitute, redilute: redilute, redilOptions: redilOptions, bestRedil: bestRedil, REDIL_OPTIONS: REDIL_OPTIONS,
+    PUMP_UNITS: PUMP_UNITS, pumpConc: pumpConc, pumpRate: pumpRate, pumpDose: pumpDose,
+    percent: percent, percentVolume: percentVolume,
+    penDoses: penDoses, vialDose: vialDose, bmi: bmi, bmiClass: bmiClass
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.Calc = api;
+})(typeof window !== 'undefined' ? window : this);
+</script>
+<script>
+(function(){
+'use strict';
+/* Banco de dados. Cada dado vem de uma fonte citada; onde a fonte não traz a informação, o campo fica vazio (a interface mostra "sem registro"). */
+var SOURCES = {
+  ebook: { short: 'E-book São Camilo (2025)', full: 'Procedimentos de Enfermagem: Preparo e Administração de Medicamentos, Vol. I. Centro Universitário São Camilo, 2025.', url: '' },
+  hugv: { short: 'HUGV/UFAM (2016)', full: 'Guia de preparo e administração de antimicrobianos injetáveis. Hospital Universitário Getúlio Vargas, UFAM, 2016.', url: 'https://antigo.ufam.edu.br/attachments/article/5223/Guia%20de%20preparo%20e%20administra%C3%A7%C3%A3o%20de%20antimicrobianos_2016.pdf' },
+  hupe: { short: 'HUPE/UERJ (2025)', full: 'Manual para preparo e administração de medicamentos injetáveis, 3ª ed. Hospital Universitário Pedro Ernesto, UERJ, 2025.', url: 'https://www.hupe.uerj.br/wp-content/uploads/2025/12/Manual-para-Preparo-e-Administra%C3%A7%C3%A3o-de-Medicamentos-Injet%C3%A1veis_3%C2%AA_edi%C3%A7%C3%A3o_2025-1-1.pdf' },
+  incor: { short: 'InCor-HCFMUSP (2024)', full: 'FOR CENF 0025: Informações para o preparo e administração de medicamentos (ambulatório), ed. 02, 2024. InCor, HCFMUSP.', url: 'https://www.incor.usp.br/onadocs/CENF/FOR%20CENF%200025%20-%20INFORMA%C3%87%C3%95ES%20PARA%20O%20PREPARO%20E%20ADMINISTRA%C3%87%C3%83O%20DE%20MEDICAMENTOS%20AMBULAT%C3%93RIO.pdf' },
+  hsc: { short: 'Hospital São Camilo SP', full: 'Guia Farmacêutico, tabela de preparo (hipodermóclise). Hospital São Camilo São Paulo.', url: 'https://guiafarmaceutico.hospitalsaocamilosp.org.br/wp-content/uploads/2023/09/TABELA-DE-PREPARO.pdf' }
+};
+
+var CATS = ['Antibióticos', 'Antifúngicos e antivirais', 'Analgésicos e antieméticos', 'Cardiovasculares', 'Corticoides', 'Insulina e anticoagulantes', 'Sedativos e outros'];
+
+/*
+ calc:  { amt, unit, ml:{EV,IM}, exp, max:{amt,unit} }  -> usado em Reconstituição (frasco em pó)
+ avail: { amt, unit, ml }                               -> usado em Dose (solução pronta)
+*/
+var DRUGS = [
+  /* ---------- Antibióticos ---------- */
+  { id: 'amoxclav', nome: 'Amoxicilina + clavulanato', cat: 0, apres: 'Pó liófilo 1 g + 200 mg (diluente de 20 mL); também 500 mg + 100 mg (diluente de 10 mL)', vias: 'EV (direta e infusão)', recon: '20 mL de AD para 1 g + 200 mg; 10 mL para 500 mg + 100 mg', conc: 'Até 5 mg/mL (HUGV). HUPE: usual 10 mg/mL, máx 12 mg/mL', dil: '500 mg em 100 mL (HUGV). HUPE: reconstituído em 100 mL de SF 0,9% ou AD', tempo: 'Direta 3 a 4 min; infusão 30 a 40 min', obs: 'Estável 20 min após reconstituir (HUPE). Não há via IM.', src: ['hugv', 'hupe'], calc: { amt: 1000, unit: 'mg', ml: { EV: 20 }, exp: 0 } },
+  { id: 'ampicilina', nome: 'Ampicilina', cat: 0, apres: 'Pó liófilo 1 g (HUPE traz também 500 mg)', vias: 'IM · EV direta · EV infusão', recon: '3 mL de AD para 1 g; 2 mL para 500 mg (HUPE)', conc: '2 a 30 mg/mL (HUGV). HUPE: máx 250 mg/mL (IM e EV direta), 30 mg/mL em infusão', dil: '1.000 mg em 100 mL (HUGV)', tempo: 'Direta 10 a 15 min; infusão 30 a 60 min (HUGV). HUPE: infusão 15 a 30 min', obs: 'IM dolorosa; EV direta não recomendada em pediatria (HUGV). Usar imediatamente (HUPE).', src: ['hugv', 'hupe'], calc: { amt: 1000, unit: 'mg', ml: { IM: 3, EV: 3 }, exp: 0, max: { amt: 30, unit: 'mg' } } },
+  { id: 'ampsulb', nome: 'Ampicilina + sulbactam', cat: 0, apres: 'Pó liófilo 3 g (2 g + 1 g)', vias: 'IM · EV direta · EV infusão', recon: '6,4 mL de AD, SG 5%, SF ou Ringer lactato', conc: '30 a 60 mg/mL', dil: '3.000 mg em 50 mL', tempo: 'Direta 3 a 5 min; infusão 15 a 30 min', obs: 'IM dolorosa; EV direta não recomendada em pediatria.', src: ['hugv'], calc: { amt: 3000, unit: 'mg', ml: { EV: 6.4 }, exp: 0 } },
+  { id: 'aztreonam', nome: 'Aztreonam', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '3 mL de AD ou SF; para EV direta, 6 a 10 mL de AD', conc: 'Máx 20 mg/mL', dil: '1.000 mg em 50 mL', tempo: 'Direta 3 a 5 min; infusão 20 a 60 min', obs: '', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { IM: 3, EV: 3 }, exp: 0, max: { amt: 20, unit: 'mg' } } },
+  { id: 'penbenz', nome: 'Benzilpenicilina benzatina', cat: 0, apres: '1.200.000 UI, solução injetável', vias: 'IM profundo', recon: 'HUGV: não precisa reconstituir. InCor: Benzetacil® pronto para uso; outra marca citada reconstitui com 3,2 mL do diluente próprio (volume final 4 mL)', conc: '', dil: '', tempo: 'Aplicar logo após o preparo', obs: 'Exclusivamente IM. Seguir o rótulo da marca disponível.', src: ['hugv', 'incor'] },
+  { id: 'pencris', nome: 'Benzilpenicilina potássica (penicilina cristalina)', cat: 0, apres: 'Pó liófilo 1.000.000, 5.000.000 e 10.000.000 UI', vias: 'EV infusão (IM só em crianças, segundo HUGV)', recon: 'E-book: 5.000.000 UI = 8 mL de AD + 2 mL de expansão = 10 mL; 10.000.000 UI = 6 mL de AD + 4 mL de expansão = 10 mL; 1.000.000 UI não sofre expansão. HUGV: 10 mL de AD para 5.000.000 UI', conc: 'Pelo e-book: 5.000.000 UI em 10 mL = 500.000 UI/mL', dil: '1 frasco em 100 mL (HUGV)', tempo: 'Infusão 30 a 60 min (HUGV)', obs: 'As fontes divergem no volume de diluente. Siga o protocolo da sua instituição; a calculadora usa os valores do e-book.', src: ['ebook', 'hugv'], calc: { amt: 5000000, unit: 'UI', ml: { EV: 8, IM: 8 }, exp: 2 } },
+  { id: 'cefalotina', nome: 'Cefalotina', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '10 mL de AD (EV); 5 mL de AD (IM)', conc: 'Máx 100 mg/mL', dil: '1.000 mg em 10 mL', tempo: 'Direta 3 a 5 min; infusão 30 min', obs: '', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 10, IM: 5 }, exp: 0, max: { amt: 100, unit: 'mg' } } },
+  { id: 'cefazolina', nome: 'Cefazolina', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '10 mL de AD (EV); 3 mL de AD (IM)', conc: 'Máx 100 mg/mL', dil: '1.000 mg em 10 mL', tempo: 'Direta 3 a 5 min; infusão 30 a 60 min', obs: '', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 10, IM: 3 }, exp: 0, max: { amt: 100, unit: 'mg' } } },
+  { id: 'cefepima', nome: 'Cefepima', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '10 mL de AD (EV); 3 mL de AD (IM)', conc: '1 a 40 mg/mL', dil: '1.000 mg em 25 mL', tempo: 'Direta 3 a 5 min; infusão 30 min', obs: 'IM dolorosa.', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 10, IM: 3 }, exp: 0, max: { amt: 40, unit: 'mg' } } },
+  { id: 'ceftazidima', nome: 'Ceftazidima', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '10 mL de AD (EV); 3 mL de AD (IM)', conc: '10 ou 20 mg/mL', dil: '1.000 mg em 50 mL', tempo: 'Direta 3 a 5 min; infusão 15 a 30 min', obs: '', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 10, IM: 3 }, exp: 0 } },
+  { id: 'ceftriaxona', nome: 'Ceftriaxona', cat: 0, apres: 'Pó liófilo 1 g', vias: 'IM · EV direta · EV infusão', recon: '10 mL de AD (EV); 3 mL de AD (IM)', conc: '50 mg/mL', dil: '1.000 mg em 20 mL', tempo: 'Direta 2 a 4 min; infusão 30 min', obs: 'IM dolorosa. Não diluir em soluções que contenham cálcio.', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 10, IM: 3 }, exp: 0, max: { amt: 50, unit: 'mg' } } },
+  { id: 'cipro', nome: 'Ciprofloxacino', cat: 0, apres: 'Solução injetável pronta, frasco ou bolsa de 100 ou 200 mL', vias: 'EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: 'Pronto para uso', tempo: '60 min', obs: '', src: ['hugv'] },
+  { id: 'claritro', nome: 'Claritromicina', cat: 0, apres: 'Pó liófilo 500 mg', vias: 'EV infusão', recon: '10 mL de AD', conc: '', dil: 'Diluir em no mínimo 250 mL', tempo: 'Mais de 60 min', obs: '', src: ['hugv'], calc: { amt: 500, unit: 'mg', ml: { EV: 10 }, exp: 0 } },
+  { id: 'clinda', nome: 'Clindamicina (fosfato)', cat: 0, apres: '150 mg/mL, ampola de 4 mL (600 mg)', vias: 'IM (máx 600 mg) · EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: '300 mg em 50 mL; 600 mg em 50 mL; 900 mg em 100 mL; 1.200 mg em 100 mL', tempo: '300 mg: 10 min; 600 mg: 20 min; 900 mg: 30 min; 1.200 mg: 40 min', obs: '', src: ['hugv'], avail: { amt: 150, unit: 'mg', ml: 1 } },
+  { id: 'gentamicina', nome: 'Gentamicina', cat: 0, apres: '40 mg/mL, ampola de 1 ou 2 mL', vias: 'IM · EV direta · EV infusão', recon: 'Não precisa reconstituir', conc: '1 mg/mL', dil: '50 a 200 mL de solução', tempo: 'Direta 2 a 3 min; infusão 30 min a 2 h', obs: '', src: ['hugv'], avail: { amt: 40, unit: 'mg', ml: 1 } },
+  { id: 'imipenem', nome: 'Imipenem + cilastatina', cat: 0, apres: 'Pó 500 mg + 500 mg', vias: 'EV infusão', recon: '10 mL de AD', conc: '5 mg/mL', dil: '500 mg em 100 mL', tempo: 'Até 500 mg: 20 a 30 min; acima de 500 mg: 40 a 60 min', obs: '', src: ['hugv'], calc: { amt: 500, unit: 'mg', ml: { EV: 10 }, exp: 0 } },
+  { id: 'levo', nome: 'Levofloxacino', cat: 0, apres: '5 mg/mL, bolsa de 100 mL (500 mg)', vias: 'EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: 'Pronto para uso', tempo: '60 a 90 min', obs: '', src: ['hugv'] },
+  { id: 'linezolida', nome: 'Linezolida', cat: 0, apres: '2 mg/mL, bolsa de 300 mL', vias: 'EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: 'Pronto para uso', tempo: '30 a 120 min', obs: '', src: ['hugv'] },
+  { id: 'meropenem', nome: 'Meropeném', cat: 0, apres: 'Pó liófilo 1 g', vias: 'EV direta · EV infusão', recon: '20 mL de AD', conc: 'Infusão 20 mg/mL; EV direta 50 mg/mL', dil: 'Infusão: diluir para 50 mL. EV direta: diluir para 20 mL', tempo: 'Direta 5 min; infusão 15 a 30 min', obs: 'Não há via IM.', src: ['hugv'], calc: { amt: 1000, unit: 'mg', ml: { EV: 20 }, exp: 0 } },
+  { id: 'metronidazol', nome: 'Metronidazol', cat: 0, apres: 'Sistema fechado 5 mg/mL, bolsa de 100 mL', vias: 'EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: 'Pronto para uso', tempo: '20 min (5 mL/min)', obs: '', src: ['hugv'] },
+  { id: 'oxacilina', nome: 'Oxacilina', cat: 0, apres: 'Pó liófilo 500 mg', vias: 'IM · EV direta · EV infusão', recon: '2,7 mL de AD (IM); 5 mL de AD (EV)', conc: '2 mg/mL', dil: '500 mg em 250 mL', tempo: 'Direta 10 min; infusão até 6 h', obs: '', src: ['hugv'], calc: { amt: 500, unit: 'mg', ml: { EV: 5, IM: 2.7 }, exp: 0 } },
+  { id: 'piptazo', nome: 'Piperacilina + tazobactam', cat: 0, apres: 'Pó 4,5 g (4 g + 0,5 g)', vias: 'EV infusão', recon: '20 mL de AD, SF ou SG 5%', conc: 'Exemplo do guia: 45 mg/mL', dil: '50 a 150 mL', tempo: '20 a 30 min', obs: 'Incompatível com Ringer lactato.', src: ['hugv'], calc: { amt: 4500, unit: 'mg', ml: { EV: 20 }, exp: 0 } },
+  { id: 'polimixina', nome: 'Polimixina B', cat: 0, apres: 'Pó 500.000 UI', vias: 'IM · EV infusão', recon: '2 mL de AD ou SF', conc: '500 a 833 UI/mL', dil: 'Diluir em 300 a 500 mL', tempo: '60 a 90 min', obs: '', src: ['hugv'], calc: { amt: 500000, unit: 'UI', ml: { EV: 2 }, exp: 0 } },
+  { id: 'smxtmp', nome: 'Sulfametoxazol + trimetoprima', cat: 0, apres: 'Ampola de 5 mL (400 mg + 80 mg)', vias: 'IM · EV infusão', recon: 'Não precisa reconstituir', conc: '3,84 a 6,4 mg/mL', dil: '480 mg em 125 mL', tempo: '30 a 60 min', obs: '', src: ['hugv'] },
+  { id: 'teico', nome: 'Teicoplanina', cat: 0, apres: 'Pó 200 mg', vias: 'IM · EV direta · EV infusão', recon: '3 mL de AD', conc: '1 a 16 mg/mL', dil: '200 mg em 12,5 mL', tempo: 'Direta 3 a 5 min; infusão 30 min', obs: '', src: ['hugv'], calc: { amt: 200, unit: 'mg', ml: { EV: 3, IM: 3 }, exp: 0 } },
+  { id: 'tigeciclina', nome: 'Tigeciclina', cat: 0, apres: 'Pó 50 mg', vias: 'EV infusão', recon: '5 mL de AD, SF ou SG 5%', conc: 'Máx 1 mg/mL', dil: '50 mg em 50 mL', tempo: '30 a 60 min', obs: '', src: ['hugv'], calc: { amt: 50, unit: 'mg', ml: { EV: 5 }, exp: 0, max: { amt: 1, unit: 'mg' } } },
+  { id: 'vanco', nome: 'Vancomicina', cat: 0, apres: 'Pó liófilo 500 mg ou 1 g', vias: 'EV infusão', recon: '10 mL de AD para 500 mg; 20 mL de AD para 1 g', conc: 'Máx 5 mg/mL', dil: '500 mg em 100 mL', tempo: 'Mais de 60 min', obs: 'Não há via IM nem EV direta. O e-book usa 500 mg em 10 mL no exemplo de cálculo.', src: ['hugv', 'ebook'], calc: { amt: 500, unit: 'mg', ml: { EV: 10 }, exp: 0, max: { amt: 5, unit: 'mg' } } },
+
+  /* ---------- Antifúngicos e antivirais ---------- */
+  { id: 'aciclovir', nome: 'Aciclovir', cat: 1, apres: 'Pó liófilo 250 mg', vias: 'EV infusão', recon: '10 mL de AD ou SF (adultos)', conc: 'Até 5 mg/mL', dil: '250 mg em 50 mL', tempo: '60 min', obs: '', src: ['hugv'], calc: { amt: 250, unit: 'mg', ml: { EV: 10 }, exp: 0, max: { amt: 5, unit: 'mg' } } },
+  { id: 'anfob', nome: 'Anfotericina B desoxicolato', cat: 1, apres: 'Pó 50 mg', vias: 'EV infusão', recon: '10 mL de AD', conc: '0,1 mg/mL ou menos', dil: '50 mg em 500 mL', tempo: '2 a 6 h', obs: '', src: ['hugv'], calc: { amt: 50, unit: 'mg', ml: { EV: 10 }, exp: 0, max: { amt: 0.1, unit: 'mg' } } },
+  { id: 'anfolipo', nome: 'Anfotericina B lipossomal', cat: 1, apres: 'Pó liófilo 50 mg', vias: 'EV infusão', recon: '12 mL de AD', conc: '0,2 a 2 mg/mL', dil: '50 mg em 25 mL', tempo: 'Abaixo de 5 mg/kg/dia: 30 a 60 min', obs: '', src: ['hugv'], calc: { amt: 50, unit: 'mg', ml: { EV: 12 }, exp: 0, max: { amt: 2, unit: 'mg' } } },
+  { id: 'fluconazol', nome: 'Fluconazol', cat: 1, apres: 'Solução injetável pronta, frasco ou bolsa de 100 mL', vias: 'EV infusão', recon: 'Não precisa reconstituir', conc: '', dil: 'Pronto para uso', tempo: '60 min (200 mg/h)', obs: '', src: ['hugv'] },
+  { id: 'ganciclovir', nome: 'Ganciclovir', cat: 1, apres: 'Pó liófilo 500 mg (também em bolsas de 100, 250 e 500 mL)', vias: 'EV infusão', recon: '10 mL de AD', conc: 'Até 10 mg/mL', dil: '500 mg em 50 mL', tempo: '60 min', obs: '', src: ['hugv'], calc: { amt: 500, unit: 'mg', ml: { EV: 10 }, exp: 0, max: { amt: 10, unit: 'mg' } } },
+  { id: 'voriconazol', nome: 'Voriconazol', cat: 1, apres: 'Pó liófilo 200 mg', vias: 'EV infusão', recon: '19 mL de AD', conc: '0,5 a 5 mg/mL', dil: '200 mg em 40 mL', tempo: '60 a 120 min', obs: '', src: ['hugv'], calc: { amt: 200, unit: 'mg', ml: { EV: 19 }, exp: 0, max: { amt: 5, unit: 'mg' } } },
+
+  /* ---------- Analgésicos e antieméticos ---------- */
+  { id: 'dipirona', nome: 'Dipirona', cat: 2, apres: '500 mg/mL, ampola de 2 mL (1 g)', vias: 'IM · EV', recon: 'Não precisa reconstituir', conc: '', dil: 'EV: diluir em 10 mL de SF 0,9%', tempo: 'Máximo de 500 mg/min', obs: '', src: ['incor'], avail: { amt: 500, unit: 'mg', ml: 1 } },
+  { id: 'ondansetrona', nome: 'Ondansetrona', cat: 2, apres: '2 mg/mL, ampola de 2 mL (4 mg)', vias: 'IM · EV', recon: 'Não precisa reconstituir', conc: '', dil: 'Doses acima de 8 mg, até 32 mg: diluir em 50 a 100 mL de SF 0,9% ou SG 5%', tempo: 'Administrar em 15 min', obs: '', src: ['incor'], avail: { amt: 2, unit: 'mg', ml: 1 } },
+  { id: 'metoclopramida', nome: 'Metoclopramida', cat: 2, apres: '5 mg/mL, ampola de 2 mL (10 mg)', vias: 'IM · EV', recon: 'Não precisa reconstituir', conc: '', dil: 'EV: doses acima de 10 mg devem ser diluídas em 50 mL de SF 0,9%', tempo: 'IM: 1 a 2 min. EV: infusão em 15 min', obs: '', src: ['incor'], avail: { amt: 5, unit: 'mg', ml: 1 } },
+  { id: 'escopolamina', nome: 'Escopolamina (Buscopan®)', cat: 2, apres: '20 mg/mL, ampola de 1 mL', vias: 'IM · EV', recon: 'Não precisa reconstituir', conc: '', dil: 'EV: direta ou diluída em 20 mL de SF 0,9%. IM: não diluir', tempo: 'EV direta lenta, em 2 a 3 min', obs: '', src: ['incor'], avail: { amt: 20, unit: 'mg', ml: 1 } },
+
+  /* ---------- Cardiovasculares ---------- */
+  { id: 'amiodarona', nome: 'Amiodarona', cat: 3, apres: '50 mg/mL, ampola de 3 mL (150 mg)', vias: 'EV', recon: 'Não precisa reconstituir', conc: '', dil: 'Ataque: 5 mg/kg em 100 mL de SG 5%. Manutenção: em 250 mL de SG 5%', tempo: 'Ataque: 20 min a 2 h', obs: 'Citação do guia InCor; a dose segue sempre a prescrição.', src: ['incor'], avail: { amt: 50, unit: 'mg', ml: 1 } },
+  { id: 'atropina', nome: 'Atropina', cat: 3, apres: '0,25 mg/mL, ampola de 1 mL', vias: 'IM · EV direta · SC', recon: 'Não precisa reconstituir', conc: 'Máx 0,5 mg/mL', dil: 'Sem diluição. Infusão contínua não é recomendada', tempo: 'EV direta em mais de 1 min (a administração muito lenta pode causar bradicardia paroxística)', obs: 'Usar imediatamente após preparar.', src: ['hupe'], avail: { amt: 0.25, unit: 'mg', ml: 1 } },
+  { id: 'deslanosideo', nome: 'Deslanosídeo (Cedilanide®)', cat: 3, apres: '0,2 mg/mL', vias: 'IV · IM', recon: 'Diluir em 8 mL de AD', conc: '', dil: '', tempo: 'Bolus direto ou infusão lenta de 5 a 10 min', obs: '', src: ['incor'], avail: { amt: 0.2, unit: 'mg', ml: 1 } },
+
+  /* ---------- Corticoides ---------- */
+  { id: 'dexa', nome: 'Dexametasona', cat: 4, apres: '2 mg/mL', vias: 'IV · IM', recon: 'Não precisa reconstituir', conc: '', dil: 'IV: 6 mL de SF 0,9%. IM: não é necessária diluição', tempo: 'Bolus, 5 a 10 min, ou contínua', obs: '', src: ['incor'], avail: { amt: 2, unit: 'mg', ml: 1 } },
+  { id: 'metilpred', nome: 'Metilprednisolona (Unimedrol®)', cat: 4, apres: 'Frasco-ampola 125 mg com ampola de diluente de 2 mL', vias: 'IV', recon: '2 mL de diluente (125 mg em 2 mL)', conc: '62,5 mg/mL', dil: '', tempo: '', obs: 'No exemplo do e-book, a dose de 8 mg (0,128 mL) é rediluída acrescentando 3 mL ao frasco (125 mg em 5 mL = 25 mg/mL).', src: ['ebook'], calc: { amt: 125, unit: 'mg', ml: { EV: 2 }, exp: 0 } },
+
+  /* ---------- Insulina e anticoagulantes ---------- */
+  { id: 'insulina', nome: 'Insulina (NPH e regular)', cat: 5, apres: '100 UI/mL (100 UI = 1 mL)', vias: 'NPH: SC. Regular: IM · EV · SC', recon: 'Não precisa reconstituir', conc: '100 UI/mL', dil: '', tempo: '', obs: 'Não aspirar após introduzir a agulha na injeção de insulina e de heparina (e-book). Fazer rodízio dos locais.', src: ['ebook', 'incor'], avail: { amt: 100, unit: 'UI', ml: 1 } },
+  { id: 'enoxaparina', nome: 'Enoxaparina (Clexane®)', cat: 5, apres: 'Seringa pronta de 20, 40 ou 60 mg', vias: 'SC', recon: 'Não precisa reconstituir', conc: '', dil: 'Administração direta', tempo: 'Usar logo após abrir a seringa', obs: 'Aplicar no abdome, a pelo menos 5 cm do umbigo; não friccionar o local (e-book).', src: ['incor', 'ebook'] },
+
+  /* ---------- Sedativos e outros ---------- */
+  { id: 'diazepam', nome: 'Diazepam', cat: 6, apres: '5 mg/mL, ampola de 2 mL (10 mg)', vias: 'IV · IM', recon: 'Não precisa reconstituir', conc: '', dil: 'Não é recomendado diluir. Se necessário: SF 0,9%, SG 5%, Ringer ou Ringer lactato', tempo: 'Infusão lenta, 5 a 10 min', obs: '', src: ['incor'], avail: { amt: 5, unit: 'mg', ml: 1 } },
+  { id: 'glicose50', nome: 'Glicose 50%', cat: 6, apres: '50% (500 mg/mL)', vias: 'IV', recon: 'Não precisa reconstituir', conc: '500 mg/mL', dil: 'Sem diluição', tempo: 'Em bolus', obs: '', src: ['incor'], avail: { amt: 500, unit: 'mg', ml: 1 } },
+  { id: 'vitk', nome: 'Vitamina K', cat: 6, apres: '', vias: 'IV · IM · SC · VO', recon: '', conc: '', dil: 'IV: diluir em 100 mL de SF 0,9%. IM: não precisa diluir', tempo: 'IV: infundir em 30 min', obs: '', src: ['incor'] }
+];
+
+/* Hipodermóclise (SC): só linhas em que a tabela traz o nome do fármaco */
+var HYPO = [
+  ['Ampicilina', 'AD 10 mL', 'SF 0,9% 50 mL', '60 min (1 mL/min ou 62,5 mL/h)', '1 g/dia'],
+  ['Cefepima', 'AD 10 mL', 'SF 0,9% 100 mL', '60 min (1 mL/min ou 62,5 mL/h)', '1 g de 12/12 h ou 8/8 h'],
+  ['Ceftriaxona', 'AD 10 mL', 'SF 0,9% 100 mL', '40 a 60 min (1 mL/min ou 62,5 mL/h)', '1 g de 12/12 h'],
+  ['Ertapenem', 'AD 10 mL', 'SF 0,9% 50 mL', '30 a 60 min (1 mL/min ou 62,5 mL/h)', '1 g/dia'],
+  ['Meropenem', '', 'SF 0,9% 100 mL', '40 a 60 min (1 mL/min ou 62,5 mL/h)', '500 mg a 1 g de 8/8 h; estável 3 h em temperatura ambiente'],
+  ['Piperacilina + tazobactam', '', 'SF 0,9% 100 mL', '30 min a 3 h', '6,75 a 13,5 g/dia'],
+  ['Ondansetrona', '', 'SF 0,9% 50 mL', '50 a 60 min (1 mL/min ou 62,5 mL/h)', '8 a 32 mg/dia'],
+  ['Dipirona', '', 'SF 0,9% 20 mL', '20 min (1 mL/min)', '1 a 2 g até 6/6 h; via exclusiva'],
+  ['Omeprazol', '', 'SF 0,9% 100 mL', '4 h', '40 mg/dia'],
+  ['Esomeprazol', '', 'SF 0,9% 50 mL', '1 h', '40 mg/dia'],
+  ['Fenitoína', '', 'SF 0,9% 100 mL', '40 min; usar filtro', '100 mg de 8/8 h; pode causar dor e irritação local; via exclusiva'],
+  ['Fenobarbital', '', 'SF 0,9% 100 mL', '60 min', '100 a 600 mg/dia; pode causar dor e irritação local; via exclusiva'],
+  ['Haloperidol', '', 'SF 0,9% ou AD 5 mL', '', '0,5 a 30 mg/dia; concentração máx 2 mg/mL; se a solução for 1 mg/mL ou mais, usar AD'],
+  ['Diclofenaco', '', 'SF 0,9% 30 mL', '', '75 a 150 mg/dia; via exclusiva'],
+  ['Prometazina', '', 'SF 0,9%, mínimo 20 mL', '', '12,5 a 25 mg/dia'],
+  ['Cloreto de potássio 19,1%', '', 'SF 0,9% ou SG 5%, acima de 100 mL', 'Máx 62,5 mL/h', 'Até 40 mEq/L; 10 a 15 mL/dia'],
+  ['Cloreto de sódio 20%', '', 'SF 0,9% ou SG 5%, acima de 100 mL', '62,5 mL/h; lento, para evitar extravasamento', '10 a 20 mL/dia'],
+  ['Soro fisiológico 0,9%', '', '', '24 h (62,5 mL/h)', '1.500 mL por sítio'],
+  ['Soro glicosado 5%', '', '', '24 h (62,5 mL/h)', '1.000 mL por sítio']
+];
+
+/* Itens do checklist: extraídos das técnicas descritas no e-book (passos e justificativas) */
+var CHECK = [
+  { t: 'Antes do preparo', items: [
+    'Higienizar as mãos (sabão antisséptico ou solução alcoólica 70%)',
+    'Desinfetar a bandeja com álcool 70% e reunir todo o material',
+    'Ler a prescrição: medicamento, dose, via, horário, validade e compatibilidade',
+    'Comparar nome e dose do rótulo com a prescrição e checar a validade (vencido volta para a farmácia)',
+    'Verificar histórico de alergia ou reação ao princípio ativo',
+    'Fazer a checagem com mais de um profissional, quando o medicamento exigir',
+    'Preparar a medicação de cada paciente individualmente'
+  ] },
+  { t: 'Antes de administrar', items: [
+    'Identificar o paciente com três identificadores (nome, data de nascimento e nome da mãe) e comparar com pulseira ou leito e com a prescrição',
+    'Explicar o procedimento ao paciente ou acompanhante: finalidade, ação e efeitos colaterais',
+    'Higienizar as mãos e calçar luvas de procedimento',
+    'Conferir de novo o nome do paciente e do medicamento na prescrição'
+  ] },
+  { t: 'Depois', items: [
+    'Descartar seringa e agulha na caixa de perfurocortantes e as luvas no lixo infectante',
+    'Higienizar as mãos',
+    'Checar o horário na prescrição e anotar no prontuário'
+  ] }
+];
+var REGISTRAR = ['Data e horário da administração', 'Nome e dose do medicamento', 'Via de administração e, quando houver, o local (rodízio)', 'Resposta do paciente à medicação', 'Intercorrências', 'Assinatura e carimbo (Coren) do profissional'];
+
+/* ===== Canetas GLP-1 / GIP: dados das bulas (EMA/EMC e bula brasileira do Saxenda) ===== */
+var PEN_SRC = {
+  wegovy: { t: 'Wegovy, informações do medicamento (EMA)', u: 'https://www.ema.europa.eu/pt/documents/product-information/wegovy-epar-product-information_pt.pdf' },
+  ozempic: { t: 'Ozempic, informações do medicamento (EMA)', u: 'https://www.ema.europa.eu/pt/documents/product-information/ozempic-epar-product-information_pt.pdf' },
+  mounjaro: { t: 'Mounjaro, resumo das características (EMC)', u: 'https://www.medicines.org.uk/emc/product/15481' },
+  mounjaroBR: { t: 'Concentrações aprovadas no Brasil, Resolução-RE 1.041 (NSC Total)', u: 'https://www.nsctotal.com.br/noticias/mounjaro-multidose-veja-as-6-dosagens-aprovadas-para-venda-no-pais' },
+  saxenda: { t: 'Saxenda, bula do paciente (CCDS 2014)', u: 'https://www.4bio.com.br/wp-content/uploads/2019/06/Saxenda_988.pdf' },
+  receita: { t: 'Retenção de receita, decisão da Anvisa de 16/04/2025 (Futuro da Saúde)', u: 'https://futurodasaude.com.br/?p=35440' },
+  manip: { t: 'Anvisa reforça regras de importação e manipulação, abril de 2026 (Itatiaia)', u: 'https://www.itatiaia.com.br/saude/canetas-emagrecedoras-o-que-muda-com-endurecimento-de-regras-para-importacao-e-manipulacao/' }
+};
+var PENS = {
+  wegovy: {
+    nome: 'Wegovy® FlexTouch (semaglutida)', ativo: 'semaglutida', interval: 7, freq: 'uma vez por semana', src: ['wegovy'],
+    pens: [
+      { id: 'w025', label: 'Caneta de 0,25 mg (1 mg em 1,5 mL)', total: 1, vol: 1.5, dial: [0.25] },
+      { id: 'w05', label: 'Caneta de 0,5 mg (2 mg em 1,5 mL)', total: 2, vol: 1.5, dial: [0.5] },
+      { id: 'w1', label: 'Caneta de 1 mg (4 mg em 3 mL)', total: 4, vol: 3, dial: [1] },
+      { id: 'w17', label: 'Caneta de 1,7 mg (6,8 mg em 3 mL)', total: 6.8, vol: 3, dial: [1.7] },
+      { id: 'w24', label: 'Caneta de 2,4 mg (9,6 mg em 3 mL)', total: 9.6, vol: 3, dial: [2.4] }
+    ],
+    sched: [['Semanas 1 a 4', '0,25 mg', 0.25], ['Semanas 5 a 8', '0,5 mg', 0.5], ['Semanas 9 a 12', '1 mg', 1], ['Semanas 13 a 16', '1,7 mg', 1.7], ['Manutenção', '2,4 mg', 2.4]],
+    schedNote: 'Esquema da bula europeia. A dose de manutenção é de 2,4 mg por semana.',
+    missed: 'Dose esquecida: aplicar o quanto antes, em até 5 dias. Passados mais de 5 dias, pular a dose e aplicar a próxima no dia previsto.'
+  },
+  ozempic: {
+    nome: 'Ozempic® (semaglutida)', ativo: 'semaglutida', interval: 7, freq: 'uma vez por semana', src: ['ozempic'],
+    pens: [
+      { id: 'o05', label: 'Caneta de 0,25 mg ou 0,5 mg (2 mg em 1,5 mL)', total: 2, vol: 1.5, dial: [0.25, 0.5] },
+      { id: 'o1', label: 'Caneta de 1 mg (4 mg em 3 mL)', total: 4, vol: 3, dial: [1] },
+      { id: 'o2', label: 'Caneta de 2 mg (8 mg em 3 mL)', total: 8, vol: 3, dial: [2] }
+    ],
+    sched: [['Primeiras 4 semanas', '0,25 mg', 0.25], ['Depois', '0,5 mg', 0.5], ['Se necessário, após 4 semanas ou mais em 0,5 mg', '1 mg', 1], ['Se necessário, após 4 semanas ou mais em 1 mg', '2 mg', 2]],
+    schedNote: 'Esquema da bula europeia. A dose de 0,25 mg não é de manutenção, e não se usa mais de 2 mg por semana.',
+    missed: 'Dose esquecida: aplicar o quanto antes, em até 5 dias. Passados mais de 5 dias, pular a dose e aplicar a próxima no dia previsto.'
+  },
+  mounjaro: {
+    nome: 'Mounjaro® KwikPen (tirzepatida)', ativo: 'tirzepatida', interval: 7, freq: 'uma vez por semana', src: ['mounjaro', 'mounjaroBR'],
+    pens: [2.5, 5, 7.5, 10, 12.5, 15].map(function (d) { return { id: 'm' + d, label: 'Caneta de ' + String(d).replace('.', ',') + ' mg por dose (4 doses)', total: d * 4, vol: 2.4, dial: [d], fixed: true, perDoseMl: 0.6 }; }),
+    sched: [['Início, por 4 semanas', '2,5 mg', 2.5], ['Depois', '5 mg', 5], ['Aumentos, se necessário (a cada 4 semanas ou mais)', '7,5 / 10 / 12,5 mg', 7.5], ['Doses de manutenção recomendadas', '5, 10 ou 15 mg', 10], ['Dose máxima', '15 mg', 15]],
+    schedNote: 'Esquema da bula (EMC). Cada caneta tem 4 doses fixas de 0,6 mL: não há seletor, aplica-se a dose inteira.',
+    missed: 'Dose esquecida: aplicar o quanto antes, em até 4 dias. Passados mais de 4 dias, pular a dose e aplicar a próxima no dia previsto.'
+  },
+  saxenda: {
+    nome: 'Saxenda® (liraglutida)', ativo: 'liraglutida', interval: 1, freq: 'uma vez por dia', src: ['saxenda'],
+    pens: [{ id: 's18', label: 'Caneta de 18 mg (6 mg/mL em 3 mL)', total: 18, vol: 3, dial: [0.6, 1.2, 1.8, 2.4, 3] }],
+    sched: [['Semana 1', '0,6 mg', 0.6], ['Semana 2', '1,2 mg', 1.2], ['Semana 3', '1,8 mg', 1.8], ['Semana 4', '2,4 mg', 2.4], ['Semana 5 em diante (manutenção e máxima)', '3,0 mg', 3]],
+    schedNote: 'Esquema da bula brasileira. A dose é diária.',
+    missed: 'Dose esquecida: aplicar assim que lembrar. Se passaram mais de 12 horas do horário previsto, não aplicar e seguir no dia seguinte. Nunca dobrar a dose.'
+  }
+};
+/* ===== utilidades ===== */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+var NF = {};
+function fmt(n, d) {
+  if (d === undefined) d = 2;
+  if (typeof n !== 'number' || !isFinite(n)) return '-';
+  if (!NF[d]) NF[d] = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: d });
+  var v = Math.abs(n) < Math.pow(10, -d) / 2 ? 0 : n;
+  return NF[d].format(v);
+}
+function parseNum(s) {
+  s = String(s == null ? '' : s).trim().replace(/\s/g, '');
+  if (!s) return NaN;
+  if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  var n = Number(s);
+  return isFinite(n) ? n : NaN;
+}
+function val(id) { return parseNum($('#' + id).value); }
+function setv(id, v) { var el = $('#' + id); if (el) el.value = (v === null || v === undefined) ? '' : String(v).replace('.', ','); }
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(msg) {
+  var t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('on'); }, 2200);
+}
+function segGet(id) { var b = $('#' + id + ' [aria-pressed="true"]'); return b ? b.getAttribute('data-v') : null; }
+function segSet(id, v) { $$('#' + id + ' button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-v') === String(v) ? 'true' : 'false'); }); }
+function norm(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function fmtMin(min) {
+  if (!isFinite(min)) return '-';
+  var t = Math.round(min), h = Math.floor(t / 60), m = t % 60;
+  if (h && m) return h + ' h ' + m + ' min';
+  if (h) return h + ' h';
+  return m + ' min';
+}
+
+/* ===== painel de resultado ===== */
+var LAST = {}, HOOKS = {}, hookN = 0;
+function hook(fn) { var k = 'h' + (++hookN); HOOKS[k] = fn; return k; }
+function alertHTML(a) {
+  var icon = { info: 'i', warn: '!', bad: '!', ok: '✓' }[a.t] || 'i';
+  var btn = a.btn ? '<div><button class="btn sec small" type="button" data-hook="' + hook(a.btn.fn) + '">' + esc(a.btn.label) + '</button></div>' : '';
+  return '<div class="alert ' + a.t + '"><i><b>' + icon + '</b></i><div>' + a.msg + btn + '</div></div>';
+}
+function paint(id, o) {
+  var el = $('#r-' + id);
+  if (o.empty) {
+    el.innerHTML = '<div class="r-label">Resultado</div><div class="empty">' + o.empty + '</div>';
+    LAST[id] = null; return;
+  }
+  var h = '<div class="r-label">' + esc(o.label || 'Resultado') + '</div>';
+  if (o.big !== undefined) h += '<div class="big"><span>' + o.big + '</span>' + (o.unit ? '<small>' + o.unit + '</small>' : '') + '</div>';
+  if (o.sub) h += '<div class="r-sub">' + o.sub + '</div>';
+  if (o.kv && o.kv.length) {
+    h += '<div class="kv">' + o.kv.map(function (k) {
+      return '<div' + (k.on ? ' class="on"' : '') + '><small>' + esc(k.k) + '</small><b>' + k.v + '</b>' + (k.s ? '<span>' + k.s + '</span>' : '') + '</div>';
+    }).join('') + '</div>';
+  }
+  if (o.syr) h += o.syr;
+  if (o.alerts && o.alerts.length) h += '<div class="alerts">' + o.alerts.map(alertHTML).join('') + '</div>';
+  if (o.steps) h += '<details class="steps"' + (o.open ? ' open' : '') + '><summary>Passo a passo</summary><pre>' + esc(o.steps) + '</pre></details>';
+  if (o.text) {
+    LAST[id] = o.text;
+    h += '<div class="actions"><button class="btn small" type="button" data-act="copy" data-id="' + id + '">Copiar resultado</button><button class="btn sec small" type="button" data-act="save" data-id="' + id + '">Salvar no histórico</button></div>';
+  } else LAST[id] = null;
+  el.innerHTML = h;
+}
+
+/* ===== seringa (SVG esquemático) ===== */
+function syringeSVG(o) {
+  var cap = o.cap, grad = o.grad, num = o.num, value = Math.max(0, Math.min(o.value, cap));
+  var x0 = 70, x1 = 540, L = x1 - x0, y0 = 32, y1 = 62;
+  var n = Math.round(cap / grad), s = '';
+  var xv = x0 + L * value / cap;
+  s += '<line class="needle" x1="8" y1="47" x2="' + (x0 - 12) + '" y2="47"/>';
+  s += '<rect class="flange" x="' + (x0 - 14) + '" y="40" width="14" height="14" rx="2"/>';
+  s += '<rect class="liq" x="' + x0 + '" y="' + (y0 + 1) + '" width="' + Math.max(0, xv - x0) + '" height="' + (y1 - y0 - 2) + '"/>';
+  s += '<rect class="barrel" x="' + x0 + '" y="' + y0 + '" width="' + L + '" height="' + (y1 - y0) + '" rx="3" fill-opacity="0"/>';
+  for (var i = 0; i <= n; i++) {
+    var x = x0 + L * i / n, v = i * grad;
+    var major = Math.abs(v / num - Math.round(v / num)) < 1e-6;
+    s += '<line class="tick' + (major ? ' maj' : '') + '" x1="' + x.toFixed(1) + '" y1="' + y1 + '" x2="' + x.toFixed(1) + '" y2="' + (y1 - (major ? 13 : 7)) + '"/>';
+    if (major) s += '<text class="lab" x="' + x.toFixed(1) + '" y="' + (y1 + 18) + '">' + fmt(v, 2) + '</text>';
+  }
+  s += '<line class="rod" x1="' + xv.toFixed(1) + '" y1="47" x2="' + (x1 + 44) + '" y2="47"/>';
+  s += '<rect class="flange" x="' + x1 + '" y="26" width="8" height="42" rx="2"/>';
+  s += '<rect class="thumb" x="' + (x1 + 44) + '" y="34" width="14" height="26" rx="3"/>';
+  s += '<line class="mark" x1="' + xv.toFixed(1) + '" y1="' + (y0 - 8) + '" x2="' + xv.toFixed(1) + '" y2="' + (y1 + 2) + '"/>';
+  var lx = Math.max(40, Math.min(xv, 580));
+  s += '<text class="marklab" x="' + lx.toFixed(1) + '" y="' + (y0 - 13) + '">' + esc(o.label) + '</text>';
+  return '<div><svg class="syr" viewBox="0 0 620 100" role="img" aria-label="' + esc(o.aria || ('Seringa de ' + fmt(cap, 2) + ' ' + (o.unit || 'mL') + ' com marcação em ' + o.label)) + '">' + s + '</svg>' +
+    '<div class="syr-cap"><span>' + esc(o.cap1 || '') + '</span><span>' + esc(o.cap2 || 'Ilustração esquemática: confira a graduação da seringa em mãos.') + '</span></div></div>';
+}
+
+/* Avalia o volume numa seringa e devolve { syr(html), alerts[], line } */
+function syringeBlock(vol, cap, opts) {
+  opts = opts || {};
+  var f = Calc.pickSyringe(vol, cap || null);
+  var alerts = [];
+  if (!f) return { syr: '', alerts: [], f: null };
+  if (f.tooBig) {
+    var capTxt = cap ? 'A seringa de ' + cap + ' mL não comporta ' + fmt(vol, 3) + ' mL.' : fmt(vol, 3) + ' mL é mais que a seringa de 20 mL.';
+    alerts.push({ t: 'bad', msg: capTxt + ' Use uma seringa maior ou divida em mais de uma aspiração, conforme o protocolo.' });
+    return { syr: '', alerts: alerts, f: f };
+  }
+  var s = f.syringe;
+  var cap1 = 'Seringa de ' + s.cap + ' mL, menor graduação ' + fmt(s.grad, 2) + ' mL';
+  var svg = syringeSVG({ cap: s.cap, grad: s.grad, num: s.num, value: vol, label: fmt(vol, 3) + ' mL', cap1: cap1 });
+  if (f.level === 'ok') {
+    alerts.push({ t: 'ok', msg: f.exact ? 'Seringa de <b>' + s.cap + ' mL</b>: o volume cai exatamente numa marca (graduação de ' + fmt(s.grad, 2) + ' mL).' : 'Seringa de <b>' + s.cap + ' mL</b>: o volume fica a menos de 2% de uma marca.' });
+  } else if (f.level === 'warn') {
+    alerts.push({ t: 'warn', msg: 'Na seringa de <b>' + s.cap + ' mL</b> o volume fica entre duas marcas (graduação de ' + fmt(s.grad, 2) + ' mL). Medir ' + fmt(f.rounded, 3) + ' mL alteraria a dose em ' + fmt(f.err * 100, 1) + '%.' });
+  } else {
+    var a = { t: 'bad', msg: 'Volume difícil de aspirar com precisão: a menor seringa disponível erra a dose em cerca de ' + fmt(f.err * 100, 0) + '% (graduação de ' + fmt(s.grad, 2) + ' mL). Considere rediluir o medicamento.' };
+    if (opts.redil) a.btn = { label: 'Calcular rediluição', fn: opts.redil };
+    alerts.push(a);
+  }
+  return { syr: svg, alerts: alerts, f: f };
+}
+
+/* ===== navegação, tema, histórico ===== */
+var MODS = ['canetas', 'gotejamento', 'dose', 'insulina', 'bomba', 'porcentagem', 'conversor', 'reconstituicao', 'rediluicao', 'medicamentos', 'vias', 'checklist', 'historico'];
+var UPDATERS = {};
+function show(mod, noScroll) {
+  if (MODS.indexOf(mod) < 0) mod = 'gotejamento';
+  MODS.forEach(function (m) { $('#m-' + m).hidden = (m !== mod); });
+  $$('#nav button').forEach(function (b) {
+    if (b.getAttribute('data-mod') === mod) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  try { history.replaceState(null, '', '#' + mod); } catch (e) { /* ignora */ }
+  if (UPDATERS[mod]) UPDATERS[mod]();
+  if (!noScroll) window.scrollTo(0, 0);
+}
+
+var HIST = [];
+function histLoad() { try { var r = localStorage.getItem('dosia-calc-hist'); HIST = r ? JSON.parse(r) : []; if (!Array.isArray(HIST)) HIST = []; } catch (e) { HIST = []; } }
+function histSave() { try { localStorage.setItem('dosia-calc-hist', JSON.stringify(HIST.slice(0, 50))); } catch (e) { /* ignora */ } }
+function histRender() {
+  var b = $('#histBadge');
+  b.textContent = HIST.length; b.hidden = HIST.length === 0;
+  var box = $('#hist');
+  if (!HIST.length) { box.innerHTML = '<div class="empty">Nada salvo ainda. Use "Salvar no histórico" em qualquer resultado.</div>'; return; }
+  box.innerHTML = HIST.map(function (h, i) {
+    return '<div class="hist-item"><div><small>' + esc(h.when) + ' · ' + esc(h.mod) + '</small><pre>' + esc(h.text) + '</pre></div><div class="actions"><button class="btn sec small" type="button" data-hcopy="' + i + '">Copiar</button><button class="x" type="button" data-hdel="' + i + '" aria-label="Apagar">×</button></div></div>';
+  }).join('');
+}
+function copyText(t) {
+  var done = function () { toast('Resultado copiado'); };
+  var fallback = function () {
+    try {
+      var ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); var ok = document.execCommand('copy'); document.body.removeChild(ta);
+      if (ok) done(); else toast('Não foi possível copiar. Selecione o texto do passo a passo.');
+    } catch (e) { toast('Não foi possível copiar. Selecione o texto do passo a passo.'); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallback); else fallback();
+}
+var MODNAME = { canetas: 'Canetas emagrecedoras', gotejamento: 'Gotejamento', dose: 'Dose', insulina: 'Insulina', bomba: 'Bomba de infusão', porcentagem: 'Porcentagem', conversor: 'Conversor', reconstituicao: 'Reconstituição', rediluicao: 'Rediluição' };
+
+/* ===== GOTEJAMENTO ===== */
+var G = { items: [], eq: 'macro' };
+function gRenderItems() {
+  $('#g-items').innerHTML = G.items.map(function (it, i) {
+    return '<div class="item-row"><label class="inp"><input class="txt" data-gi="' + i + '" data-k="name" placeholder="Soro ou medicamento" aria-label="Nome do item ' + (i + 1) + '" value="' + esc(it.name) + '"></label>' +
+      '<label class="inp"><input data-gi="' + i + '" data-k="vol" inputmode="decimal" autocomplete="off" aria-label="Volume do item ' + (i + 1) + '" value="' + esc(it.vol) + '"><span class="suf">mL</span></label>' +
+      '<button class="x" type="button" data-grm="' + i + '" aria-label="Remover item ' + (i + 1) + '">×</button></div>';
+  }).join('');
+}
+function gUpdate() {
+  var vols = G.items.map(function (it) { var v = parseNum(it.vol); return isFinite(v) && v > 0 ? v : 0; });
+  var total = vols.reduce(function (a, b) { return a + b; }, 0);
+  $('#g-total').textContent = fmt(total, 2) + ' mL';
+  var t = val('g-time'), unit = $('#g-timeu').value;
+  var tmin = unit === 'h' ? t * 60 : t;
+  if (!(total > 0) || !(tmin > 0)) { paint('gotejamento', { empty: 'Informe o volume e o tempo de infusão para ver o gotejamento.' }); return; }
+  var d = Calc.drip(total, tmin);
+  var eq = G.eq;
+  var big, unitTxt;
+  if (eq === 'macro') { big = fmt(Math.round(d.macro), 0); unitTxt = 'gotas/min'; }
+  else if (eq === 'micro') { big = fmt(Math.round(d.micro), 0); unitTxt = 'microgotas/min'; }
+  else { big = fmt(d.mlh, 1); unitTxt = 'mL/h'; }
+  var perDrop = eq === 'macro' ? 60 / d.macro : (eq === 'micro' ? 60 / d.micro : null);
+  var sub = perDrop ? 'Uma ' + (eq === 'macro' ? 'gota' : 'microgota') + ' a cada <b>' + fmt(perDrop, 1) + ' s</b>.' : 'Programe a vazão na bomba de infusão.';
+  var th = tmin / 60;
+  var steps = '';
+  var named = G.items.filter(function (it, i) { return vols[i] > 0; });
+  if (named.length > 1) steps += 'Volume total = ' + vols.filter(function (v) { return v > 0; }).map(function (v) { return fmt(v, 2); }).join(' + ') + ' = ' + fmt(total, 2) + ' mL\n';
+  else steps += 'Volume = ' + fmt(total, 2) + ' mL\n';
+  steps += 'Tempo = ' + (unit === 'h' ? fmt(t, 2) + ' h (' + fmt(tmin, 1) + ' min)' : fmt(t, 1) + ' min') + '\n\n';
+  if (d.overHour) {
+    steps += 'Tempo acima de 60 min:\n';
+    steps += 'Gotas/min = V ÷ (T[h] × 3)\n         = ' + fmt(total, 2) + ' ÷ (' + fmt(th, 3) + ' × 3) = ' + fmt(d.macro, 2) + ' ≈ ' + fmt(Math.round(d.macro), 0) + '\n';
+    steps += 'Microgotas/min = V ÷ T[h]\n         = ' + fmt(total, 2) + ' ÷ ' + fmt(th, 3) + ' = ' + fmt(d.micro, 2) + ' ≈ ' + fmt(Math.round(d.micro), 0) + '\n';
+  } else {
+    steps += 'Tempo de 60 min ou menos:\n';
+    steps += 'Gotas/min = V × 20 ÷ T[min]\n         = ' + fmt(total, 2) + ' × 20 ÷ ' + fmt(tmin, 1) + ' = ' + fmt(d.macro, 2) + ' ≈ ' + fmt(Math.round(d.macro), 0) + '\n';
+    steps += 'Microgotas/min = V × 60 ÷ T[min]\n         = ' + fmt(total, 2) + ' × 60 ÷ ' + fmt(tmin, 1) + ' = ' + fmt(d.micro, 2) + ' ≈ ' + fmt(Math.round(d.micro), 0) + '\n';
+  }
+  steps += 'mL/h = V ÷ T[h] = ' + fmt(total, 2) + ' ÷ ' + fmt(th, 3) + ' = ' + fmt(d.mlh, 2);
+  var kv = [
+    { k: 'Macrogotas', v: fmt(Math.round(d.macro), 0), s: 'gotas/min', on: eq === 'macro' },
+    { k: 'Microgotas', v: fmt(Math.round(d.micro), 0), s: 'microgotas/min', on: eq === 'micro' },
+    { k: 'Vazão', v: fmt(d.mlh, 1), s: 'mL/h', on: eq === 'bomba' }
+  ];
+  var start = $('#g-start').value;
+  if (/^\d{2}:\d{2}$/.test(start)) {
+    var parts = start.split(':'), m0 = Number(parts[0]) * 60 + Number(parts[1]);
+    var m1 = m0 + Math.round(tmin), days = Math.floor(m1 / 1440), mm = ((m1 % 1440) + 1440) % 1440;
+    var hh = String(Math.floor(mm / 60)).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0');
+    kv.push({ k: 'Término previsto', v: hh, s: days > 0 ? 'no dia seguinte' : 'mesmo dia' });
+  }
+  var alerts = [];
+  if (named.length > 1) alerts.push({ t: 'info', msg: 'Volume somado de ' + named.length + ' itens prescritos para o mesmo período. Confirme na prescrição se eles correm juntos.' });
+  var names = G.items.filter(function (it, i) { return vols[i] > 0 && it.name; }).map(function (it) { return it.name; });
+  var text = 'Gotejamento' + (names.length ? ' (' + names.join(' + ') + ')' : '') + ': ' + fmt(total, 2) + ' mL em ' + (unit === 'h' ? fmt(t, 2) + ' h' : fmt(t, 1) + ' min') + ' → ' + fmt(Math.round(d.macro), 0) + ' gotas/min (macro) · ' + fmt(Math.round(d.micro), 0) + ' microgotas/min · ' + fmt(d.mlh, 1) + ' mL/h';
+  paint('gotejamento', { big: big, unit: unitTxt, sub: sub, kv: kv, alerts: alerts, steps: steps, text: text });
+}
+function gInverse() {
+  var v = val('gi-vol'), dr = val('gi-drops'), kind = $('#gi-kind').value;
+  var m = Calc.dripTime(v, dr, kind);
+  $('#gi-out').textContent = m ? fmtMin(m) : '-';
+}
+function gLoad(ex) {
+  if (ex === 'g1') {
+    G.items = [{ name: 'SF 0,9%', vol: '1000' }, { name: 'NaCl 20%', vol: '20' }, { name: 'KCl 19,1%', vol: '10' }, { name: 'Albumina', vol: '50' }];
+    setv('g-time', '8'); $('#g-timeu').value = 'h';
+  } else {
+    G.items = [{ name: 'Vancomicina + SF 0,9%', vol: '106' }];
+    setv('g-time', '40'); $('#g-timeu').value = 'min';
+  }
+  gRenderItems(); gUpdate();
+}
+
+/* ===== DOSE ===== */
+function dRoute() { return $('#d-route').value; }
+function dUpdate() {
+  var perKg = $('#d-perkg').checked;
+  $('#d-wrap').hidden = !perKg;
+  var form = segGet('d-form');
+  $('#d-liqrow').hidden = false;
+  $('#d-comphint').hidden = form !== 'comp';
+  var dose = val('d-dose'), du = $('#d-doseu').value, w = val('d-weight'), amt = val('d-amt'), au = $('#d-amtu').value, vol = val('d-vol');
+  var route = dRoute(), syrCap = Number($('#d-syr').value) || null;
+  if (form === 'comp') { $('#d-liqrow').children[1].hidden = true; } else { $('#d-liqrow').children[1].hidden = false; }
+  var need = [dose, amt]; if (form === 'liq') need.push(vol); if (perKg) need.push(w);
+  if (need.some(function (x) { return !(x > 0); })) { paint('dose', { empty: 'Preencha a dose prescrita e a apresentação disponível.' }); return; }
+  if (!Calc.sameDim(du, au)) {
+    paint('dose', { alerts: [{ t: 'bad', msg: 'As unidades <b>' + esc(du) + '</b> e <b>' + esc(au) + '</b> não se convertem entre si. Confira a prescrição e o rótulo (por exemplo, mg e UI não são equivalentes).' }], label: 'Verifique as unidades' });
+    return;
+  }
+  var total = perKg ? dose * w : dose;
+  var steps = '';
+  if (perKg) steps += 'Dose total = ' + fmt(dose, 4) + ' ' + du + '/kg × ' + fmt(w, 2) + ' kg = ' + fmt(total, 4) + ' ' + du + '\n';
+  var dIn = Calc.convert(total, du, au);
+  if (du !== au) steps += 'Conversão: ' + fmt(total, 4) + ' ' + du + ' = ' + fmt(dIn, 6) + ' ' + au + '\n';
+  if (form === 'comp') {
+    var r = Calc.doseTablets({ dose: dose, doseUnit: du, perKg: perKg, weight: w, availAmount: amt, availUnit: au });
+    var n = r.tablets;
+    steps += 'Cada comprimido = ' + fmt(amt, 4) + ' ' + au + '\nNúmero de comprimidos = ' + fmt(dIn, 4) + ' ÷ ' + fmt(amt, 4) + ' = ' + fmt(n, 3);
+    var alerts = [];
+    var frac = n - Math.floor(n);
+    if (frac > 1e-6 && Math.abs(frac - 0.5) > 1e-6) alerts.push({ t: 'warn', msg: 'A dose não corresponde a um número inteiro nem à metade do comprimido. Reveja a prescrição e a apresentação com o prescritor ou a farmácia.' });
+    else if (frac > 1e-6) alerts.push({ t: 'info', msg: 'Dose fracionada: nas instituições de saúde, o recomendado é que a farmácia divida o comprimido e o entregue embalado e rotulado (e-book).' });
+    alerts.push({ t: 'info', msg: 'Em dificuldade de deglutição, o comprimido pode ser macerado, diluído em água e administrado com seringa para via oral. Antes, confirme que a forma farmacêutica permite.' });
+    paint('dose', { big: fmt(n, 2), unit: Math.abs(n - 1) < 1e-9 ? 'comprimido' : 'comprimidos', sub: 'para ' + fmt(total, 4) + ' ' + du + (perKg ? ' (dose por peso)' : '') + ', com ' + fmt(amt, 4) + ' ' + au + ' por comprimido.', alerts: alerts, steps: steps, text: 'Dose: ' + fmt(total, 4) + ' ' + du + ' = ' + fmt(n, 2) + ' comprimido(s) de ' + fmt(amt, 4) + ' ' + au });
+    return;
+  }
+  var res = Calc.doseVolume({ dose: dose, doseUnit: du, perKg: perKg, weight: w, availAmount: amt, availUnit: au, availVolume: vol });
+  var v = res.volume;
+  steps += 'Disponível:  ' + fmt(amt, 4) + ' ' + au + ' ----- ' + fmt(vol, 4) + ' mL\nPrescrito:   ' + fmt(dIn, 4) + ' ' + au + ' ----- X\nX = ' + fmt(dIn, 4) + ' × ' + fmt(vol, 4) + ' ÷ ' + fmt(amt, 4) + ' = ' + fmt(v, 4) + ' mL';
+  var redil = hook(function () {
+    setv('rd-dose', total); $('#rd-doseu').value = du; setv('rd-amt', amt); $('#rd-amtu').value = au; setv('rd-vol', vol); RD.auto = true;
+    show('rediluicao');
+  });
+  var alerts2 = [];
+  var capUse = syrCap;
+  if (!capUse && route === 'ID') capUse = 1;
+  var sb = syringeBlock(v, capUse, { redil: function () { HOOKS[redil](); } });
+  if (route === 'VO' && v < 10) alerts2.push({ t: 'info', msg: 'Via oral com menos de 10 mL: prepare na seringa para uso oral (e-book).' });
+  if (route === 'IM') {
+    if (v > 4) alerts2.push({ t: 'bad', msg: 'Acima de 4 mL por local na via IM (limite do e-book para vasto lateral, dorso e ventroglúteo). Divida em mais de um local, conforme o protocolo.' });
+    else if (v > 1) alerts2.push({ t: 'warn', msg: 'Acima de 1 mL não use o deltoide (limite de 1 mL). Locais com até 4 mL: vasto lateral da coxa, dorsoglúteo e ventroglúteo.' });
+    else alerts2.push({ t: 'info', msg: 'IM: até 1 mL no deltoide e até 4 mL em vasto lateral, dorsoglúteo e ventroglúteo. Ângulo de 90°.' });
+  }
+  if (route === 'ID') {
+    if (v > 0.1) alerts2.push({ t: 'bad', msg: 'Pela via intradérmica injetam-se no máximo 0,1 mL de substância reagente (e-book).' });
+    else alerts2.push({ t: 'info', msg: 'ID: seringa de 1 mL, agulha de 13 mm (0,38 a 0,45 mm), ângulo de 5° a 15°, formando pápula. Não aspirar.' });
+  }
+  if (route === 'SC') alerts2.push({ t: 'info', msg: 'SC: seringa de 1 a 3 mL e agulha de 4, 5 ou 6 mm. Faça rodízio dos locais.' });
+  var all = sb.alerts.concat(alerts2);
+  var text = 'Dose: ' + fmt(total, 4) + ' ' + du + (perKg ? ' (dose por peso)' : '') + ' com disponível ' + fmt(amt, 4) + ' ' + au + '/' + fmt(vol, 4) + ' mL → aspirar ' + fmt(v, 3) + ' mL';
+  paint('dose', { big: fmt(v, 3), unit: 'mL', sub: 'para ' + fmt(total, 4) + ' ' + du + (perKg ? ' (dose por peso)' : '') + '.', syr: sb.syr, alerts: all, steps: steps, text: text });
+}
+function dLoad(ex) {
+  if (ex === 'd1') { setv('d-dose', '4'); $('#d-doseu').value = 'mg'; setv('d-amt', '10'); $('#d-amtu').value = 'mg'; setv('d-vol', '1'); $('#d-route').value = 'EV'; }
+  else { setv('d-dose', '650000'); $('#d-doseu').value = 'UI'; setv('d-amt', '5000000'); $('#d-amtu').value = 'UI'; setv('d-vol', '10'); $('#d-route').value = 'EV'; }
+  $('#d-perkg').checked = false; $('#d-preset').value = ''; segSet('d-form', 'liq'); $('#d-syr').value = '';
+  dUpdate();
+}
+
+/* ===== INSULINA ===== */
+function iUpdate() {
+  var dose = val('i-dose'), conc = val('i-conc'), mode = segGet('i-syr');
+  if (!(dose > 0) || !(conc > 0)) { paint('insulina', { empty: 'Informe a dose em UI e a concentração do frasco.' }); return; }
+  var vol = dose / conc;
+  var steps = fmt(conc, 2) + ' UI ----- 1 mL\n' + fmt(dose, 2) + ' UI ----- X\nX = ' + fmt(dose, 2) + ' × 1 ÷ ' + fmt(conc, 2) + ' = ' + fmt(vol, 3) + ' mL';
+  var alerts = [], syr = '', big, unit, sub;
+  if (mode === 'ins') {
+    var caps = [30, 50, 100], cap = null;
+    for (var i = 0; i < caps.length; i++) { if (dose <= caps[i]) { cap = caps[i]; break; } }
+    big = fmt(dose, 2); unit = 'UI'; sub = 'Equivale a <b>' + fmt(vol, 3) + ' mL</b> com insulina a ' + fmt(conc, 0) + ' UI/mL.';
+    if (!cap) alerts.push({ t: 'bad', msg: 'Dose maior que a capacidade da seringa de insulina (100 UI). Confirme a prescrição.' });
+    else {
+      syr = syringeSVG({ cap: cap, grad: cap === 100 ? 2 : 1, num: cap === 100 ? 10 : 5, value: dose, unit: 'UI', label: fmt(dose, 2) + ' UI', cap1: 'Seringa de insulina de ' + cap + ' UI (' + fmt(cap / 100, 1) + ' mL)', aria: 'Seringa de insulina com marcação em ' + fmt(dose, 2) + ' UI' });
+    }
+    if (conc !== 100) alerts.push({ t: 'warn', msg: 'Seringas de insulina são graduadas para 100 UI/mL. Com ' + fmt(conc, 0) + ' UI/mL, a marca em UI não vale: meça em mL com seringa de 1 mL ou de 3 mL.' });
+  } else {
+    var sb = syringeBlock(vol, Number(mode));
+    syr = sb.syr; alerts = alerts.concat(sb.alerts);
+    big = fmt(vol, 3); unit = 'mL'; sub = 'Equivale a <b>' + fmt(dose, 2) + ' UI</b> com insulina a ' + fmt(conc, 0) + ' UI/mL.';
+  }
+  alerts.push({ t: 'info', msg: 'Insulina é medicamento potencialmente perigoso. Confira dose e tipo (NPH ou regular) com outro profissional, conforme o protocolo da instituição.' });
+  alerts.push({ t: 'info', msg: 'Não aspire depois de introduzir a agulha na injeção de insulina e de heparina, e faça rodízio dos locais (e-book). NPH: somente via SC. Regular: IM, EV ou SC (InCor).' });
+  paint('insulina', { big: big, unit: unit, sub: sub, syr: syr, alerts: alerts, steps: steps, text: 'Insulina: ' + fmt(dose, 2) + ' UI (' + fmt(conc, 0) + ' UI/mL) = ' + fmt(vol, 3) + ' mL' });
+}
+
+/* ===== BOMBA ===== */
+var PUMP_LABEL = { 'mcg/kg/min': 'mcg/kg/min', 'mcg/kg/h': 'mcg/kg/h', 'mg/kg/h': 'mg/kg/h', 'mcg/min': 'mcg/min', 'mcg/h': 'mcg/h', 'mg/min': 'mg/min', 'mg/h': 'mg/h', 'UI/h': 'UI/h', 'UI/kg/h': 'UI/kg/h' };
+function pUpdate() {
+  var mode = segGet('p-mode'), unit = $('#p-unit').value, u = Calc.PUMP_UNITS[unit];
+  $('#p-dosewrap').hidden = mode !== 'rate'; $('#p-mlhwrap').hidden = mode !== 'dose';
+  $('#p-wwrap').hidden = !u.kg;
+  var amt = val('p-amt'), au = $('#p-amtu').value, vol = val('p-vol'), w = val('p-weight');
+  var need = [amt, vol]; if (u.kg) need.push(w); need.push(mode === 'rate' ? val('p-dose') : val('p-mlh'));
+  if (need.some(function (x) { return !(x > 0); })) { paint('bomba', { empty: 'Preencha a solução, o peso (quando a dose for por kg) e a dose ou a vazão.' }); return; }
+  var baseU = Calc.UNITS[au].dim === 'm' ? 'mcg' : 'UI';
+  var conc = Calc.pumpConc(amt, au, vol);
+  var steps = 'Concentração = ' + fmt(amt, 4) + ' ' + au + ' ÷ ' + fmt(vol, 2) + ' mL' + (au !== baseU && baseU === 'mcg' ? ' = ' + fmt(Calc.convert(amt, au, 'mcg'), 2) + ' mcg ÷ ' + fmt(vol, 2) + ' mL' : '') + ' = ' + fmt(conc.perMl, 4) + ' ' + baseU + '/mL\n';
+  var factor = u.k !== 1 ? ' × ' + fmt(u.k, 0) : '';
+  var alerts = [];
+  if (mode === 'rate') {
+    var dose = val('p-dose');
+    var r = Calc.pumpRate({ dose: dose, unit: unit, weight: w, amount: amt, aUnit: au, volume: vol });
+    if (r.error) { paint('bomba', { label: 'Verifique as unidades', alerts: [{ t: 'bad', msg: 'A dose em <b>' + esc(unit) + '</b> não combina com o medicamento em <b>' + esc(au) + '</b>. Use unidades de massa com massa, e UI com UI.' }] }); return; }
+    steps += 'Dose por hora = ' + fmt(dose, 4) + (u.kg ? ' × ' + fmt(w, 2) + ' kg' : '') + factor + ' = ' + fmt(r.perHour, 4) + ' ' + baseU + '/h\n';
+    steps += 'Vazão = ' + fmt(r.perHour, 4) + ' ÷ ' + fmt(conc.perMl, 4) + ' = ' + fmt(r.mlh, 3) + ' mL/h';
+    alerts.push({ t: 'info', msg: 'Confira o resultado com a prescrição e com outro profissional antes de programar a bomba.' });
+    paint('bomba', { big: fmt(r.mlh, 2), unit: 'mL/h', sub: 'para ' + fmt(dose, 4) + ' ' + unit + (u.kg ? ' em ' + fmt(w, 2) + ' kg' : '') + ', com solução de ' + fmt(conc.perMl, 3) + ' ' + baseU + '/mL.', kv: [{ k: 'Concentração', v: fmt(conc.perMl, 3), s: baseU + '/mL' }, { k: 'Dose por hora', v: fmt(r.perHour, 3), s: baseU + '/h' }], alerts: alerts, steps: steps, text: 'Bomba: ' + fmt(dose, 4) + ' ' + unit + (u.kg ? ' (' + fmt(w, 2) + ' kg)' : '') + ', ' + fmt(amt, 4) + ' ' + au + ' em ' + fmt(vol, 2) + ' mL → ' + fmt(r.mlh, 2) + ' mL/h' });
+  } else {
+    var mlh = val('p-mlh');
+    var r2 = Calc.pumpDose({ mlh: mlh, unit: unit, weight: w, amount: amt, aUnit: au, volume: vol });
+    if (r2.error) { paint('bomba', { label: 'Verifique as unidades', alerts: [{ t: 'bad', msg: 'A unidade <b>' + esc(unit) + '</b> não combina com o medicamento em <b>' + esc(au) + '</b>.' }] }); return; }
+    steps += 'Quantidade por hora = ' + fmt(mlh, 3) + ' mL/h × ' + fmt(conc.perMl, 4) + ' = ' + fmt(r2.perHour, 4) + ' ' + baseU + '/h\n';
+    steps += 'Dose = ' + fmt(r2.perHour, 4) + (u.kg ? ' ÷ ' + fmt(w, 2) + ' kg' : '') + (u.k !== 1 ? ' ÷ ' + fmt(u.k, 0) : '') + ' = ' + fmt(r2.dose, 5) + ' ' + unit;
+    alerts.push({ t: 'info', msg: 'Compare a dose obtida com a prescrição vigente.' });
+    paint('bomba', { big: fmt(r2.dose, 4), unit: unit, sub: 'com a bomba a ' + fmt(mlh, 2) + ' mL/h e solução de ' + fmt(conc.perMl, 3) + ' ' + baseU + '/mL.', kv: [{ k: 'Concentração', v: fmt(conc.perMl, 3), s: baseU + '/mL' }, { k: 'Quantidade por hora', v: fmt(r2.perHour, 3), s: baseU + '/h' }], alerts: alerts, steps: steps, text: 'Bomba: ' + fmt(mlh, 2) + ' mL/h com ' + fmt(amt, 4) + ' ' + au + ' em ' + fmt(vol, 2) + ' mL → ' + fmt(r2.dose, 4) + ' ' + unit });
+  }
+}
+function pLoad(ex) {
+  segSet('p-mode', 'rate');
+  if (ex === 'p1') { setv('p-amt', '4'); $('#p-amtu').value = 'mg'; setv('p-vol', '250'); $('#p-unit').value = 'mcg/kg/min'; setv('p-dose', '0,1'); setv('p-weight', '70'); }
+  else { setv('p-amt', '25000'); $('#p-amtu').value = 'UI'; setv('p-vol', '250'); $('#p-unit').value = 'UI/h'; setv('p-dose', '1000'); setv('p-weight', ''); }
+  pUpdate();
+}
+
+/* ===== CANETAS EMAGRECEDORAS (GLP-1 / GIP): dose fixa em mg, não por kg ===== */
+var CN = { init: false };
+function cnPen() { return PENS[$('#cn-drug').value]; }
+function cnFillPens(keep) {
+  var d = cnPen();
+  $('#cn-pensel').innerHTML = d.pens.map(function (p) { return '<option value="' + p.id + '">' + esc(p.label) + '</option>'; }).join('');
+  cnFillDoses();
+}
+function cnCurPen() { var d = cnPen(), id = $('#cn-pensel').value; return d.pens.filter(function (p) { return p.id === id; })[0] || d.pens[0]; }
+function cnFillDoses() {
+  var p = cnCurPen();
+  $('#cn-dosewrap').hidden = !!p.fixed || p.dial.length < 2;
+  $('#cn-dose').innerHTML = p.dial.map(function (x) { return '<option value="' + x + '">' + fmt(x, 3) + ' mg</option>'; }).join('');
+}
+function cnDate(s) { if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null; var a = s.split('-'); return new Date(Number(a[0]), Number(a[1]) - 1, Number(a[2])); }
+function cnAdd(dt, n) { var x = new Date(dt.getTime()); x.setDate(x.getDate() + n); return x; }
+function cnD(dt) { return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+function cnDays(n) { if (n < 14) return n + (n === 1 ? ' dia' : ' dias'); var w = n / 7; return fmt(w, 1) + ' semanas'; }
+
+function cnSources(keys) {
+  $('#cn-src').innerHTML = keys.length ? '<b>Fontes:</b> ' + keys.map(function (k) { var s = PEN_SRC[k]; return '<a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>'; }).join(' · ') : '';
+}
+
+function cnUpdatePen() {
+  var d = cnPen(), p = cnCurPen();
+  var dose = p.fixed ? p.dial[0] : Number($('#cn-dose').value);
+  var used = val('cn-used'); if (!(used >= 0)) used = 0;
+  cnSources(d.src.concat(['receita']));
+  var pd = Calc.penDoses(p.total, dose, used);
+  var mgPerMl = p.total / p.vol;
+  var perDose = p.fixed ? p.perDoseMl : dose / mgPerMl;
+  var big = p.fixed ? fmt(dose, 3) : fmt(dose, 3);
+  var sub = p.fixed ? 'Caneta de dose fixa: não há seletor. Aplique a dose inteira (' + fmt(perDose, 2) + ' mL).' : 'Gire o seletor até <b>' + fmt(dose, 3) + ' mg</b> e confirme a marca na janela da caneta.';
+  var kv = [
+    { k: 'Volume por dose', v: fmt(perDose, 3) + ' mL', s: 'concentração ' + fmt(mgPerMl, 3) + ' mg/mL' },
+    { k: 'Doses por caneta', v: String(pd.total), s: fmt(p.total, 2) + ' mg no total' },
+    { k: 'Doses restantes', v: String(pd.remaining), s: used > 0 ? 'após ' + fmt(used, 0) + ' aplicada(s)' : 'caneta nova', on: true },
+    { k: 'Dura ainda', v: pd.remaining ? cnDays(pd.remaining * d.interval) : '0', s: d.freq }
+  ];
+  var alerts = [];
+  var last = cnDate($('#cn-last').value);
+  if (last && pd.remaining > 0) {
+    var nxt = cnAdd(last, d.interval), end = cnAdd(last, pd.remaining * d.interval);
+    kv.push({ k: 'Próxima aplicação', v: cnD(nxt) }); kv.push({ k: 'Última dose desta caneta', v: cnD(end) });
+  } else if (last) kv.push({ k: 'Próxima aplicação', v: cnD(cnAdd(last, d.interval)) });
+  if (pd.remaining === 0) alerts.push({ t: 'warn', msg: 'Esta caneta não tem mais uma dose inteira de ' + fmt(dose, 3) + ' mg. Troque por uma caneta nova, não complete com a sobra.' });
+  alerts.push({ t: 'info', msg: '<b>A dose não depende do peso.</b> ' + (p.fixed ? 'A caneta de ' + fmt(dose, 3) + ' mg aplica sempre ' + fmt(dose, 3) + ' mg.' : 'Quem pesa 60 kg ou 120 kg usa o mesmo seletor.') + ' O médico escolhe a dose e quando aumentar.' });
+  alerts.push({ t: 'info', msg: d.missed });
+  alerts.push({ t: 'warn', msg: 'O número de doses é uma estimativa pelo volume. Se o seletor não chegar à dose, a caneta acabou: não junte com outra caneta.' });
+  var rows = d.sched.map(function (r) {
+    var on = Math.abs(r[2] - dose) < 1e-9;
+    return '<tr' + (on ? ' style="background:var(--brand-soft)"' : '') + '><td>' + esc(r[0]) + '</td><td class="mono"><b>' + esc(r[1]) + '</b></td></tr>';
+  }).join('');
+  var syr = cnaHTML(d, p, dose) + '<details class="steps" style="margin-top:12px"><summary>Esquema de doses da bula</summary><div class="tbl-wrap" style="margin-top:8px"><table><thead><tr><th>Período</th><th>Dose</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="hint" style="margin-top:8px">' + esc(d.schedNote) + '</p></details>';
+  var txt = d.nome + ': dose ' + fmt(dose, 3) + ' mg (' + fmt(perDose, 3) + ' mL), ' + pd.remaining + ' dose(s) restante(s) na caneta' + (last && pd.remaining ? '; próxima em ' + cnD(cnAdd(last, d.interval)) : '');
+  paint('canetas', { label: p.fixed ? 'Dose da caneta' : 'Marque no seletor', big: big, unit: 'mg', sub: sub, kv: kv, syr: syr, alerts: alerts, text: txt });
+  cnaMount(dose);
+}
+
+function cnUpdateVial() {
+  cnSources(['manip', 'receita']);
+  var mode = segGet('cn-vmode'), dose = val('cn-vdose');
+  $('#cn-vconcw').hidden = mode !== 'conc'; $('#cn-vtotw').hidden = mode !== 'total';
+  var o = { doseMg: dose };
+  if (mode === 'conc') { o.conc = val('cn-vconc'); } else { o.totalMg = val('cn-vtotal'); o.diluentMl = val('cn-vdil'); }
+  var ok = dose > 0 && (mode === 'conc' ? o.conc > 0 : (o.totalMg > 0 && o.diluentMl > 0));
+  if (!ok) { paint('canetas', { empty: 'Informe a dose prescrita e a concentração do frasco (ou o total em mg e o volume).' }); return; }
+  var r = Calc.vialDose(o), ui = r.ui;
+  var freq = Number(val('cn-vfreq')) || Number($('#cn-vfreq').value);
+  var kv = [{ k: 'Concentração', v: fmt(r.conc, 3) + ' mg/mL' }, { k: 'Volume por dose', v: fmt(r.volMl, 3) + ' mL', s: 'seringa U-100' }];
+  if (mode === 'total') {
+    var wk = r.dosesPerVial / freq;
+    kv.push({ k: 'Doses no frasco', v: String(r.dosesPerVial), on: true });
+    kv.push({ k: 'Dura cerca de', v: fmt(wk, 1) + ' semanas', s: 'com ' + (freq === 7 ? '1 aplicação por dia' : freq + ' por semana') });
+  }
+  var alerts = [], syr = '';
+  var caps = [30, 50, 100], cap = null;
+  for (var i = 0; i < caps.length; i++) { if (ui <= caps[i] + 1e-9) { cap = caps[i]; break; } }
+  if (!cap) alerts.push({ t: 'bad', msg: 'A dose passa de 100 UI (1 mL), que é a capacidade da seringa de insulina. Confira a concentração e a prescrição.' });
+  else {
+    var grad = cap === 100 ? 2 : 1;
+    syr = syringeSVG({ cap: cap, grad: grad, num: cap === 100 ? 10 : 5, value: ui, unit: 'UI', label: fmt(ui, 1) + ' UI', cap1: 'Seringa de insulina de ' + cap + ' UI', aria: 'Seringa de insulina marcada em ' + fmt(ui, 1) + ' UI' });
+    var off = Math.abs(ui / grad - Math.round(ui / grad)) > 0.05;
+    if (off) alerts.push({ t: 'warn', msg: 'A marca fica entre duas graduações da seringa (de ' + grad + ' em ' + grad + ' UI). Arredondar muda a dose em até ' + fmt(grad / 2 / ui * 100, 0) + '%.' });
+  }
+  if (ui < 5) alerts.push({ t: 'warn', msg: 'Menos de 5 UI é difícil de medir com precisão. Peça orientação ao farmacêutico ou ao médico.' });
+  alerts.push({ t: 'warn', msg: '<b>UI da seringa não é mg.</b> A seringa de insulina marca unidades de volume (100 UI = 1 mL). A conta só vale para a concentração do seu frasco: confirme com a farmácia ou o laudo.' });
+  alerts.push({ t: 'bad', msg: 'Frascos manipulados, importados ou sem registro na Anvisa trazem risco de dose errada e de contaminação, e a Anvisa endureceu as regras em 2026. Use só com prescrição e produto de origem conhecida.' });
+  alerts.push({ t: 'info', msg: '<b>A dose não depende do peso.</b> É a prescrição, em mg, que define a conta.' });
+  paint('canetas', { label: 'Puxe na seringa de insulina', big: fmt(ui, 1), unit: 'UI', sub: 'Equivale a <b>' + fmt(r.volMl, 3) + ' mL</b> para ' + fmt(dose, 3) + ' mg.', kv: kv, syr: syr, alerts: alerts,
+    steps: 'Concentração = ' + (mode === 'conc' ? fmt(r.conc, 3) : fmt(o.totalMg, 3) + ' mg ÷ ' + fmt(o.diluentMl, 3) + ' mL = ' + fmt(r.conc, 3)) + ' mg/mL\nVolume = ' + fmt(dose, 3) + ' mg ÷ ' + fmt(r.conc, 3) + ' mg/mL = ' + fmt(r.volMl, 3) + ' mL\nUI = ' + fmt(r.volMl, 3) + ' mL × 100 = ' + fmt(ui, 1) + ' UI',
+    text: 'Frasco ' + fmt(r.conc, 3) + ' mg/mL: ' + fmt(dose, 3) + ' mg = ' + fmt(r.volMl, 3) + ' mL = ' + fmt(ui, 1) + ' UI na seringa de insulina' });
+}
+
+function cnUpdatePeso() {
+  cnSources([]);
+  var h = val('cn-h'), w0 = val('cn-w0'), w1 = val('cn-w1'), wk = val('cn-weeks'), tg = val('cn-target');
+  if (!(w0 > 0) || !(w1 > 0)) { paint('canetas', { empty: 'Informe o peso inicial e o peso atual. A altura permite calcular o IMC.' }); return; }
+  var lost = w0 - w1, pct = lost / w0 * 100;
+  var kv = [{ k: 'Variação', v: (lost >= 0 ? '-' : '+') + fmt(Math.abs(lost), 1) + ' kg', on: true }, { k: 'Do peso inicial', v: fmt(Math.abs(pct), 1) + '%' }];
+  var alerts = [], txt = 'Peso: ' + fmt(w0, 1) + ' → ' + fmt(w1, 1) + ' kg (' + fmt(pct, 1) + '%)';
+  var rate = wk > 0 ? lost / wk : NaN;
+  if (wk > 0) kv.push({ k: 'Ritmo', v: fmt(rate, 2) + ' kg/sem' });
+  if (h > 100 && h < 250) {
+    var b0 = Calc.bmi(w0, h), b1 = Calc.bmi(w1, h);
+    kv.push({ k: 'IMC inicial', v: fmt(b0, 1), s: Calc.bmiClass(b0) }); kv.push({ k: 'IMC atual', v: fmt(b1, 1), s: Calc.bmiClass(b1) });
+    txt += '; IMC ' + fmt(b1, 1) + ' (' + Calc.bmiClass(b1) + ')';
+  }
+  if (tg > 0 && tg < w1) {
+    kv.push({ k: 'Falta para a meta', v: fmt(w1 - tg, 1) + ' kg' });
+    if (rate > 0) alerts.push({ t: 'info', msg: 'No mesmo ritmo, faltariam cerca de <b>' + fmt((w1 - tg) / rate, 0) + ' semanas</b>. O ritmo costuma diminuir com o tempo: use só como referência.' });
+  }
+  if (wk > 0 && rate > 1.5) alerts.push({ t: 'warn', msg: 'Perda acima de 1,5 kg por semana merece conversa com o médico ou a nutricionista.' });
+  alerts.push({ t: 'info', msg: '<b>O peso não define a dose.</b> A dose segue o esquema prescrito pelo médico e a tolerância de cada pessoa. IMC é referência geral e não vale para todos os corpos.' });
+  paint('canetas', { label: 'Seu progresso', big: (lost >= 0 ? '-' : '+') + fmt(Math.abs(lost), 1), unit: 'kg', sub: 'De ' + fmt(w0, 1) + ' kg para ' + fmt(w1, 1) + ' kg.', kv: kv, alerts: alerts, text: txt });
+}
+
+function cnUpdate() {
+  cnaStop();
+  var tab = segGet('cn-tab') || 'pen';
+  $('#cn-pen').hidden = tab !== 'pen'; $('#cn-vial').hidden = tab !== 'vial'; $('#cn-peso').hidden = tab !== 'peso';
+  if (tab === 'pen') cnUpdatePen(); else if (tab === 'vial') cnUpdateVial(); else cnUpdatePeso();
+}
+function cnLoad(k) {
+  if (k === 'cn1') {
+    segSet('cn-tab', 'pen'); $('#cn-drug').value = 'mounjaro'; cnFillPens(); $('#cn-pensel').value = 'm5'; cnFillDoses(); setv('cn-used', '1'); $('#cn-last').value = '';
+  } else {
+    segSet('cn-tab', 'vial'); segSet('cn-vmode', 'total'); setv('cn-vdose', '0,25'); setv('cn-vtotal', '10'); setv('cn-vdil', '2'); setv('cn-vconc', ''); $('#cn-vfreq').value = '1';
+  }
+  cnUpdate();
+}
+function initCanetas() {
+  $('#cn-drug').innerHTML = Object.keys(PENS).map(function (k) { return '<option value="' + k + '">' + esc(PENS[k].nome) + '</option>'; }).join('');
+  $('#cn-drug').value = 'wegovy'; cnFillPens();
+  $('#cn-drug').addEventListener('change', function () { cnFillPens(); cnUpdate(); });
+  $('#cn-pensel').addEventListener('change', function () { cnFillDoses(); cnUpdate(); });
+  ['cn-dose', 'cn-used', 'cn-last', 'cn-vdose', 'cn-vconc', 'cn-vtotal', 'cn-vdil', 'cn-vfreq', 'cn-h', 'cn-w0', 'cn-w1', 'cn-weeks', 'cn-target'].forEach(function (id) { $('#' + id).addEventListener('input', cnUpdate); });
+  $('#r-canetas').addEventListener('click', function (e) {
+    var s = e.target.closest('[data-cnastep]'); if (s) { cnaStop(); cnaShow(Number(s.getAttribute('data-cnastep')), false); return; }
+    if (e.target.closest('[data-cnaplay]')) cnaPlay();
+  });
+  UPDATERS.canetas = cnUpdate;
+  cnLoad('cn1');
+}
+
+/* ===== animação da caneta: dose de cada semana ===== */
+var CNA = { timer: null, idx: 0, shown: 0, raf: 0 };
+function cnaStop() { if (CNA.timer) { clearInterval(CNA.timer); CNA.timer = null; } var b = $('#cna-play'); if (b) b.textContent = '▶ Ver semana a semana'; }
+function cnaPenFor(d, mg, cur) {
+  var f = d.pens.filter(function (x) { return x.dial.indexOf(mg) >= 0; })[0];
+  return f || cur;
+}
+function cnaInfo(d, i, cur) {
+  var r = d.sched[i], mg = r[2], p = cnaPenFor(d, mg, cur);
+  var ml = p.fixed ? p.perDoseMl : mg / (p.total / p.vol);
+  return { r: r, mg: mg, p: p, ml: ml, frac: Math.min(1, mg / p.total), doses: Calc.penDoses(p.total, mg, 0).total };
+}
+function cnaHTML(d, cur, dose) {
+  var chips = d.sched.map(function (r, i) {
+    var short = r[2] === 7.5 && d.nome.indexOf('Mounjaro') === 0 ? '7,5 a 12,5 mg' : r[1];
+    return '<button type="button" data-cnastep="' + i + '" aria-pressed="false">' + esc(short) + '</button>';
+  }).join('');
+  var pen = '<svg viewBox="0 0 620 120" role="img" aria-label="Caneta aplicadora com a dose de cada semana">' +
+    '<line class="pen-needle" x1="8" y1="60" x2="46" y2="60"/><rect class="pen-body" x="46" y="52" width="14" height="16" rx="3"/>' +
+    '<rect class="pen-body" x="60" y="26" width="440" height="68" rx="16"/>' +
+    '<rect class="pen-cart" x="78" y="40" width="288" height="40" rx="7"/><rect class="pen-liq" x="78" y="40" width="288" height="40" rx="7"/>' +
+    '<rect class="pen-slice" id="cna-slice" x="78" y="40" width="0" height="40" rx="7"/>' +
+    '<text class="pen-cap" id="cna-cap" x="82" y="108">parte usada em 1 aplicação</text>' +
+    '<rect class="pen-win" x="380" y="42" width="96" height="36" rx="7"/><text class="pen-dial" id="cna-dial" x="428" y="67">0</text><text class="pen-unit" x="428" y="38">mg</text>' +
+    '<rect class="pen-knob" x="500" y="34" width="46" height="52" rx="9"/>' +
+    [510, 518, 526, 534].map(function (x) { return '<line class="pen-ridge" x1="' + x + '" y1="40" x2="' + x + '" y2="80"/>'; }).join('') +
+    '<rect class="pen-btn" x="546" y="46" width="28" height="28" rx="6"/></svg>';
+  return '<div class="cna" id="cna" data-cur="' + esc(cur.id) + '"><div class="cna-h"><b>Dose de cada semana</b><button type="button" class="btn sec small" id="cna-play" data-cnaplay="1">▶ Ver semana a semana</button></div>' + pen +
+    '<div class="cna-now" id="cna-now" aria-live="polite"></div><div class="cna-steps" id="cna-steps">' + chips + '</div></div>';
+}
+function cnaShow(i, instant) {
+  var d = cnPen(), cur = cnCurPen(), n = cnaInfo(d, i, cur);
+  CNA.idx = i;
+  $$('#cna-steps button').forEach(function (b) { b.setAttribute('aria-pressed', Number(b.getAttribute('data-cnastep')) === i ? 'true' : 'false'); });
+  var slice = $('#cna-slice'); if (!slice) return;
+  slice.style.width = Math.max(6, 288 * n.frac) + 'px';
+  $('#cna-cap').textContent = fmt(n.frac * 100, 0) + '% da caneta de ' + fmt(n.p.total, 2) + ' mg';
+  $('#cna-now').innerHTML = '<b>' + esc(n.r[0]) + ': ' + esc(n.r[1]) + '</b>' + (n.p.fixed ? 'Caneta de ' + fmt(n.mg, 3) + ' mg, dose fixa de ' : 'Gire o seletor até ' + fmt(n.mg, 3) + ' mg: ') + fmt(n.ml, 2) + ' mL por aplicação, ' + esc(d.freq) + '. Rende ' + n.doses + (n.doses === 1 ? ' dose' : ' doses') + '.';
+  var dial = $('#cna-dial'), from = CNA.shown, to = n.mg;
+  cancelAnimationFrame(CNA.raf);
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (instant || reduce) { dial.textContent = fmt(to, 3); CNA.shown = to; return; }
+  var t0 = performance.now();
+  (function tick(t) {
+    var k = Math.min(1, (t - t0) / 650), e = 1 - Math.pow(1 - k, 3), v = from + (to - from) * e;
+    dial.textContent = fmt(v, 2); CNA.shown = v;
+    if (k < 1) CNA.raf = requestAnimationFrame(tick); else { dial.textContent = fmt(to, 3); CNA.shown = to; }
+  })(t0);
+}
+function cnaMount(dose) {
+  var d = cnPen(), idx = 0;
+  d.sched.forEach(function (r, i) { if (Math.abs(r[2] - dose) < 1e-9) idx = i; });
+  CNA.shown = 0; cnaShow(idx, false);
+}
+function cnaPlay() {
+  if (CNA.timer) { cnaStop(); return; }
+  var d = cnPen(), i = 0;
+  $('#cna-play').textContent = '❚❚ Pausar';
+  cnaShow(0, false);
+  CNA.timer = setInterval(function () {
+    i++;
+    if (i >= d.sched.length) { cnaStop(); return; }
+    cnaShow(i, false);
+  }, 2600);
+}
+/* ===== INSULINA (exemplo) ===== */
+function iLoad() { setv('i-dose', '40'); setv('i-conc', '100'); segSet('i-syr', '3'); iUpdate(); }
+
+/* ===== PORCENTAGEM ===== */
+var PC_PRESETS = [
+  { n: 'SF 0,9%', pct: '0,9', mm: '58,44' }, { n: 'SG 5%', pct: '5', mm: '' }, { n: 'Glicose 50%', pct: '50', mm: '' },
+  { n: 'NaCl 20%', pct: '20', mm: '58,44' }, { n: 'KCl 19,1%', pct: '19,1', mm: '74,55' }
+];
+function pcUpdate() {
+  var mode = segGet('pc-mode');
+  $('#pc-volwrap').hidden = mode !== 'mass'; $('#pc-massw').hidden = mode !== 'vol';
+  var pct = val('pc-pct'), mm = val('pc-mm');
+  var need = [pct]; need.push(mode === 'mass' ? val('pc-vol') : val('pc-mass'));
+  if (need.some(function (x) { return !(x > 0); })) { paint('porcentagem', { empty: 'Informe a concentração e o ' + (mode === 'mass' ? 'volume.' : 'valor da massa.') }); return; }
+  var kv = [{ k: 'Concentração', v: fmt(pct * 10, 3), s: 'mg/mL' }];
+  var steps, big, unit, sub, text;
+  if (mode === 'mass') {
+    var vol = val('pc-vol'), r = Calc.percent(pct, vol);
+    steps = '100 mL ----- ' + fmt(pct, 4) + ' g\n' + fmt(vol, 2) + ' mL ----- X\nX = ' + fmt(vol, 2) + ' × ' + fmt(pct, 4) + ' ÷ 100 = ' + fmt(r.grams, 4) + ' g';
+    big = fmt(r.grams, 3); unit = 'g'; sub = 'em ' + fmt(vol, 2) + ' mL de solução a ' + fmt(pct, 3) + '% (' + fmt(r.grams * 1000, 1) + ' mg).';
+    if (mm > 0) { var meq = r.grams * 1000 / mm; kv.push({ k: 'Equivalentes', v: fmt(meq, 2), s: 'mEq no volume' }); kv.push({ k: 'Por mL', v: fmt(meq / vol, 3), s: 'mEq/mL' }); steps += '\nmEq = ' + fmt(r.grams * 1000, 2) + ' mg ÷ ' + fmt(mm, 3) + ' g/mol = ' + fmt(meq, 3) + ' mEq (monovalente)'; }
+    text = 'Porcentagem: ' + fmt(pct, 3) + '% em ' + fmt(vol, 2) + ' mL = ' + fmt(r.grams, 3) + ' g';
+  } else {
+    var m = val('pc-mass'), mu = $('#pc-massu').value, g = mu === 'mg' ? m / 1000 : m;
+    var v = Calc.percentVolume(pct, g);
+    steps = fmt(pct, 4) + ' g ----- 100 mL\n' + fmt(g, 4) + ' g ----- X\nX = ' + fmt(g, 4) + ' × 100 ÷ ' + fmt(pct, 4) + ' = ' + fmt(v, 4) + ' mL';
+    big = fmt(v, 3); unit = 'mL'; sub = 'de solução a ' + fmt(pct, 3) + '% contêm ' + fmt(m, 3) + ' ' + mu + '.';
+    if (mm > 0) { var meq2 = g * 1000 / mm; kv.push({ k: 'Equivalentes', v: fmt(meq2, 2), s: 'mEq na massa' }); }
+    text = 'Porcentagem: ' + fmt(m, 3) + ' ' + mu + ' em solução a ' + fmt(pct, 3) + '% = ' + fmt(v, 3) + ' mL';
+  }
+  paint('porcentagem', { big: big, unit: unit, sub: sub, kv: kv, steps: steps, text: text, alerts: [{ t: 'info', msg: 'Porcentagem massa/volume indica gramas de soluto em 100 mL de solução (e-book).' }] });
+}
+function pcPreset(i) { var p = PC_PRESETS[i]; setv('pc-pct', p.pct); setv('pc-mm', p.mm); if (!val('pc-vol')) setv('pc-vol', '500'); pcUpdate(); }
+
+/* ===== CONVERSOR ===== */
+var CV = {
+  mass: { units: [['kg', 1000], ['g', 1], ['mg', 1e-3], ['mcg', 1e-6]], def: 'g', hint: '1 g = 1.000 mg · 1 mg = 1.000 mcg (µg)' },
+  vol: { units: [['L', 1000], ['mL', 1], ['µL', 1e-3]], def: 'mL', hint: '1 L = 1.000 mL' },
+  drop: { units: [['gotas (macro)', 1 / 20], ['microgotas', 1 / 60], ['mL', 1]], def: 'mL', hint: 'Macrogotas: 20 gotas = 1 mL. Microgotas: 60 microgotas = 1 mL (fórmulas do e-book).' }
+};
+function cvFillUnits() {
+  var k = segGet('cv-kind'), sel = $('#cv-unit');
+  sel.innerHTML = CV[k].units.map(function (u) { return '<option' + (u[0] === CV[k].def ? ' selected' : '') + '>' + u[0] + '</option>'; }).join('');
+  $('#cv-hint').textContent = CV[k].hint;
+}
+function cvUpdate() {
+  var k = segGet('cv-kind'), v = val('cv-val'), unit = $('#cv-unit').value;
+  if (!isFinite(v)) { paint('conversor', { empty: 'Informe um valor.' }); return; }
+  var f = null; CV[k].units.forEach(function (u) { if (u[0] === unit) f = u[1]; });
+  var base = v * f;
+  var kv = CV[k].units.map(function (u) { return { k: u[0], v: fmt(base / u[1], 6), on: u[0] === unit }; });
+  var text = 'Conversão: ' + fmt(v, 6) + ' ' + unit + ' = ' + CV[k].units.filter(function (u) { return u[0] !== unit; }).map(function (u) { return fmt(base / u[1], 6) + ' ' + u[0]; }).join(' = ');
+  paint('conversor', { label: 'Equivalências', kv: kv, text: text });
+}
+
+/* ===== RECONSTITUIÇÃO ===== */
+var RC = { preset: null, via: 'EV' };
+function drugById(id) { for (var i = 0; i < DRUGS.length; i++) if (DRUGS[i].id === id) return DRUGS[i]; return null; }
+function srcList(d) { return d.src.map(function (k) { return SOURCES[k].short; }).join(', '); }
+function rcApply(id, via) {
+  var d = drugById(id); if (!d || !d.calc) return;
+  RC.preset = id;
+  var keys = Object.keys(d.calc.ml);
+  RC.via = via && d.calc.ml[via] != null ? via : (d.calc.ml.EV != null ? 'EV' : keys[0]);
+  setv('rc-amt', d.calc.amt); $('#rc-amtu').value = d.calc.unit;
+  setv('rc-dil', d.calc.ml[RC.via]); setv('rc-exp', d.calc.exp || 0);
+  var box = $('#rc-via');
+  if (keys.length > 1) {
+    box.hidden = false;
+    $('#rc-viaseg').innerHTML = keys.map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="' + (k === RC.via) + '">' + (k === 'EV' ? 'Endovenosa' : 'Intramuscular') + '</button>'; }).join('');
+  } else box.hidden = true;
+}
+function rcUpdate() {
+  var amt = val('rc-amt'), au = $('#rc-amtu').value, dil = val('rc-dil'), exp = val('rc-exp'), dose = val('rc-dose'), du = $('#rc-doseu').value, bag = val('rc-bag');
+  if (!isFinite(exp) || exp < 0) exp = 0;
+  if (RC.preset && RC.via === 'IM') bag = NaN;
+  if (!(amt > 0) || !(dil > 0)) { paint('reconstituicao', { empty: 'Informe a quantidade do frasco e o volume de diluente.' }); return; }
+  var d = RC.preset ? drugById(RC.preset) : null;
+  var o = { amount: amt, unit: au, diluent: dil, expansion: exp };
+  if (dose > 0) { o.dose = dose; o.doseUnit = du; if (bag > 0) o.bag = bag; }
+  var r = Calc.reconstitute(o);
+  if (r.error) { paint('reconstituicao', { label: 'Verifique as unidades', alerts: [{ t: 'bad', msg: 'A dose em <b>' + esc(du) + '</b> não se converte para <b>' + esc(au) + '</b> do frasco.' }] }); return; }
+  var steps = 'Volume final = ' + fmt(dil, 3) + ' mL de diluente' + (exp ? ' + ' + fmt(exp, 3) + ' mL de expansão' : '') + ' = ' + fmt(r.finalVol, 3) + ' mL\n';
+  steps += 'Concentração = ' + fmt(amt, 4) + ' ' + au + ' ÷ ' + fmt(r.finalVol, 3) + ' mL = ' + fmt(r.conc, 4) + ' ' + au + '/mL';
+  var kv = [{ k: 'Volume final do frasco', v: fmt(r.finalVol, 3), s: 'mL' }, { k: 'Concentração', v: fmt(r.conc, 3), s: au + '/mL' }];
+  var alerts = [], big, unit, sub, text, syr = '';
+  if (d) alerts.push({ t: 'info', msg: 'Dados de <b>' + esc(d.nome) + '</b> (' + esc(srcList(d)) + '). Confira o rótulo do frasco' + (d.obs ? '. ' + esc(d.obs) : '.') });
+  if (r.aspirate !== undefined) {
+    steps += '\n\nRegra de três:\n' + fmt(amt, 4) + ' ' + au + ' ----- ' + fmt(r.finalVol, 3) + ' mL\n' + fmt(r.dInVial, 4) + ' ' + au + ' ----- X\nX = ' + fmt(r.dInVial, 4) + ' × ' + fmt(r.finalVol, 3) + ' ÷ ' + fmt(amt, 4) + ' = ' + fmt(r.aspirate, 4) + ' mL';
+    big = fmt(r.aspirate, 3); unit = 'mL'; sub = 'a aspirar do frasco para ' + fmt(dose, 4) + ' ' + du + '.';
+    kv.push({ k: 'Volume a aspirar', v: fmt(r.aspirate, 3), s: 'mL', on: true });
+    var redilHook = function () { setv('rd-dose', dose); $('#rd-doseu').value = du; setv('rd-amt', amt); $('#rd-amtu').value = au; setv('rd-vol', r.finalVol); RD.auto = true; show('rediluicao'); };
+    if (r.aspirate > 0) { var sb = syringeBlock(r.aspirate, null, { redil: redilHook }); syr = sb.syr; alerts = sb.alerts.concat(alerts); }
+    if (r.totalVol) {
+      steps += '\n\nInfusão: ' + fmt(bag, 2) + ' mL de solução + ' + fmt(r.aspirate, 3) + ' mL do frasco = ' + fmt(r.totalVol, 3) + ' mL\nConcentração final = ' + fmt(r.dInVial, 4) + ' ' + au + ' ÷ ' + fmt(r.totalVol, 3) + ' mL = ' + fmt(r.finalConc, 4) + ' ' + au + '/mL';
+      kv.push({ k: 'Volume total da infusão', v: fmt(r.totalVol, 2), s: 'mL' });
+      kv.push({ k: 'Concentração final', v: fmt(r.finalConc, 3), s: au + '/mL' });
+      if (d && d.calc && d.calc.max && d.calc.max.unit === au) {
+        if (r.finalConc <= d.calc.max.amt + 1e-9) alerts.push({ t: 'ok', msg: 'Concentração final dentro do limite do guia para ' + esc(d.nome) + ' (máx ' + fmt(d.calc.max.amt, 3) + ' ' + au + '/mL).' });
+        else alerts.push({ t: 'warn', msg: 'Concentração final de ' + fmt(r.finalConc, 3) + ' ' + au + '/mL acima do limite do guia (' + fmt(d.calc.max.amt, 3) + ' ' + au + '/mL). Aumente o volume da bolsa ou confirme com o prescritor.' });
+      }
+      alerts.push({ t: 'info', msg: 'Para calcular o gotejamento, use ' + fmt(r.totalVol, 2) + ' mL como volume (bolsa + medicamento), como no exemplo do e-book.', btn: { label: 'Calcular gotejamento com ' + fmt(r.totalVol, 2) + ' mL', fn: function () { G.items = [{ name: d ? d.nome + ' + solução' : 'Medicamento + solução', vol: String(Math.round(r.totalVol * 100) / 100).replace('.', ',') }]; gRenderItems(); show('gotejamento'); $('#g-time').focus(); } } });
+    }
+    text = 'Reconstituição: ' + fmt(amt, 4) + ' ' + au + ' + ' + fmt(dil, 3) + ' mL' + (exp ? ' (+' + fmt(exp, 3) + ' mL expansão)' : '') + ' = ' + fmt(r.conc, 3) + ' ' + au + '/mL → dose ' + fmt(dose, 4) + ' ' + du + ' = aspirar ' + fmt(r.aspirate, 3) + ' mL' + (r.totalVol ? '; em ' + fmt(bag, 2) + ' mL = ' + fmt(r.finalConc, 3) + ' ' + au + '/mL' : '');
+  } else {
+    big = fmt(r.conc, 3); unit = au + '/mL'; sub = 'depois de reconstituir em ' + fmt(r.finalVol, 3) + ' mL. Informe a dose prescrita para ver o volume a aspirar.';
+    text = 'Reconstituição: ' + fmt(amt, 4) + ' ' + au + ' + ' + fmt(dil, 3) + ' mL' + (exp ? ' (+' + fmt(exp, 3) + ' mL expansão)' : '') + ' = ' + fmt(r.conc, 3) + ' ' + au + '/mL';
+  }
+  paint('reconstituicao', { label: r.aspirate !== undefined ? 'Aspirar do frasco' : 'Concentração', big: big, unit: unit, sub: sub, kv: kv, syr: syr, alerts: alerts, steps: steps, text: text });
+}
+function rcLoad(ex) {
+  RC.preset = null; $('#rc-preset').value = '';
+  if (ex === 'rc1') { rcApply('vanco', 'EV'); $('#rc-preset').value = 'vanco'; setv('rc-dose', '300'); $('#rc-doseu').value = 'mg'; setv('rc-bag', '100'); }
+  else { rcApply('pencris', 'EV'); $('#rc-preset').value = 'pencris'; setv('rc-dose', '650000'); $('#rc-doseu').value = 'UI'; setv('rc-bag', ''); }
+  rcUpdate();
+}
+
+/* ===== REDILUIÇÃO ===== */
+var RD = { auto: true, key: null, steps: 1 };
+var OPT_TXT = { '2': '1 mL + 1 mL de diluente', '5': '1 mL + 4 mL de diluente', '10': '1 mL + 9 mL de diluente', '100': '1 mL + 9 mL, repetido 2 vezes' };
+function rdUpdate() {
+  var dose = val('rd-dose'), du = $('#rd-doseu').value, amt = val('rd-amt'), au = $('#rd-amtu').value, vol = val('rd-vol');
+  if (!(dose > 0) || !(amt > 0) || !(vol > 0)) { $('#rd-opts').innerHTML = ''; paint('rediluicao', { empty: 'Informe a dose prescrita, a quantidade do frasco e o volume depois de reconstituído.' }); return; }
+  if (!Calc.sameDim(du, au)) { $('#rd-opts').innerHTML = ''; paint('rediluicao', { label: 'Verifique as unidades', alerts: [{ t: 'bad', msg: 'A dose em <b>' + esc(du) + '</b> não se converte para <b>' + esc(au) + '</b> do frasco.' }] }); return; }
+  var C = amt / vol, d = Calc.convert(dose, du, au), direct = d / C;
+  var f0 = Calc.pickSyringe(direct);
+  var needs = !(f0 && !f0.tooBig && f0.level === 'ok');
+  var list = Calc.redilOptions(direct);
+  if (RD.auto) {
+    if (needs) {
+      var best = Calc.bestRedil(direct);
+      if (best) { RD.key = best.opt.key; RD.steps = best.opt.steps; setv('rd-a', best.opt.a); setv('rd-T', best.opt.T); }
+      else { RD.key = '10'; RD.steps = 1; setv('rd-a', 1); setv('rd-T', 10); }
+    } else { RD.key = null; if (!val('rd-a')) { setv('rd-a', 1); setv('rd-T', 10); } }
+  }
+  var a = val('rd-a'), T = val('rd-T');
+  var useRedil = (!RD.auto) || needs;
+  /* tabela de opções */
+  $('#rd-opts').innerHTML = '<thead><tr><th>Diluição</th><th>Preparo</th><th>Aspirar depois</th><th>Medida</th></tr></thead><tbody>' + list.map(function (x) {
+    var tag;
+    if (x.vol < 0.1 - 1e-9) tag = '<span class="tag bad">volume pequeno</span>';
+    else if (x.vol > 1 + 1e-9) tag = '<span class="tag warn">acima de 1 mL</span>';
+    else tag = '<span class="tag ' + x.fit.level + '">' + (x.fit.level === 'ok' ? 'mede bem' : (x.fit.level === 'warn' ? 'entre marcas' : 'impreciso')) + '</span>';
+    return '<tr class="pick' + (useRedil && RD.key === x.opt.key ? ' sel' : '') + '" data-key="' + x.opt.key + '" tabindex="0"><td class="mono">÷ ' + x.opt.f + '</td><td>' + OPT_TXT[x.opt.key] + '</td><td class="mono">' + fmt(x.vol, 3) + ' mL</td><td>' + tag + '</td></tr>';
+  }).join('') + '</tbody>';
+  var alerts = [], steps = 'Concentração do frasco = ' + fmt(amt, 4) + ' ' + au + ' ÷ ' + fmt(vol, 3) + ' mL = ' + fmt(C, 4) + ' ' + au + '/mL\n';
+  if (du !== au) steps += 'Dose = ' + fmt(dose, 4) + ' ' + du + ' = ' + fmt(d, 6) + ' ' + au + '\n';
+  steps += 'Direto: ' + fmt(d, 4) + ' ÷ ' + fmt(C, 4) + ' = ' + fmt(direct, 4) + ' mL' + (needs ? ' (difícil de aspirar nas seringas disponíveis)' : '') + '\n';
+  var redilHook = function () { RD.auto = true; rdUpdate(); };
+  if (!useRedil) {
+    var sb0 = syringeBlock(direct, null);
+    alerts = sb0.alerts; alerts.unshift({ t: 'info', msg: 'Neste caso a rediluição não é necessária: o volume direto cabe numa seringa com boa leitura.' });
+    paint('rediluicao', { label: 'Aspiração direta', big: fmt(direct, 3), unit: 'mL', sub: 'do frasco reconstituído, para ' + fmt(dose, 4) + ' ' + du + '.', syr: sb0.syr, alerts: alerts, steps: steps, text: 'Rediluição não necessária: ' + fmt(dose, 4) + ' ' + du + ' = aspirar ' + fmt(direct, 3) + ' mL (frasco ' + fmt(C, 3) + ' ' + au + '/mL)' });
+    return;
+  }
+  if (!(a > 0) || !(T >= a)) { paint('rediluicao', { label: 'Rediluição', alerts: [{ t: 'bad', msg: 'Informe quanto aspirar do frasco e até quantos mL completar. O total precisa ser maior ou igual ao volume aspirado.' }] }); return; }
+  var steps2 = RD.steps === 2 ? 2 : 1;
+  var ftot = Math.pow(T / a, steps2), C2 = C / ftot, vol2 = d / C2;
+  var amtAsp = a * C;
+  steps += '\nRediluição' + (steps2 === 2 ? ' (2 etapas iguais)' : '') + ': aspirar ' + fmt(a, 3) + ' mL do frasco (' + fmt(amtAsp, 4) + ' ' + au + ') e completar com ' + fmt(T - a, 3) + ' mL de diluente = ' + fmt(T, 3) + ' mL\n';
+  if (steps2 === 2) steps += 'Depois, da seringa obtida, aspirar ' + fmt(a, 3) + ' mL e completar de novo até ' + fmt(T, 3) + ' mL\n';
+  steps += 'Nova concentração = ' + fmt(C, 4) + ' ÷ ' + fmt(ftot, 3) + ' = ' + fmt(C2, 4) + ' ' + au + '/mL\n\nRegra de três:\n' + fmt(C2, 4) + ' ' + au + ' ----- 1 mL\n' + fmt(d, 4) + ' ' + au + ' ----- X\nX = ' + fmt(d, 4) + ' ÷ ' + fmt(C2, 4) + ' = ' + fmt(vol2, 4) + ' mL';
+  var sb = syringeBlock(vol2, null, { redil: null });
+  alerts = sb.alerts;
+  if (vol2 < 0.1 - 1e-9 || vol2 > 1 + 1e-9) alerts.push({ t: 'warn', msg: 'O volume final de ' + fmt(vol2, 3) + ' mL fica fora da faixa de 0,1 a 1 mL, que a seringa de 1 mL mede bem. Escolha outra diluição na tabela.' });
+  alerts.push({ t: 'info', msg: 'Identifique a seringa da rediluição com nome do paciente, medicamento, nova concentração e via (e-book: etiqueta na seringa quando não houver outra forma segura de checagem). Use o diluente indicado para o medicamento.' });
+  var perMl = fmt(C2, 3) + ' ' + au + '/mL';
+  paint('rediluicao', { label: 'Aspirar da rediluição', big: fmt(vol2, 3), unit: 'mL', sub: 'depois de diluir ' + fmt(a, 3) + ' mL do frasco até ' + fmt(T, 3) + ' mL' + (steps2 === 2 ? ' (duas vezes)' : '') + ', a ' + perMl + '.', kv: [{ k: 'Aspiração direta', v: fmt(direct, 3), s: 'mL (sem rediluir)' }, { k: 'Nova concentração', v: fmt(C2, 3), s: au + '/mL' }, { k: 'Fator de diluição', v: '÷ ' + fmt(ftot, 2) }], syr: sb.syr, alerts: alerts, steps: steps, open: true, text: 'Rediluição: ' + fmt(dose, 4) + ' ' + du + '; frasco ' + fmt(C, 3) + ' ' + au + '/mL; aspirar ' + fmt(a, 3) + ' mL + completar até ' + fmt(T, 3) + ' mL' + (steps2 === 2 ? ' (2x)' : '') + ' = ' + perMl + ' → aspirar ' + fmt(vol2, 3) + ' mL' });
+}
+function rdLoad(ex) {
+  RD.auto = true; RD.key = null; RD.steps = 1;
+  if (ex === 'rd1') { setv('rd-dose', '35000'); $('#rd-doseu').value = 'UI'; setv('rd-amt', '10000000'); $('#rd-amtu').value = 'UI'; setv('rd-vol', '10'); }
+  else if (ex === 'rd2') { setv('rd-dose', '35000'); $('#rd-doseu').value = 'UI'; setv('rd-amt', '5000000'); $('#rd-amtu').value = 'UI'; setv('rd-vol', '10'); }
+  else { setv('rd-dose', '8'); $('#rd-doseu').value = 'mg'; setv('rd-amt', '125'); $('#rd-amtu').value = 'mg'; setv('rd-vol', '2'); RD.auto = false; RD.key = 'manual'; setv('rd-a', '2'); setv('rd-T', '5'); }
+  rdUpdate();
+}
+
+/* ===== BANCO DE MEDICAMENTOS ===== */
+var LIB = { q: '', cat: -1 };
+function libRender() {
+  var q = norm(LIB.q), out = [];
+  DRUGS.forEach(function (d) {
+    if (LIB.cat >= 0 && d.cat !== LIB.cat) return;
+    if (q && norm(d.nome + ' ' + CATS[d.cat]).indexOf(q) < 0) return;
+    out.push(d);
+  });
+  out.sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+  $('#lib-count').textContent = out.length + ' de ' + DRUGS.length + ' medicamentos';
+  var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? esc(v) : '<span class="none">sem registro na fonte</span>') + '</dd></div>'; };
+  $('#lib').innerHTML = out.length ? out.map(function (d) {
+    var src = d.src.map(function (k) { var s = SOURCES[k]; return s.url ? '<a href="' + s.url + '" target="_blank" rel="noopener" style="color:var(--brand-ink)">' + esc(s.short) + '</a>' : esc(s.short); }).join(' · ');
+    var btns = '';
+    if (d.calc) btns += '<button class="btn small" type="button" data-lib-calc="' + d.id + '">Calcular reconstituição</button>';
+    if (d.avail) btns += '<button class="btn sec small" type="button" data-lib-dose="' + d.id + '">Usar na dose</button>';
+    return '<article class="drug"><div><div class="cat">' + esc(CATS[d.cat]) + '</div><h4>' + esc(d.nome) + '</h4></div><dl>' + row('Apresentação', d.apres) + row('Vias', d.vias) + row('Reconstituição', d.recon) + row('Concentração', d.conc) + row('Diluição para administrar', d.dil) + row('Tempo', d.tempo) + (d.obs ? row('Observação', d.obs) : '') + '</dl>' + (btns ? '<div class="actions">' + btns + '</div>' : '') + '<div class="src">Fonte: ' + src + '</div></article>';
+  }).join('') : '<div class="card"><div class="empty">Nenhum medicamento encontrado. O banco traz apenas dados que têm fonte citada.</div></div>';
+}
+
+/* ===== VIAS E SERINGAS ===== */
+var VIAS_TABS = [['im', 'Intramuscular'], ['sc', 'Subcutânea'], ['id', 'Intradérmica'], ['ev', 'Endovenosa'], ['vo', 'Oral e sublingual'], ['syr', 'Seringas'], ['hipo', 'Hipodermóclise']];
+var VIAS_CUR = 'im';
+function ul(a) { return '<ul>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
+function facts(a) { return '<div class="facts">' + a.map(function (x) { return '<div><small>' + esc(x[0]) + '</small><b>' + esc(x[1]) + '</b></div>'; }).join('') + '</div>'; }
+function viasHTML(t) {
+  if (t === 'im') return '<div class="guide"><div class="card"><h4>Intramuscular (IM)</h4><p class="hint">Deposita o medicamento no músculo, com absorção mais rápida que a SC.</p>' + facts([['Ângulo', '90°'], ['Agulha de aspiração', '40×12 ou ponta romba'], ['Espera', '10 s com a agulha'], ['Compressão', 'até 10 s']]) + ul(['Trocar a agulha de aspiração por outra adequada ao músculo e à viscosidade do medicamento.', 'Técnica em Z: deslocar a pele cerca de 2,5 cm, segurar e introduzir rápido a 90°. Na técnica em Z, a espera de 10 s não é necessária.', 'Aspirar o êmbolo para confirmar que não houve punção de vaso.', 'Retirar no mesmo ângulo e comprimir sem friccionar.', 'Antissepsia com swab de álcool 70%, do centro para a periferia.']) + '</div><div class="card"><h4>Volume e local por músculo</h4><div class="tbl-wrap"><table><thead><tr><th>Músculo</th><th>Volume</th><th>Local da punção</th></tr></thead><tbody><tr><td>Deltoide</td><td class="mono">até 1 mL</td><td>Cerca de 2,5 cm do acrômio; ou linha imaginária da axila pelo úmero, injetando logo acima.</td></tr><tr><td>Vasto lateral da coxa</td><td class="mono">até 4 mL</td><td>Terço médio da coxa.</td></tr><tr><td>Dorsoglúteo</td><td class="mono">até 4 mL</td><td>Quadrante superior externo do músculo.</td></tr><tr><td>Ventroglúteo</td><td class="mono">até 4 mL</td><td>Centro do "V" formado com a palma sobre o trocanter maior, o indicador na espinha ilíaca anterossuperior e o médio até a crista ilíaca.</td></tr></tbody></table></div></div></div>';
+  if (t === 'sc') return '<div class="guide"><div class="card"><h4>Subcutânea (SC)</h4><p class="hint">Tecido com menos irrigação: absorção mais lenta que a IM.</p>' + facts([['Seringa', '1 a 3 mL'], ['Agulha de aspiração', '30×7'], ['Agulha de aplicação', '4, 5 ou 6 mm'], ['Espera', '10 s']]) + ul(['Fazer a prega cutânea e inserir a agulha no ângulo correto para a idade, o tecido SC e a agulha.', 'Injetar lentamente, até o fim do êmbolo; após 10 s, retirar e pressionar o local.', 'Aplicar em locais sem hematoma, vermelhidão, dor, abaulamento ou lesão, fazendo rodízio.', 'Registrar o local da aplicação.']) + '</div><div class="card"><h4>Alertas</h4>' + ul(['Não é preciso aspirar após introduzir a agulha: perfurar vaso é raro. Não se recomenda aspirar na injeção de heparina e de insulina.', 'Anticoagulante de baixo peso molecular: aplicar no abdome, a pelo menos 5 cm do umbigo, em ambos os lados; manter a prega durante a injeção e não friccionar depois.', 'Nos dispositivos com trava de segurança, ela só ativa com o êmbolo totalmente abaixado.']) + '</div></div>';
+  if (t === 'id') return '<div class="guide"><div class="card"><h4>Intradérmica (ID)</h4><p class="hint">Usada em testes de sensibilidade, vacina BCG e teste de Mantoux (PPD).</p>' + facts([['Volume injetado', 'até 0,1 mL'], ['Ângulo', '5° a 15°'], ['Seringa', '1 mL (tuberculínica)'], ['Agulha', '13 mm, 0,38 ou 0,45 mm']]) + ul(['Local comum: face anterior do antebraço.', 'Aspirar de 0,1 a 0,5 mL, conforme a solução.', 'Esticar a pele e introduzir 2 mm da agulha, bisel para cima, até ele desaparecer.', 'Injetar lentamente, formando uma pápula. Não aspirar.']) + '</div><div class="card"><h4>Alertas</h4>' + ul(['Não fazer antissepsia com álcool 70% em BCG e testes de sensibilidade.', 'Verificar lote e validade; registrar data e hora de abertura do frasco.', 'Se perfurar o tecido subcutâneo, descartar o material e recomeçar.', 'Orientar: prurido, edema leve e irritação podem ocorrer; não coçar, não aplicar cremes sobre a pápula.', 'Marcar data e hora de retorno para leitura.']) + '</div></div>';
+  if (t === 'ev') return '<div class="guide"><div class="card"><h4>Endovenosa (EV)</h4><p class="hint">Medicamento direto na corrente sanguínea, com efeito mais rápido.</p>' + facts([['Ângulo da punção', '45° a 30°'], ['Torniquete', '10 a 15 cm acima'], ['Fixar a veia', '4 a 5 cm distal'], ['Pinça rolete', '2 a 5 cm abaixo da câmara']]) + ul(['Bisel voltado para cima; observar o retorno de sangue na câmara do cateter.', 'Não puncionar áreas com dor, calor, rubor ou edema, nem o lado de paralisia, fístula arteriovenosa ou mastectomia.', 'Veias dos membros inferiores não devem ser usadas para terapia IV em adultos.', 'Encher a câmara de gotejamento no máximo até a metade.', 'Fixar com filme transparente estéril e identificar data e hora da punção.']) + '</div><div class="card"><h4>Alertas</h4>' + ul(['O mesmo profissional não faz duas tentativas de punção no mesmo paciente.', 'Usar cada cateter apenas uma vez por tentativa.', 'Registrar número de tentativas, local, calibre do cateter, tempo de infusão, horário de início e resposta do paciente.', 'Conferir alergia ou reação prévia ao princípio ativo.']) + '</div></div>';
+  if (t === 'vo') return '<div class="guide"><div class="card"><h4>Oral e sublingual</h4>' + ul(['Paciente sentado ou em Fowler, deglutindo um comprimido de cada vez; manter a posição por 30 min.', 'Se o volume for menor que 10 mL, preparar na seringa para uso oral.', 'Suspensões: agitar antes (frasco de múltiplas doses). Medir o líquido na altura dos olhos.', 'Comprimidos em dificuldade de deglutição: macerar, diluir em água e dar com seringa oral.', 'Pós: misturar com líquido à beira do leito e oferecer na hora, sem preparar antes.', 'Permanecer ao lado até o paciente engolir tudo.']) + '</div><div class="card"><h4>Sublingual, bucal e lactentes</h4>' + ul(['Sublingual: colocar sob a língua até dissolver; não engolir o comprimido nem a saliva.', 'Bucal: colocar contra a mucosa da bochecha e da gengiva até dissolver.', 'Desintegração oral: empurrar o comprimido pela embalagem, colocar no topo da língua.', 'Recém-nascidos e lactentes: posição confortável, levemente reclinada, de preferência no colo. Bico da seringa no canto da boca, direcionado à bochecha interna, administrando devagar para evitar broncoaspiração.']) + '</div></div>';
+  if (t === 'syr') return '<div class="card"><h4>Graduações de seringas</h4><div class="tbl-wrap"><table><thead><tr><th>Seringa</th><th>Menor graduação</th><th>Numeração a cada</th></tr></thead><tbody>' + Calc.SYRINGES.slice().reverse().map(function (s) { return '<tr><td class="mono">' + s.cap + ' mL</td><td class="mono">' + fmt(s.grad, 2) + ' mL</td><td class="mono">' + fmt(s.num, 2) + ' mL</td></tr>'; }).join('') + '</tbody></table></div><p class="hint">Fonte: e-book São Camilo (2025), p. 14. Seringa de insulina: use a graduação impressa na própria seringa.</p></div>';
+  var rows = HYPO.map(function (r) { return '<tr><td><b>' + esc(r[0]) + '</b></td><td>' + (r[1] ? esc(r[1]) : '<span class="hint">-</span>') + '</td><td>' + (r[2] ? esc(r[2]) : '<span class="hint">-</span>') + '</td><td>' + (r[3] ? esc(r[3]) : '<span class="hint">-</span>') + '</td><td>' + esc(r[4]) + '</td></tr>'; }).join('');
+  return '<div class="card"><h4>Hipodermóclise (infusão SC)</h4><p class="hint">Velocidade máxima citada na fonte: 1 mL/min (62,5 mL/h) por sítio. Linhas sem dado aparecem com "-". Fonte: Guia Farmacêutico do Hospital São Camilo SP.</p><div class="tbl-wrap"><table><thead><tr><th>Fármaco</th><th>Reconstituição</th><th>Diluição</th><th>Tempo ou taxa</th><th>Observações do guia</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+}
+function viasRender() {
+  $('#vias-tabs').innerHTML = VIAS_TABS.map(function (t) { return '<button class="chip" type="button" data-vtab="' + t[0] + '" aria-pressed="' + (t[0] === VIAS_CUR) + '">' + t[1] + '</button>'; }).join('');
+  $('#vias-body').innerHTML = viasHTML(VIAS_CUR);
+}
+
+/* ===== CHECKLIST ===== */
+function chkRender() {
+  $('#chk').innerHTML = CHECK.map(function (g, gi) {
+    return '<div class="card"><h3>' + esc(g.t) + '</h3><div>' + g.items.map(function (it, i) { return '<label><input type="checkbox" data-chk="1" id="c' + gi + '-' + i + '"><span>' + esc(it) + '</span></label>'; }).join('') + '</div></div>';
+  }).join('') + '<div class="card"><h3>O que registrar no prontuário</h3>' + ul(REGISTRAR) + '</div>';
+  chkProg();
+}
+function chkProg() {
+  var all = $$('#chk input[data-chk]'), done = all.filter(function (x) { return x.checked; }).length;
+  $('#chk-bar').style.width = (all.length ? done / all.length * 100 : 0) + '%';
+  $('#chk-text').textContent = done + ' de ' + all.length + ' passos marcados';
+}
+
+/* ===== inicialização ===== */
+function themeInit() {
+  var saved = null; try { saved = localStorage.getItem('dosia-calc-theme'); } catch (e) { /* ignora */ }
+  if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+  $('#themeBtn').addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('dosia-calc-theme', next); } catch (e) { /* ignora */ }
+  });
+}
+
+function init() {
+  themeInit(); histLoad(); histRender();
+
+  /* selects dinâmicos */
+  var optsAvail = '<option value="">Escolher...</option>' + DRUGS.filter(function (d) { return d.avail; }).sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }).map(function (d) { return '<option value="' + d.id + '">' + esc(d.nome) + ' (' + fmt(d.avail.amt, 3) + ' ' + d.avail.unit + '/' + fmt(d.avail.ml, 2) + ' mL)</option>'; }).join('');
+  $('#d-preset').innerHTML = optsAvail;
+  $('#rc-preset').innerHTML = '<option value="">Escolher...</option>' + DRUGS.filter(function (d) { return d.calc; }).sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }).map(function (d) { return '<option value="' + d.id + '">' + esc(d.nome) + ' (' + fmt(d.calc.amt, 0) + ' ' + d.calc.unit + ')</option>'; }).join('');
+  $('#p-unit').innerHTML = Object.keys(Calc.PUMP_UNITS).map(function (k) { return '<option>' + k + '</option>'; }).join('');
+  $('#pc-presets').innerHTML = PC_PRESETS.map(function (p, i) { return '<button class="chip" type="button" data-pcp="' + i + '">' + esc(p.n) + '</button>'; }).join('');
+  $('#lib-cats').innerHTML = '<button class="chip" type="button" data-cat="-1" aria-pressed="true">Todos</button>' + CATS.map(function (c, i) { return '<button class="chip" type="button" data-cat="' + i + '" aria-pressed="false">' + esc(c) + '</button>'; }).join('');
+  cvFillUnits();
+
+  /* atualizadores por módulo */
+  UPDATERS.gotejamento = function () { gUpdate(); gInverse(); };
+  UPDATERS.dose = dUpdate; UPDATERS.insulina = iUpdate; UPDATERS.bomba = pUpdate; UPDATERS.porcentagem = pcUpdate; UPDATERS.conversor = cvUpdate;
+  UPDATERS.reconstituicao = rcUpdate; UPDATERS.rediluicao = rdUpdate; UPDATERS.medicamentos = libRender; UPDATERS.vias = viasRender;
+
+  /* estados iniciais com exemplos do e-book */
+  gLoad('g1'); dLoad('d1'); iLoad(); pLoad('p1');
+  setv('pc-pct', '0,9'); setv('pc-mm', '58,44'); setv('pc-vol', '500'); pcUpdate();
+  initCanetas();
+  cvUpdate(); rcLoad('rc1'); rdLoad('rd1'); libRender(); viasRender(); chkRender();
+
+  /* navegação */
+  $('#nav').addEventListener('click', function (e) { var b = e.target.closest('button[data-mod]'); if (b) show(b.getAttribute('data-mod')); });
+
+  /* exemplos */
+  document.addEventListener('click', function (e) {
+    var ex = e.target.closest('[data-ex]');
+    if (ex) { var k = ex.getAttribute('data-ex'); if (k[0] === 'g') gLoad(k); else if (k[0] === 'd') dLoad(k); else if (k === 'i1') iLoad(); else if (k[0] === 'p') pLoad(k); else if (k.indexOf('rc') === 0) rcLoad(k); else if (k.indexOf('rd') === 0) rdLoad(k); else if (k.indexOf('cn') === 0) cnLoad(k); return; }
+    var h = e.target.closest('[data-hook]'); if (h) { var fn = HOOKS[h.getAttribute('data-hook')]; if (fn) fn(); return; }
+    var act = e.target.closest('[data-act]');
+    if (act) {
+      var id = act.getAttribute('data-id'), t = LAST[id];
+      if (!t) return;
+      if (act.getAttribute('data-act') === 'copy') copyText(t);
+      else { HIST.unshift({ when: new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }), mod: MODNAME[id] || id, text: t }); HIST = HIST.slice(0, 50); histSave(); histRender(); toast('Salvo no histórico'); }
+      return;
+    }
+    var pcp = e.target.closest('[data-pcp]'); if (pcp) { pcPreset(Number(pcp.getAttribute('data-pcp'))); return; }
+    var lc = e.target.closest('[data-lib-calc]'); if (lc) { var did = lc.getAttribute('data-lib-calc'); rcApply(did, 'EV'); $('#rc-preset').value = did; show('reconstituicao'); return; }
+    var ld = e.target.closest('[data-lib-dose]'); if (ld) { var dr = drugById(ld.getAttribute('data-lib-dose')); setv('d-amt', dr.avail.amt); $('#d-amtu').value = dr.avail.unit; setv('d-vol', dr.avail.ml); $('#d-preset').value = dr.id; segSet('d-form', 'liq'); show('dose'); return; }
+    var cat = e.target.closest('[data-cat]'); if (cat) { LIB.cat = Number(cat.getAttribute('data-cat')); $$('#lib-cats .chip').forEach(function (c) { c.setAttribute('aria-pressed', c === cat ? 'true' : 'false'); }); libRender(); return; }
+    var vt = e.target.closest('[data-vtab]'); if (vt) { VIAS_CUR = vt.getAttribute('data-vtab'); viasRender(); return; }
+    var hc = e.target.closest('[data-hcopy]'); if (hc) { copyText(HIST[Number(hc.getAttribute('data-hcopy'))].text); return; }
+    var hd = e.target.closest('[data-hdel]'); if (hd) { HIST.splice(Number(hd.getAttribute('data-hdel')), 1); histSave(); histRender(); return; }
+    var rmv = e.target.closest('[data-grm]'); if (rmv) { G.items.splice(Number(rmv.getAttribute('data-grm')), 1); if (!G.items.length) G.items.push({ name: '', vol: '' }); gRenderItems(); gUpdate(); return; }
+    var tr = e.target.closest('#rd-opts tr[data-key]');
+    if (tr) { var key = tr.getAttribute('data-key'), op = Calc.REDIL_OPTIONS.filter(function (o) { return o.key === key; })[0]; RD.auto = false; RD.key = key; RD.steps = op.steps; setv('rd-a', op.a); setv('rd-T', op.T); rdUpdate(); return; }
+    var sg = e.target.closest('.seg button[data-v]');
+    if (sg) {
+      var sid = sg.parentNode.id; segSet(sid, sg.getAttribute('data-v'));
+      if (sid === 'g-eq') { G.eq = sg.getAttribute('data-v'); gUpdate(); }
+      else if (sid === 'd-form') dUpdate(); else if (sid === 'i-syr') iUpdate(); else if (sid === 'p-mode') pUpdate(); else if (sid === 'pc-mode') pcUpdate();
+      else if (sid === 'cn-tab' || sid === 'cn-vmode') cnUpdate();
+      else if (sid === 'cv-kind') { cvFillUnits(); cvUpdate(); }
+      else if (sid === 'rc-viaseg') { RC.via = sg.getAttribute('data-v'); var dd = drugById(RC.preset); if (dd) setv('rc-dil', dd.calc.ml[RC.via]); rcUpdate(); }
+    }
+  });
+  document.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('#rd-opts tr[data-key]')) { e.preventDefault(); e.target.click(); } });
+
+  /* campos */
+  $('#g-items').addEventListener('input', function (e) { var i = e.target.getAttribute('data-gi'); if (i === null) return; G.items[Number(i)][e.target.getAttribute('data-k')] = e.target.value; gUpdate(); });
+  $('#g-add').addEventListener('click', function () { G.items.push({ name: '', vol: '' }); gRenderItems(); var ins = $$('#g-items input.txt'); ins[ins.length - 1].focus(); gUpdate(); });
+  ['g-time', 'g-timeu', 'g-start'].forEach(function (id) { $('#' + id).addEventListener('input', gUpdate); });
+  ['gi-vol', 'gi-drops', 'gi-kind'].forEach(function (id) { $('#' + id).addEventListener('input', gInverse); });
+  ['d-dose', 'd-doseu', 'd-perkg', 'd-weight', 'd-amt', 'd-amtu', 'd-vol', 'd-route', 'd-syr'].forEach(function (id) { $('#' + id).addEventListener('input', dUpdate); });
+  $('#d-preset').addEventListener('change', function () { var dr = drugById(this.value); if (!dr) return; setv('d-amt', dr.avail.amt); $('#d-amtu').value = dr.avail.unit; setv('d-vol', dr.avail.ml); dUpdate(); });
+  ['i-dose', 'i-conc'].forEach(function (id) { $('#' + id).addEventListener('input', iUpdate); });
+  ['p-amt', 'p-amtu', 'p-vol', 'p-dose', 'p-mlh', 'p-unit', 'p-weight'].forEach(function (id) { $('#' + id).addEventListener('input', pUpdate); });
+  ['pc-pct', 'pc-vol', 'pc-mass', 'pc-massu', 'pc-mm'].forEach(function (id) { $('#' + id).addEventListener('input', pcUpdate); });
+  ['cv-val', 'cv-unit'].forEach(function (id) { $('#' + id).addEventListener('input', cvUpdate); });
+  $('#rc-preset').addEventListener('change', function () { if (!this.value) { RC.preset = null; $('#rc-via').hidden = true; } else rcApply(this.value, 'EV'); rcUpdate(); });
+  ['rc-amt', 'rc-amtu', 'rc-dil', 'rc-exp', 'rc-dose', 'rc-doseu', 'rc-bag'].forEach(function (id) { $('#' + id).addEventListener('input', rcUpdate); });
+  ['rd-dose', 'rd-doseu', 'rd-amt', 'rd-amtu', 'rd-vol'].forEach(function (id) { $('#' + id).addEventListener('input', function () { RD.auto = true; rdUpdate(); }); });
+  ['rd-a', 'rd-T'].forEach(function (id) { $('#' + id).addEventListener('input', function () { RD.auto = false; RD.key = 'manual'; RD.steps = 1; rdUpdate(); }); });
+  $('#lib-q').addEventListener('input', function () { LIB.q = this.value; libRender(); });
+  $('#chk').addEventListener('change', chkProg);
+  $('#chk-reset').addEventListener('click', function () { $$('#chk input[data-chk]').forEach(function (x) { x.checked = false; }); chkProg(); });
+  $('#hist-clear').addEventListener('click', function () { HIST = []; histSave(); histRender(); });
+  window.addEventListener('hashchange', function () { show(location.hash.replace('#', ''), true); });
+
+  show(location.hash.replace('#', '') || 'gotejamento', true);
+}
+init();
+})();
+</script>

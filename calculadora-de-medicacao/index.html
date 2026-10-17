@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Medicação · Dosia</title>
+<meta name="description" content="Dosia — ferramentas para a enfermagem: consulta de medicamentos, compatibilidade, diluição e calculadoras de dose.">
+<style>html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<div class="dosia-nav">
+<style>
+.dosia-nav{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.dosia-nav *{box-sizing:border-box}
+.dosia-nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.dosia-nav-bar{position:sticky;top:0;z-index:9998;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:60px;padding:0 16px;background:#fff;border-bottom:1px solid #E3E8EE;box-shadow:0 1px 6px rgba(18,48,74,.06)}
+body.admin-bar .dosia-nav-bar{top:32px}
+.dosia-nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#12304A;font-weight:700;font-size:20px}
+.dosia-nav-brand img{height:34px;width:auto;display:block}
+.dosia-nav-btn{order:-1;display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;border-radius:10px;cursor:pointer}
+.dosia-nav-btn:hover{background:#F1F5F8}
+.dosia-nav-btn span{display:block;height:2.5px;width:100%;background:#12304A;border-radius:2px;transition:transform .25s,opacity .2s}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(2){opacity:0}
+.dosia-nav-toggle:checked ~ .dosia-nav-bar .dosia-nav-btn span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.dosia-nav-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,48,74,.35);opacity:0;visibility:hidden;transition:opacity .25s}
+.dosia-nav-panel{position:fixed;top:0;left:0;bottom:0;z-index:9999;width:min(300px,85vw);background:#fff;padding:76px 16px 24px;box-shadow:4px 0 24px rgba(18,48,74,.15);transform:translateX(-105%);transition:transform .28s ease}
+.dosia-nav-toggle:checked ~ .dosia-nav-overlay{opacity:1;visibility:visible}
+.dosia-nav-toggle:checked ~ .dosia-nav-panel{transform:none}
+.dosia-nav-close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;color:#12304A}
+.dosia-nav-close:hover{background:#F1F5F8}
+.dosia-nav-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A8A99;margin:0 8px 8px}
+.dosia-nav-panel a{display:flex;align-items:center;gap:12px;padding:13px 12px;margin-bottom:4px;border-radius:10px;text-decoration:none;color:#12304A;font-size:15.5px;font-weight:500}
+.dosia-nav-panel a:hover{background:#E9F8F6;color:#0E8C80}
+.dosia-nav-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#E9F8F6;color:#14B5A6;flex:none}
+.dosia-nav-ico svg{width:18px;height:18px}
+</style>
+<input type="checkbox" id="dosia-nav-toggle" class="dosia-nav-toggle" aria-hidden="true">
+<header class="dosia-nav-bar">
+<a class="dosia-nav-brand" href="/"><img decoding="async" src="../assets/dosia-logo.webp" alt="Dosia"></a>
+<label for="dosia-nav-toggle" class="dosia-nav-btn" aria-label="Abrir menu" title="Menu"><span></span><span></span><span></span></label>
+</header>
+<label for="dosia-nav-toggle" class="dosia-nav-overlay" aria-hidden="true"></label>
+<nav class="dosia-nav-panel" aria-label="Menu do Dosia">
+<label for="dosia-nav-toggle" class="dosia-nav-close" aria-label="Fechar menu">×</label>
+<p class="dosia-nav-title">Ferramentas</p>
+<a href="/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span>Consulta de medicamentos</a>
+<a href="/calculadora-de-medicacao/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"></path></svg></span>Calculadora de medicação</a>
+<a href="/leis-e-deveres-da-enfermagem/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M8 7h8M8 11h6"></path></svg></span>Leis e deveres da enfermagem</a>
+<a href="/calculadora-pediatrica/"><span class="dosia-nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path><path d="M10 7h.01M14 7h.01"></path></svg></span>Calculadora pediátrica</a>
+</nav>
+</div>
+<div class="dosia-embed" style="width:100%;max-width:100%;">
+<iframe id="dosia-calc-frame" title="Calculadora Dosia" style="width:100%;border:0;display:block;min-height:900px;" loading="eager" src="app.html"></iframe>
+</div>
+<script>
+(function(){
+  var f=document.getElementById('dosia-calc-frame'); if(!f) return;
+  function fit(){ try{ var d=f.contentDocument; if(!d||!d.documentElement) return; f.style.height=d.documentElement.scrollHeight+'px'; }catch(e){} }
+  f.addEventListener('load',function(){ fit(); try{ var d=f.contentDocument; new ResizeObserver(fit).observe(d.body); d.addEventListener('click',function(){setTimeout(fit,50);}); }catch(e){} });
+  window.addEventListener('resize',fit);
+})();
+</script>
+</body>
+</html>
